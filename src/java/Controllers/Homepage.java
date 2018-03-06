@@ -25,7 +25,10 @@ import model.LoginVerification;
 import model.User;
 import javax.servlet.http.HttpSession;
 import model.Algoritmo;
+import static model.Algoritmo.TAMX;
+import static model.Algoritmo.TAMY;
 import model.DBConnect;
+import model.Teacher;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
@@ -65,7 +68,12 @@ public class Homepage extends MultiActionController  {
         this.st2 = cn2.createStatement();
         DBConnect db = new DBConnect();
         ModelAndView mv = new ModelAndView("index");
-        //(new Algoritmo()).algo();
+        mv.addObject("TAMX",new Integer(TAMX));
+        mv.addObject("TAMY",new Integer(TAMY));
+        (new Algoritmo()).algo(mv);
+        ArrayList<Teacher> trst = new ArrayList<>();
+        trst.add(new Teacher());
+       // mv.addObject("profesores", trst);
         return mv;
         //return new ModelAndView("userform");
     }

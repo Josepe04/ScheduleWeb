@@ -15,6 +15,15 @@ public class Student {
     private int huecos[][];
     private int id;
     private String genero;
+    private String name;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 
     public String getGenero() {
         return genero;
@@ -39,6 +48,8 @@ public class Student {
     }
     
     public boolean patronCompatible(ArrayList<Tupla> ar){
+        if(ar==null)
+            return false;
         for(Tupla t:ar)
             if(huecos[(Integer)t.x][(Integer)t.y]!=0)
                 return false;
@@ -52,6 +63,10 @@ public class Student {
             }
             System.out.println("");
         }
+    }
+    
+    public int[][] getHuecos() {
+        return huecos;
     }
     
     public boolean equals(Student st){

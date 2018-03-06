@@ -22,6 +22,15 @@ public class Teacher{
     protected int MaxBxD;//max blocksperday
     private String ExcludeBlocks;
     protected boolean ocupado;
+    private String name;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
     
     
     public int getIdTeacher() {

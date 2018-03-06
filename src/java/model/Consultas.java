@@ -19,10 +19,14 @@ import java.util.logging.Logger;
 public class Consultas {
     ArrayList<Integer> teachers;
     Teacher tdefault;
+    Student stDefault;
     
     public Consultas(){
         teachers = new ArrayList<>();
         tdefault = teacherDefault();
+        stDefault = new Student(0);
+        stDefault.setGenero("Male");
+        stDefault.setName("default");
     }
     
     protected ArrayList<Course> getRestricciones(int[] ids){
@@ -326,6 +330,7 @@ public class Consultas {
             } catch (Exception ex ) {
                 Logger.getLogger(Consultas.class.getName()).log(Level.SEVERE, null, ex);
             }
+        ret.setName(fetchName(id));
         return ret;
     }
     
@@ -364,14 +369,45 @@ public class Consultas {
             Logger.getLogger(Consultas.class.getName()).log(Level.SEVERE, null, ex);
         }
         if(ret.isEmpty()){
-            numStudents[0] = 1;
-            Random r = new Random();
-            Student st = new Student(r.nextInt());
-            if(r.nextBoolean())
-                st.setGenero("Male");
-            else
-                st.setGenero("Female");
-            ret.add(st);
+            ret.add(stDefault);
+        }else{
+            for(Student st:ret){
+                st.setName(fetchName(st.getId()));
+            }
+        }
+        return ret;
+    }
+    
+    public String nameCourse(int id){
+        if(id==0)
+            return "0";
+        int idc = id/100;
+        id=id-(idc*100);
+        String ret = "";
+        try {
+            String consulta = "select * from courses where courseid = "+idc;
+            ResultSet rs = DBConnect.st.executeQuery(consulta);
+            while(rs.next()){
+                ret = rs.getString("title");
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(Consultas.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return ret + " Section: "+id;
+    }
+ 
+    private String fetchName(int id){
+        String consulta = "select * from person where personid="+id;
+        String ret = "";
+        ResultSet rs;
+        try {
+            rs = DBConnect.st.executeQuery(consulta);
+            while(rs.next()){
+               ret= rs.getString("lastname")+" , ";
+               ret += rs.getString("firstname");
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(Consultas.class.getName()).log(Level.SEVERE, null, ex);
         }
         return ret;
     }

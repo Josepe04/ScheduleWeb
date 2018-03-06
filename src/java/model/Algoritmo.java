@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import org.springframework.web.servlet.ModelAndView;
 import xml.XMLWriterDOM;
 
 /**
@@ -56,13 +57,13 @@ public class Algoritmo {
         return ret;
     }
     
-    public void algo(){
+    public void algo(ModelAndView mv){
         Consultas cs = new Consultas();
         int[] idsprueba = {739,688,796,733,676,837,718,702,717,846,690,
                             721,735,722,680,706,755,746,872,873,935,650};
         ArrayList<Course> rst = cs.getRestricciones(idsprueba);
         ArrayList<Teacher> trst = cs.teachersList();
-        HashMap<String,ArrayList<Tupla>> seccionesExistentes = new HashMap<>();
+        ArrayList<ArrayList<Tupla>> seccionesDisponibles = new ArrayList<>();
         HashMap<Integer,ArrayList<Integer>> studentsCourse = new HashMap<>();
         HashMap<Integer,Student> students = new HashMap<>();
         
@@ -77,39 +78,18 @@ public class Algoritmo {
             studentsCourse.put(c.getIdCourse(),stids);
         }
         
-        boolean[] asignados = new boolean[idsprueba.length];
-        int i = 0;
         for(Course course: rst){
             int minsections = 1 + studentsCourse.get(course.getIdCourse()).size()/CHILDSPERSECTION;
             course.setSections(minsections);
-            for(int j = 0;j<minsections;j++){
-                for(Teacher teacher:trst){
-                    int id = course.getIdCourse();
-                    if(teacher.asignaturaCursable(id)){
-                        for(ArrayList<Tupla> ar: course.opciones()){
-                            int numberStudents = 0;
-                            for(Integer st2 :studentsCourse.get(course.getIdCourse()))
-                                if(course.getTrestricctions().contains(teacher.idTeacher) 
-                                        && teacher.patronCompatible(ar) && students.get(st2).patronCompatible(ar)){
-                                        numberStudents++;
-                                }
-                            int size = studentsCourse.get(course.getIdCourse()).size();
-                            if(numberStudents > size/minsections -1){
-                                teacher.ocuparHueco(ar, id*100+j);
-                                seccionesExistentes.put(""+course.getIdCourse()+j,ar);
-                                asignados[i] = true;
-                                break;
-                            }
-                        }
-                    }
-                    if(asignados[i])
-                        break;
-                }
-                asignados[i] = false;
+            for(ArrayList<Tupla> ar: course.opciones()){
+                seccionesDisponibles.add(ar);
             }
-            studentGroups(course,minsections,seccionesExistentes,studentsCourse.get(course.getIdCourse()),students);
             
-            i++;
+            if(seccionesDisponibles.size()>0)
+                studentSections(trst,course,minsections,seccionesDisponibles,studentsCourse.get(course.getIdCourse()),students);
+            else
+                System.out.println("FAILURE: " + course.getIdCourse());
+            seccionesDisponibles = new ArrayList<>();
         }
         
         XMLWriterDOM.xmlCreate(trst, null);
@@ -118,17 +98,20 @@ public class Algoritmo {
             teacher.mostrarHuecos();
             System.out.println("");
         }
+        ArrayList<Student> retst = new ArrayList<>();
         for(Map.Entry<Integer, Student> entry : students.entrySet()) {
             entry.getValue().mostrarHuecos();
+            retst.add(entry.getValue());
             System.out.println("");
         }
-                
+        mv.addObject("profesores", trst);
+        mv.addObject("students",retst);
     }
     
-    private class Comp implements Comparator<ArrayList<Integer>>{
+    private class Comp implements Comparator<Tupla<Integer,ArrayList<Integer>>>{
         @Override
-        public int compare(ArrayList<Integer> e1, ArrayList<Integer> e2) {
-            if(e1.size() < e2.size()){
+        public int compare(Tupla<Integer,ArrayList<Integer>> e1, Tupla<Integer,ArrayList<Integer>> e2) {
+            if(e1.y.size() < e2.y.size()){
                 return 1;
             } else {
                 return -1;
@@ -136,40 +119,62 @@ public class Algoritmo {
         }
     }
     
-    private void studentGroups(Course c,int minsections,HashMap<String, ArrayList<Tupla>> sec,
-            ArrayList<Integer> studentsCourse,HashMap<Integer,Student> students){
-        ArrayList<ArrayList<Integer>> stids = new ArrayList<>();
-        for(int i = 0; i < minsections;i++){
-            stids.add(new ArrayList<>());
+    private ArrayList<Integer> studentSections(ArrayList<Teacher> teachers,Course c,int minsections,ArrayList<ArrayList<Tupla>> sec,
+        ArrayList<Integer> studentsCourse,HashMap<Integer,Student> students){
+        ArrayList<Tupla<Integer,ArrayList<Integer>>> stids = new ArrayList<>();
+        ArrayList<Integer> idsAsignados = new ArrayList<>();
+        for(int i = 0; i < sec.size();i++){
+            stids.add(new Tupla<Integer,ArrayList<Integer>>(i,new ArrayList<>()));
             for(Integer j:studentsCourse){
-                if(students.get(j).patronCompatible(sec.get(""+c.getIdCourse()+i))){
-                    stids.get(i).add(j);
+                if(students.get(j).patronCompatible(sec.get(i))){
+                    stids.get(i).y.add(j);
                 }
             }
         }
-        stids.sort(new Comp());
-        if((stids.get(0).size()==studentsCourse.size() && stids.size()==1)
-                ||(stids.get(0).size()==studentsCourse.size() && stids.get(1).size() == studentsCourse.size())){
-            int i=0;
-            for(Integer j:studentsCourse){
-                if(stids.size()==1 || i< studentsCourse.size()/2)
-                    students.get(j).ocuparHueco(sec.get(""+c.getIdCourse()+0), c.getIdCourse()*100);
-                else
-                    students.get(j).ocuparHueco(sec.get(""+c.getIdCourse()+1), c.getIdCourse()*100+1);
-                i++;
-            }
-        }else{
-            ArrayList<Integer> diferencia = stids.get(stids.size()-1);
-            for(int j = stids.size()-1; j >= 0;j--){
-                diferencia = Conjuntos.diferencia(diferencia, stids.get(j));
-                int i=0;
-                for(Integer k:diferencia){
-                    if(i<(studentsCourse.size()/2+3))
-                        students.get(k).ocuparHueco(sec.get(""+c.getIdCourse()+0), c.getIdCourse()*100);
-                    i++;
-                }
-            }
+        try{
+            stids.sort(new Comp());
+        }catch(Exception e){
+            return null;
         }
-          
+        boolean asignado = false;
+        ArrayList<Integer> diferencia;
+        diferencia = stids.get(0).y;
+        for(int i = 0;i < stids.size();i++){
+            for(Teacher t : teachers)
+                if(c.getTrestricctions().contains(t.idTeacher) && t.asignaturaCursable(c.getIdCourse()) && t.patronCompatible(sec.get(stids.get(i).x))){
+                    t.ocuparHueco(sec.get(stids.get(i).x), c.getIdCourse()*100+i);
+                    asignado = true;
+                    int k = 0;
+                    for(Integer j:diferencia){
+                        if((k<studentsCourse.size()/c.getSections()+1 || studentsCourse.size()==1) && !idsAsignados.contains(j) && 
+                                students.get(j).patronCompatible(sec.get(stids.get(i).x))){
+                            idsAsignados.add(j);
+                            students.get(j).ocuparHueco(sec.get(stids.get(i).x), c.getIdCourse()*100+i);
+                            k++;
+                        }
+                    }
+                    if(k<studentsCourse.size()/c.getSections()){
+                        for(Integer j:stids.get(i).y){
+                            if((k<studentsCourse.size()/c.getSections()+1 || studentsCourse.size()==1) && !idsAsignados.contains(j) && 
+                                    students.get(j).patronCompatible(sec.get(stids.get(i).x))){
+                                idsAsignados.add(j);
+                                students.get(j).ocuparHueco(sec.get(stids.get(i).x), c.getIdCourse()*100+i);
+                                k++;
+                            }
+                        }
+                    }
+                    if(idsAsignados.size() == studentsCourse.size()){
+                        return null;
+                    }
+                }
+            if(i+1<stids.size())
+                diferencia = Conjuntos.diferencia(stids.get(i+1).y, stids.get(i).y);
+        }
+       
+        if(idsAsignados.size()!= studentsCourse.size()){
+            System.out.println("FAILURE");
+            return Conjuntos.diferencia(studentsCourse, idsAsignados);
+        }
+        return null;
     }
 }
