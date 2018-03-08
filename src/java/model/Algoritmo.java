@@ -85,8 +85,12 @@ public class Algoritmo {
                 seccionesDisponibles.add(ar);
             }
             
-            if(seccionesDisponibles.size()>0)
-                studentSections(trst,course,minsections,seccionesDisponibles,studentsCourse.get(course.getIdCourse()),students);
+            if(seccionesDisponibles.size()>0){
+                ArrayList<Integer> noAsign = studentSections(trst,course,minsections,
+                        seccionesDisponibles,studentsCourse.get(course.getIdCourse()),students);
+                if(noAsign != null)
+                    course.setStudentsNoAsignados(noAsign);
+            }
             else
                 System.out.println("FAILURE: " + course.getIdCourse());
             seccionesDisponibles = new ArrayList<>();
@@ -106,6 +110,7 @@ public class Algoritmo {
         }
         mv.addObject("profesores", trst);
         mv.addObject("students",retst);
+        mv.addObject("Courses",rst);
     }
     
     private class Comp implements Comparator<Tupla<Integer,ArrayList<Integer>>>{
@@ -142,14 +147,15 @@ public class Algoritmo {
         for(int i = 0;i < stids.size();i++){
             for(Teacher t : teachers)
                 if(c.getTrestricctions().contains(t.idTeacher) && t.asignaturaCursable(c.getIdCourse()) && t.patronCompatible(sec.get(stids.get(i).x))){
-                    t.ocuparHueco(sec.get(stids.get(i).x), c.getIdCourse()*100+i);
+                    t.ocuparHueco(sec.get(stids.get(i).x), c.getIdCourse()*100+i+1);
+                    c.ocuparHueco(i+1, sec.get(stids.get(i).x));
                     asignado = true;
                     int k = 0;
                     for(Integer j:diferencia){
                         if((k<studentsCourse.size()/c.getSections()+1 || studentsCourse.size()==1) && !idsAsignados.contains(j) && 
                                 students.get(j).patronCompatible(sec.get(stids.get(i).x))){
                             idsAsignados.add(j);
-                            students.get(j).ocuparHueco(sec.get(stids.get(i).x), c.getIdCourse()*100+i);
+                            students.get(j).ocuparHueco(sec.get(stids.get(i).x), c.getIdCourse()*100+i+1);
                             k++;
                         }
                     }
@@ -158,22 +164,27 @@ public class Algoritmo {
                             if((k<studentsCourse.size()/c.getSections()+1 || studentsCourse.size()==1) && !idsAsignados.contains(j) && 
                                     students.get(j).patronCompatible(sec.get(stids.get(i).x))){
                                 idsAsignados.add(j);
-                                students.get(j).ocuparHueco(sec.get(stids.get(i).x), c.getIdCourse()*100+i);
+                                students.get(j).ocuparHueco(sec.get(stids.get(i).x), c.getIdCourse()*100+i+1);
                                 k++;
                             }
                         }
                     }
                     if(idsAsignados.size() == studentsCourse.size()){
+                        c.setStudentsAsignados(idsAsignados);
                         return null;
                     }
                 }
             if(i+1<stids.size())
                 diferencia = Conjuntos.diferencia(stids.get(i+1).y, stids.get(i).y);
         }
-       
+        c.setStudentsAsignados(idsAsignados);
         if(idsAsignados.size()!= studentsCourse.size()){
             System.out.println("FAILURE");
-            return Conjuntos.diferencia(studentsCourse, idsAsignados);
+            ArrayList<Integer> ret = Conjuntos.diferencia(studentsCourse, idsAsignados);
+            for(Integer st:ret){
+                students.get(st).addNoAsignado(c.getIdCourse());
+            }
+            return ret;
         }
         return null;
     }

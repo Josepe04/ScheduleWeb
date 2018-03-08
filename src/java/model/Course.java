@@ -25,6 +25,32 @@ public class Course {
     private String excludeBlocks; // bloques que no se puede
     private int maxBlocksPerDay;
     private int sections;
+    private ArrayList<Integer> studentsNoAsignados; 
+    private ArrayList<Integer> studentsAsignados;
+    
+    public Course(int idCourse) {
+        this.idCourse = idCourse;
+        huecos=new int[Algoritmo.TAMX][Algoritmo.TAMY];
+        maxBlocksPerDay = 1;
+        sections = 0;
+        studentsNoAsignados = new ArrayList<>();
+    }
+    
+    public ArrayList<Integer> getStudentsAsignados() {
+        return studentsAsignados;
+    }
+
+    public void setStudentsAsignados(ArrayList<Integer> studentsAsignados) {
+        this.studentsAsignados = studentsAsignados;
+    }
+    
+    public ArrayList<Integer> getStudentsNoAsignados() {
+        return studentsNoAsignados;
+    }
+
+    public void setStudentsNoAsignados(ArrayList<Integer> studentsNoAsignados) {
+        this.studentsNoAsignados = studentsNoAsignados;
+    }
 
     public void setSections(int sections) {
         this.sections = sections;
@@ -35,23 +61,6 @@ public class Course {
         return sections;
     }
     
-    public Course(int idCourse) {
-        this.idCourse = idCourse;
-        huecos=new int[Algoritmo.TAMX][Algoritmo.TAMY];
-        maxBlocksPerDay = 1;
-        sections = 0;
-    }
-
-    public boolean addSection(){
-        try{
-            if(sections+1 < Integer.parseInt(maxSections))
-                sections++;
-            return true;
-        }catch(Exception e){
-            sections++;
-            return true;
-        }
-    }
     
     public int getIdCourse() {
         return idCourse;
@@ -136,6 +145,23 @@ public class Course {
     public int[][] getHuecos() {
         return huecos;
     }
+    public void ocuparHueco(int sec,ArrayList<Tupla> list){
+        for(Tupla<Integer,Integer> t:list)
+            if(huecos[t.x][t.y] == 0)
+                huecos[t.x][t.y] = sec;
+    }
+    
+    public boolean addSection(){
+        try{
+            if(sections+1 < Integer.parseInt(maxSections))
+                sections++;
+            return true;
+        }catch(Exception e){
+            sections++;
+            return true;
+        }
+    }
+    
     public ArrayList<Tupla> huecosLibres(){
         ArrayList<Tupla> ret = new ArrayList<>();
         for(int i = 0;i < Algoritmo.TAMX;i++)

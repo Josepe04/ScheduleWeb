@@ -16,6 +16,25 @@ public class Student {
     private int id;
     private String genero;
     private String name;
+    private ArrayList<Integer> cursosNoAsignados;
+
+    
+    public Student(int id){
+        this.cursosNoAsignados = new ArrayList<>();
+        this.id = id;
+        huecos = new int[Algoritmo.TAMX][Algoritmo.TAMY];
+    }
+    
+    public void addNoAsignado(Integer i){
+        cursosNoAsignados.add(i);
+    }
+    public ArrayList<Integer> getCursosNoAsignados() {
+        return cursosNoAsignados;
+    }
+
+    public void setCursosNoAsignados(ArrayList<Integer> cursosNoAsignados) {
+        this.cursosNoAsignados = cursosNoAsignados;
+    }
 
     public String getName() {
         return name;
@@ -35,11 +54,6 @@ public class Student {
 
     public int getId() {
         return id;
-    }
-    
-    public Student(int id){
-        this.id = id;
-        huecos = new int[Algoritmo.TAMX][Algoritmo.TAMY];
     }
     
     public void ocuparHueco(ArrayList<Tupla> ar , int id){

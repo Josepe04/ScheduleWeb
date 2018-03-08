@@ -6,6 +6,7 @@
 package model;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  *
@@ -23,7 +24,27 @@ public class Teacher{
     private String ExcludeBlocks;
     protected boolean ocupado;
     private String name;
+    private HashMap<Integer,Integer> secciones;
+    
+    public Teacher(){
+        huecos = new int[Algoritmo.TAMX][Algoritmo.TAMY];
+        blocksPerDay = new int[Algoritmo.TAMX];
+        for(int i = 0; i<blocksPerDay.length;i++){
+            blocksPerDay[i] = 0;
+        }
+        secsComplete = 0;
+        prepsComplete = new ArrayList<>();
+        secciones = new HashMap<>();
+    }
+    
+    public HashMap<Integer,Integer> getSecciones() {
+        return secciones;
+    }
 
+    public void setSecciones(HashMap<Integer,Integer> secciones) {
+        this.secciones = secciones;
+    }
+    
     public String getName() {
         return name;
     }
@@ -32,7 +53,14 @@ public class Teacher{
         this.name = name;
     }
     
-    
+    public int getSecsComplete() {
+        return secsComplete;
+    }
+
+    public int getMaxSections() {
+        return MaxSections;
+    }
+
     public int getIdTeacher() {
         return idTeacher;
     }
@@ -56,15 +84,7 @@ public class Teacher{
         }
         this.ExcludeBlocks = ExcludeBlocks;
     }
-    public Teacher(){
-        huecos = new int[Algoritmo.TAMX][Algoritmo.TAMY];
-        blocksPerDay = new int[Algoritmo.TAMX];
-        for(int i = 0; i<blocksPerDay.length;i++){
-            blocksPerDay[i] = 0;
-        }
-        secsComplete = 0;
-        prepsComplete = new ArrayList<>();
-    }
+    
     public String toString(){
         return idTeacher +" sections: "+ MaxSections+" preps: "+ Preps+" maxbxd: "+ MaxBxD +" exclude: "+ExcludeBlocks;
     }
@@ -99,7 +119,14 @@ public class Teacher{
         secsComplete++;
         if(secsComplete >= MaxSections)
             ocupado = true;
+        if(secciones.containsKey(id/100)){
+            int aux = secciones.get(id/100)+1;
+            secciones.replace(id/100, aux);
+        }else{
+            secciones.put(id/100,1);
+        }
     }
+    
     public boolean asignaturaCursable(int id){
         if(ocupado || (!prepsComplete.contains(id) && prepsComplete.size()>=Preps))
             return false;

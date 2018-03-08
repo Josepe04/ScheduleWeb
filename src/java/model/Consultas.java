@@ -379,13 +379,9 @@ public class Consultas {
     }
     
     public String nameCourse(int id){
-        if(id==0)
-            return "0";
-        int idc = id/100;
-        id=id-(idc*100);
         String ret = "";
         try {
-            String consulta = "select * from courses where courseid = "+idc;
+            String consulta = "select * from courses where courseid = "+id;
             ResultSet rs = DBConnect.st.executeQuery(consulta);
             while(rs.next()){
                 ret = rs.getString("title");
@@ -393,7 +389,16 @@ public class Consultas {
         } catch (SQLException ex) {
             Logger.getLogger(Consultas.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return ret + " Section: "+id;
+        return ret;
+    }
+    
+    public String nameCourseAndSection(int id){
+        if(id==0)
+            return "0";
+        int idc = id/100;
+        id=id-(idc*100);
+        
+        return nameCourse(idc) + " Section: "+id;
     }
  
     private String fetchName(int id){
@@ -411,5 +416,6 @@ public class Consultas {
         }
         return ret;
     }
+    
     
 }
