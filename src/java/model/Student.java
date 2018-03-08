@@ -17,10 +17,12 @@ public class Student {
     private String genero;
     private String name;
     private ArrayList<Integer> cursosNoAsignados;
+    private ArrayList<Integer> cursosAsignados;
 
     
     public Student(int id){
         this.cursosNoAsignados = new ArrayList<>();
+        this.cursosAsignados = new ArrayList<>();
         this.id = id;
         huecos = new int[Algoritmo.TAMX][Algoritmo.TAMY];
     }
@@ -28,6 +30,14 @@ public class Student {
     public void addNoAsignado(Integer i){
         cursosNoAsignados.add(i);
     }
+    public void addAsignado(Integer i){
+        cursosAsignados.add(i);
+    }
+    
+    public ArrayList<Integer> getCursosAsignados() {
+        return cursosAsignados;
+    }
+    
     public ArrayList<Integer> getCursosNoAsignados() {
         return cursosNoAsignados;
     }

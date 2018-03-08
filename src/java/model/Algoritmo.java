@@ -147,7 +147,7 @@ public class Algoritmo {
         for(int i = 0;i < stids.size();i++){
             for(Teacher t : teachers)
                 if(c.getTrestricctions().contains(t.idTeacher) && t.asignaturaCursable(c.getIdCourse()) && t.patronCompatible(sec.get(stids.get(i).x))){
-                    t.ocuparHueco(sec.get(stids.get(i).x), c.getIdCourse()*100+i+1);
+                    t.ocuparHueco(sec.get(stids.get(i).x), c.getIdCourse()*100+i);
                     c.ocuparHueco(i+1, sec.get(stids.get(i).x));
                     asignado = true;
                     int k = 0;
@@ -171,11 +171,18 @@ public class Algoritmo {
                     }
                     if(idsAsignados.size() == studentsCourse.size()){
                         c.setStudentsAsignados(idsAsignados);
+                        for(Integer st:idsAsignados){
+                            students.get(st).addAsignado(c.getIdCourse());
+                        }
                         return null;
                     }
                 }
             if(i+1<stids.size())
                 diferencia = Conjuntos.diferencia(stids.get(i+1).y, stids.get(i).y);
+        }
+        
+        for(Integer st:idsAsignados){
+            students.get(st).addAsignado(c.getIdCourse());
         }
         c.setStudentsAsignados(idsAsignados);
         if(idsAsignados.size()!= studentsCourse.size()){

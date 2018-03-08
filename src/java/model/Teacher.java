@@ -37,6 +37,14 @@ public class Teacher{
         secciones = new HashMap<>();
     }
     
+    public int seccionesDisponibles(){
+        return MaxSections - secsComplete;
+    }
+    
+    public int prepsDisponibles(){
+        return Preps - prepsComplete.size();
+    }
+    
     public HashMap<Integer,Integer> getSecciones() {
         return secciones;
     }
@@ -114,8 +122,8 @@ public class Teacher{
     public void ocuparHueco(ArrayList<Tupla> ar,int id){
         for(Tupla t:ar)
             huecos[(Integer)t.x][(Integer)t.y]=id; 
-        if(!prepsComplete.contains(id))
-            prepsComplete.add(id);
+        if(!prepsComplete.contains(id/100))
+            prepsComplete.add(id/100);
         secsComplete++;
         if(secsComplete >= MaxSections)
             ocupado = true;
