@@ -8,7 +8,7 @@ package model;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Random;
+import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -17,9 +17,10 @@ import java.util.logging.Logger;
  * @author Norhan
  */
 public class Consultas {
-    ArrayList<Integer> teachers;
-    Teacher tdefault;
-    Student stDefault;
+    private ArrayList<Integer> teachers;
+    private Teacher tdefault;
+    private Student stDefault;
+    private HashMap<Integer,String> courseName;
     
     public Consultas(){
         teachers = new ArrayList<>();
@@ -27,6 +28,7 @@ public class Consultas {
         stDefault = new Student(0);
         stDefault.setGenero("Male");
         stDefault.setName("default");
+        courseName = new HashMap<>();
     }
     
     protected ArrayList<Course> getRestricciones(int[] ids){
@@ -38,6 +40,7 @@ public class Consultas {
             for(int i = 0; i < ids.length;i++){
                 Course r=new Course(ids[i]);
                 ret.add(r);
+                courseName.put(ids[i], fetchNameCourse(ids[i]));
             }
             for(int i = 0; i < ret.size();i++){
                 consulta = "select udd.data\n" +
@@ -378,7 +381,7 @@ public class Consultas {
         return ret;
     }
     
-    public String nameCourse(int id){
+    private String fetchNameCourse(int id){
         String ret = "";
         try {
             String consulta = "select * from courses where courseid = "+id;
@@ -390,6 +393,10 @@ public class Consultas {
             Logger.getLogger(Consultas.class.getName()).log(Level.SEVERE, null, ex);
         }
         return ret;
+    }
+    
+    public String nameCourse(int id){
+        return courseName.get(id);
     }
     
     public String nameCourseAndSection(int id){

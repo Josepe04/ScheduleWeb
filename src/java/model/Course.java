@@ -25,6 +25,8 @@ public class Course {
     private String excludeBlocks; // bloques que no se puede
     private int maxBlocksPerDay;
     private int sections;
+    private int sectionsNoEnrolled;
+    private double percentEnrolled;
     private ArrayList<Integer> studentsNoAsignados; 
     private ArrayList<Integer> studentsAsignados;
     
@@ -35,6 +37,25 @@ public class Course {
         sections = 0;
         studentsNoAsignados = new ArrayList<>();
     }
+
+    public int getSectionsNoEnrolled() {
+        return sectionsNoEnrolled;
+    }
+
+    public void updateSectionsNoEnrolled(int sectionsEnrolled) {
+        this.sectionsNoEnrolled = sections-sectionsEnrolled;
+    }
+
+    
+    
+    public double getPercentEnrolled() {
+        return percentEnrolled;
+    }
+
+    public void setPercentEnrolled(double percentEnrolled) {
+        this.percentEnrolled = percentEnrolled;
+    }
+    
     
     public ArrayList<Integer> getStudentsAsignados() {
         return studentsAsignados;
