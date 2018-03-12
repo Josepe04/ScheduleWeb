@@ -29,6 +29,7 @@ public class Course {
     private double percentEnrolled;
     private ArrayList<Integer> studentsNoAsignados; 
     private ArrayList<Integer> studentsAsignados;
+    private ArrayList<ArrayList<Tupla>> patronesStudents; 
     
     public Course(int idCourse) {
         this.idCourse = idCourse;
@@ -38,6 +39,14 @@ public class Course {
         studentsNoAsignados = new ArrayList<>();
     }
 
+    public ArrayList<ArrayList<Tupla>> getPatronesStudents() {
+        return patronesStudents;
+    }
+
+    public void setPatronesStudents(ArrayList<ArrayList<Tupla>> patronesStudents) {
+        this.patronesStudents = patronesStudents;
+    }
+    
     public int getSectionsNoEnrolled() {
         return sectionsNoEnrolled;
     }
@@ -151,6 +160,10 @@ public class Course {
         return excludeBlocks;
     }
 
+    public void addExcludeBlocks(String newBlocks){
+        this.excludeBlocks+=newBlocks;
+    }
+    
     public void setExcludeBlocks(String excludeBlocks) {
         this.excludeBlocks = excludeBlocks;
     }
@@ -166,6 +179,17 @@ public class Course {
     public int[][] getHuecos() {
         return huecos;
     }
+    
+    public int[][] huecosStudents(){
+        int[][] ret = new int[Algoritmo.TAMX][Algoritmo.TAMY];
+        for(ArrayList<Tupla> ar:this.patronesStudents){
+            for(Tupla<Integer,Integer> t:ar){
+                ret[t.x][t.y] = 1;
+            }
+        }
+        return ret;
+    }
+    
     public void ocuparHueco(int sec,ArrayList<Tupla> list){
         for(Tupla<Integer,Integer> t:list)
             if(huecos[t.x][t.y] == 0)
@@ -198,6 +222,7 @@ public class Course {
         for(int j = 0;j<Algoritmo.TAMY;j++){
             boolean anadir=false;
             if(excludeBlocks!=null && excludeBlocks.contains(""+j)){
+                
             }else{
                 int k;
                 int gd= this.minGapDays;

@@ -27,6 +27,20 @@ public class Student {
         huecos = new int[Algoritmo.TAMX][Algoritmo.TAMY];
     }
     
+    public ArrayList<ArrayList<Tupla>> listPatronesCompatibles(ArrayList<ArrayList<Tupla>> ar){
+        ArrayList<ArrayList<Tupla>> ret = new ArrayList<>();
+        boolean compatible;
+        ret.add(new ArrayList());
+        for(ArrayList<Tupla> a : ar){
+            for(Tupla t:a){
+                if(huecos[(Integer)t.x][(Integer)t.y] == 0){
+                    ret.get(0).add(t);
+                }
+            }
+        }
+        return ret;
+    } 
+    
     public void addNoAsignado(Integer i){
         cursosNoAsignados.add(i);
     }

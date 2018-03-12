@@ -19,8 +19,8 @@ import xml.XMLWriterDOM;
  * @author Norhan
  */
 public class Algoritmo {
-    public final static int TAMX = 6;
-    public final static int TAMY = 5;
+    public static int TAMX = 6;
+    public static int TAMY = 5;
     public final static int CHILDSPERSECTION = 20;
     private List<Object> tabla;
     private ArrayList<String> Log;
@@ -113,7 +113,7 @@ public class Algoritmo {
             System.out.println("");
         }
         mv.addObject("profesores", trst);
-        mv.addObject("students",retst);
+        mv.addObject("students",students);
         mv.addObject("Courses",rst);
         mv.addObject("cs",cs);
         mv.addObject("log",Log);
@@ -211,15 +211,18 @@ public class Algoritmo {
             }else{
                 Log.add("Los siguientes estudiantes no tienen secciones disponibles para el curso "+cs.nameCourse(c.getIdCourse())+":");
                 String anadir = "",anadir2="";
-                ArrayList<Tupla<Integer,Integer>> aux;
+                ArrayList<ArrayList<Tupla>> aux = null;
                 for(Integer i: ret){
                     anadir+=students.get(i).getName()+",";
-//                    if(aux == null) 
-//                        aux = 
+                    if(aux == null) 
+                        aux = students.get(i).listPatronesCompatibles(c.opciones());
+                    else
+                        aux = students.get(i).listPatronesCompatibles(aux);
                 }
+                c.setPatronesStudents(aux);
                 anadir = anadir.substring(0,anadir.length()-2)+".";
                 Log.add(anadir);
-                Log.add("Para este conjunto de estudiantes tenemos disponibles los siguientes patrones en común:");
+                //Log.add("Para este conjunto de estudiantes tenemos disponibles los siguientes patrones en común:");
                 
             }
             for(Integer st:ret){

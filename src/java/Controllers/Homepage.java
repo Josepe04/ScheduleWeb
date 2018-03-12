@@ -27,8 +27,10 @@ import javax.servlet.http.HttpSession;
 import model.Algoritmo;
 import static model.Algoritmo.TAMX;
 import static model.Algoritmo.TAMY;
+import model.Consultas;
 import model.DBConnect;
 import model.Teacher;
+import model.Tupla;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
@@ -77,6 +79,15 @@ public class Homepage extends MultiActionController  {
         return mv;
         //return new ModelAndView("userform");
     }
+    
+    @RequestMapping("/menu.htm")
+    public ModelAndView menu(HttpServletRequest hsr, HttpServletResponse hsr1){
+        ModelAndView mv= new ModelAndView("menu");
+        ArrayList<Tupla<Integer,String>> ar=Consultas.getYears();
+        mv.addObject("years",ar);
+        return mv;
+    }
+    
     
     public static ModelAndView checklogin(HttpServletRequest hsr){
         if(hsr.getSession().getAttribute("user") == null)

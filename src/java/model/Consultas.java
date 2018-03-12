@@ -31,6 +31,40 @@ public class Consultas {
         courseName = new HashMap<>();
     }
     
+    public static ArrayList<Tupla<Integer,String>> getYears(){
+        ArrayList<Tupla<Integer,String>> ret = new ArrayList<>();
+        String consulta="select * from SchoolYear";
+        try {
+            ResultSet rs = DBConnect.st.executeQuery(consulta);
+            while(rs.next()){
+                int yearid = rs.getInt("yearid");
+                String yearName = rs.getString("SchoolYear");
+                ret.add(new Tupla<>(yearid,yearName));
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(Consultas.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return ret;
+    } 
+    
+    public static ArrayList<Template> getTemplates(int yearid){
+        ArrayList<Template> ret = new ArrayList();
+        String consulta="select * from ScheduleTemplate where yearid="+yearid;
+        try {
+            ResultSet rs = DBConnect.st.executeQuery(consulta);
+            while(rs.next()){
+                String name = rs.getString("TemplateName");
+                int cols = rs.getInt("cols");
+                int rows = rs.getInt("rows");
+                int id = rs.getInt("templateid");
+                ret.add(new Template(id,cols,rows,name));
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(Consultas.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return ret;
+    }
+    
     protected ArrayList<Course> getRestricciones(int[] ids){
         teachers = new ArrayList<>();
         ArrayList<Course> ret = new ArrayList<>();
@@ -182,6 +216,21 @@ public class Consultas {
                 rs=DBConnect.st.executeQuery(consulta);
                 while(rs.next()){
                     ret.get(i).setExcludeBlocks(rs.getString(1));
+                }
+                
+                consulta="select udd.data\n" +
+                "                from uddata udd\n" +
+                "                inner join udfield udf\n" +
+                "                    on udd.fieldid = udf.fieldid\n" +
+                "                inner join udgroup udg\n" +
+                "                    on udg.groupid = udf.groupid\n" +
+                "                    and udg.grouptype = 'school'\n" +
+                "                    and udg.groupname = 'Schedule'\n" +
+                "                    and udf.fieldName = 'ExcludeBlocks'";
+                
+                rs=DBConnect.st.executeQuery(consulta);
+                while(rs.next()){
+                    ret.get(i).addExcludeBlocks(rs.getString(1));
                 }
             }
         } catch (SQLException ex) {
