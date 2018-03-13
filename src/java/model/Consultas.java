@@ -47,7 +47,7 @@ public class Consultas {
         return ret;
     } 
     
-    public static ArrayList<Template> getTemplates(int yearid){
+    public static ArrayList<Template> getTemplates(String yearid){
         ArrayList<Template> ret = new ArrayList();
         String consulta="select * from ScheduleTemplate where yearid="+yearid;
         try {

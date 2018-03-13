@@ -11,12 +11,14 @@ package Controllers;
  */
 
 
+import atg.taglib.json.util.JSONException;
 import atg.taglib.json.util.JSONObject;
 import com.google.gson.Gson;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Comparator;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -24,18 +26,16 @@ import javax.servlet.http.HttpServletResponse;
 import model.LoginVerification;
 import model.User;
 import javax.servlet.http.HttpSession;
-import model.Algoritmo;
-import static model.Algoritmo.TAMX;
-import static model.Algoritmo.TAMY;
 import model.Consultas;
 import model.DBConnect;
-import model.Teacher;
+import model.Template;
 import model.Tupla;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
@@ -43,10 +43,6 @@ import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 @Controller
 public class Homepage extends MultiActionController  {
-    public static Connection cn;
-    public static Connection cn2;
-    public static Statement st;
-    public static Statement st2;
     
     private Object getBean(String nombrebean, ServletContext servlet){
         ApplicationContext contexto = WebApplicationContextUtils.getRequiredWebApplicationContext(servlet);
@@ -56,37 +52,47 @@ public class Homepage extends MultiActionController  {
     
     @RequestMapping
     public ModelAndView inicio(HttpServletRequest hsr, HttpServletResponse hsr1) throws Exception {
-        //connection to comunication
-        DriverManagerDataSource dataSource = (DriverManagerDataSource) this.getBean("comunicacion", hsr.getServletContext());
-        if(this.cn!=null)
-            Homepage.cn.close();
-        this.cn = dataSource.getConnection();
-        st = this.cn.createStatement(); 
-        //connection to datasourceAH
-        DriverManagerDataSource dataSource2 = (DriverManagerDataSource)this.getBean("dataSourceAH",hsr.getServletContext());
-        if(this.cn2!=null)
-            Homepage.cn2.close();
-        this.cn2 = dataSource2.getConnection();
-        this.st2 = cn2.createStatement();
         DBConnect db = new DBConnect();
-        ModelAndView mv = new ModelAndView("index");
-        mv.addObject("TAMX",new Integer(TAMX));
-        mv.addObject("TAMY",new Integer(TAMY));
-        (new Algoritmo()).algo(mv);
-        ArrayList<Teacher> trst = new ArrayList<>();
-        trst.add(new Teacher());
-       // mv.addObject("profesores", trst);
-        return mv;
-        //return new ModelAndView("userform");
+        return new ModelAndView("userform");
+    }
+    
+    private class Comp implements Comparator<Tupla<Integer,String>>{
+        @Override
+        public int compare(Tupla<Integer,String> e1, Tupla<Integer,String> e2) {
+            return e2.y.compareTo(e1.y);
+        }
     }
     
     @RequestMapping("/menu.htm")
     public ModelAndView menu(HttpServletRequest hsr, HttpServletResponse hsr1){
         ModelAndView mv= new ModelAndView("menu");
         ArrayList<Tupla<Integer,String>> ar=Consultas.getYears();
+        ar.sort(new Comp());
         mv.addObject("years",ar);
         return mv;
     }
+    
+    
+    @RequestMapping("/menu/create.htm")
+    public ModelAndView create(HttpServletRequest hsr, HttpServletResponse hsr1){
+        String data = hsr.getParameter("templateInfo");
+        String[] datost = data.split("-");
+        ModelAndView mv= new ModelAndView("redirect:/schedule/start.htm?"+datost[0]+"&rows="+datost[1]+"&cols="
+                                    + datost[2]);
+        ArrayList<Tupla<Integer,String>> ar=Consultas.getYears();
+        ar.sort(new Comp());
+        mv.addObject("years",ar);
+        return mv;
+    }
+    
+    @RequestMapping("/menu/temp.htm")
+    @ResponseBody
+    public String getTemplates(HttpServletRequest hsr, HttpServletResponse hsr1) throws JSONException{
+        String id = hsr.getParameter("id");
+        ArrayList<Template> tmps = Consultas.getTemplates(id);
+        return (new Gson()).toJson(tmps);
+    }
+    
     
     
     public static ModelAndView checklogin(HttpServletRequest hsr){
@@ -102,7 +108,7 @@ public class Homepage extends MultiActionController  {
             int scgrpid = 0;
             boolean result = false;
             LoginVerification login = new LoginVerification();
-            ModelAndView mv = new ModelAndView("redirect:/menu/start.htm?folder=null");
+            ModelAndView mv = new ModelAndView("redirect:/menu.htm");
             
 //            setTipo(user);//borrar
 //            session.setAttribute("user", user); //borrar
@@ -186,12 +192,12 @@ public class Homepage extends MultiActionController  {
         boolean padre = false, profesor = false;
         try {
             String consulta = "SELECT count(*) AS cuenta FROM Staff where Faculty = 1 and StaffID =" + user.getId();
-            ResultSet rs = st2.executeQuery(consulta);
+            ResultSet rs = DBConnect.st.executeQuery(consulta);
             if (rs.next()) {
                 profesor = rs.getInt("cuenta") > 0;
             }
             consulta = "SELECT count(*) AS cuenta FROM Parent_Student where ParentID =" + user.getId();
-            ResultSet rs2 = st2.executeQuery(consulta);
+            ResultSet rs2 = DBConnect.st.executeQuery(consulta);
             if (rs2.next()) {
                 padre = rs2.getInt("cuenta") > 0;
             }

@@ -19,18 +19,29 @@ import xml.XMLWriterDOM;
  * @author Norhan
  */
 public class Algoritmo {
-    public static int TAMX = 6;
-    public static int TAMY = 5;
+    protected static int TAMX = 6;
+    protected static int TAMY = 5;
     public final static int CHILDSPERSECTION = 20;
     private List<Object> tabla;
     private ArrayList<String> Log;
     Consultas cs;
+    
     public Algoritmo(){
         Log = new ArrayList<>();
         tabla = new ArrayList<>();
         tabla.add(new int[TAMX][TAMY]);
          cs = new Consultas();
     }
+    
+    public Algoritmo(int x, int y){
+        TAMX = x;
+        TAMY = y;
+        Log = new ArrayList<>();
+        tabla = new ArrayList<>();
+        tabla.add(new int[TAMX][TAMY]);
+         cs = new Consultas();
+    }
+    
     public boolean esSolucion(boolean[] asignados){
         for(int i = 0; i < asignados.length;i++){
             if(!asignados[i])
