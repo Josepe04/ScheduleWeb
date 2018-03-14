@@ -8,6 +8,7 @@ package Controllers;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import model.Algoritmo;
+import model.Consultas;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
@@ -23,8 +24,11 @@ public class ScheduleController {
         ModelAndView mv = new ModelAndView("index");
         String xs = hsr.getParameter("cols");
         String ys = hsr.getParameter("rows");
+        int id = Integer.parseInt(hsr.getParameter("id"));
         int x = Integer.parseInt(xs);
         int y = Integer.parseInt(ys);
+        mv.addObject("hFilas",Consultas.getRowHeader(id, y));
+        mv.addObject("hcols",Consultas.getColHeader(id, x));
         (new Algoritmo(x,y)).algo(mv);
         return mv;
     }

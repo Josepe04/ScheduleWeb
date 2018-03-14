@@ -65,6 +65,45 @@ public class Consultas {
         return ret;
     }
     
+    public static ArrayList<Tupla<String,String>> getRowHeader(int id,int rows){
+        String consulta = "";
+        ResultSet rs;
+        ArrayList<Tupla<String,String>> ret = new ArrayList();
+        for(int i = 1; i <= rows; i++){
+            consulta = "select * from ScheduleTemplateTimeTable "
+                    + "where templateid="+id+" and Row="+i+" and Col=0";
+            try {
+                rs = DBConnect.st.executeQuery(consulta);
+                while(rs.next()){ 
+                    ret.add(new Tupla(rs.getString("TemplateTime"),
+                            rs.getString("TemplateText")));
+                }
+            } catch (SQLException ex) {
+                Logger.getLogger(Consultas.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return ret;
+    }
+    
+    public static ArrayList<String> getColHeader(int id,int cols){
+        String consulta = "";
+        ResultSet rs;
+        ArrayList<String> ret = new ArrayList();
+        for(int i = 1; i <= cols; i++){
+            consulta = "select * from ScheduleTemplateTimeTable "
+                    + "where templateid="+id+" and Col="+i+" and Row=0";
+            try {
+                rs = DBConnect.st.executeQuery(consulta);
+                while(rs.next()){ 
+                    ret.add(rs.getString("TemplateText"));
+                }
+            } catch (SQLException ex) {
+                Logger.getLogger(Consultas.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return ret;
+    }
+    
     protected ArrayList<Course> getRestricciones(int[] ids){
         teachers = new ArrayList<>();
         ArrayList<Course> ret = new ArrayList<>();
@@ -214,8 +253,9 @@ public class Consultas {
                 "                where udd.id ="+ret.get(i).getIdCourse();
 
                 rs=DBConnect.st.executeQuery(consulta);
+                String excludes = "";
                 while(rs.next()){
-                    ret.get(i).setExcludeBlocks(rs.getString(1));
+                    excludes+=rs.getString(1);
                 }
                 
                 consulta="select udd.data\n" +
@@ -230,8 +270,10 @@ public class Consultas {
                 
                 rs=DBConnect.st.executeQuery(consulta);
                 while(rs.next()){
-                    ret.get(i).addExcludeBlocks(rs.getString(1));
+                    if(!excludes.contains(rs.getString(1)))
+                        excludes+=rs.getString(1);
                 }
+                ret.get(i).setExcludeBlocks(excludes);
             }
         } catch (SQLException ex) {
             Logger.getLogger(Consultas.class.getName()).log(Level.SEVERE, null, ex);

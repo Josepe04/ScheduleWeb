@@ -19,6 +19,10 @@ public class Tupla <X, Y>{
     public String toString(){
         return "x: " + x +"- y:"+ y+" ";
     }
+    
+    public String text(){
+        return x +" "+ y;
+    }
 
     public X getX() {
         return x;

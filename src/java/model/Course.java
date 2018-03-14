@@ -22,7 +22,7 @@ public class Course {
     private int minGapDays; //cada cuantos dias entre bloques
     private int rank; // prioridad
     private boolean GR; //
-    private String excludeBlocks; // bloques que no se puede
+    private ArrayList<Integer> excludeBlocks; // bloques que no se puede
     private int maxBlocksPerDay;
     private int sections;
     private int sectionsNoEnrolled;
@@ -156,19 +156,25 @@ public class Course {
         this.maxBlocksPerDay = maxBlocksPerDay;
     }
 
-    public String getExcludeBlocks() {
+    public ArrayList<Integer> getExcludeBlocks() {
         return excludeBlocks;
-    }
-
-    public void addExcludeBlocks(String newBlocks){
-        this.excludeBlocks+=newBlocks;
     }
     
     public void setExcludeBlocks(String excludeBlocks) {
-        this.excludeBlocks = excludeBlocks;
+        String [] s = excludeBlocks.split(";");
+        String[] elem;
+        this.excludeBlocks = new ArrayList();
+        if(!s[0].equals("")){
+            for(String s2 : s){
+                elem = s2.split(",");
+                try{
+                    this.excludeBlocks.add(Integer.parseInt(elem[0]));
+                }catch(Exception e){}
+            }
+        }
     }
     
-        public ArrayList<Integer> getTrestricctions() {
+    public ArrayList<Integer> getTrestricctions() {
         return trestricctions;
     }
 
@@ -221,9 +227,7 @@ public class Course {
         ArrayList<ArrayList<Tupla>> ret = new ArrayList<>();
         for(int j = 0;j<Algoritmo.TAMY;j++){
             boolean anadir=false;
-            if(excludeBlocks!=null && excludeBlocks.contains(""+j)){
-                
-            }else{
+            if(excludeBlocks==null || !excludeBlocks.contains(j+1)){
                 int k;
                 int gd= this.minGapDays;
                 gd++;

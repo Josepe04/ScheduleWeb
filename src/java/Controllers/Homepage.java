@@ -77,7 +77,7 @@ public class Homepage extends MultiActionController  {
     public ModelAndView create(HttpServletRequest hsr, HttpServletResponse hsr1){
         String data = hsr.getParameter("templateInfo");
         String[] datost = data.split("-");
-        ModelAndView mv= new ModelAndView("redirect:/schedule/start.htm?"+datost[0]+"&rows="+datost[1]+"&cols="
+        ModelAndView mv= new ModelAndView("redirect:/schedule/start.htm?id="+datost[0]+"&rows="+datost[1]+"&cols="
                                     + datost[2]);
         ArrayList<Tupla<Integer,String>> ar=Consultas.getYears();
         ar.sort(new Comp());

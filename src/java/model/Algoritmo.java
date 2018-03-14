@@ -50,28 +50,10 @@ public class Algoritmo {
         return true;
     }
     
-    
     /**
-     * Dada una lista de patrones en los que se puede impartir la clase y 
-     * una cuadricula con el horario del profesor o del estudiante
-     * @param l1
-     * @param huecos
-     * @return 
+     * algoritmo
+     * @param mv 
      */
-    public ArrayList<ArrayList<Tupla>> opcionesCompatibles(ArrayList<ArrayList<Tupla>> l1, int huecos[][]){
-        ArrayList<ArrayList<Tupla>> ret = new ArrayList<>();
-        for(ArrayList<Tupla> lista:l1){
-                boolean tvalida = true;
-                for(Tupla t:lista){
-                    if(huecos[(Integer)t.x][(Integer)t.y] != 0)
-                        tvalida = false;
-                }
-                if(tvalida)
-                    ret.add(lista);
-        }
-        return ret;
-    }
-    
     public void algo(ModelAndView mv){
         
         int[] idsprueba = {739,688,796,733,676,837,718,702,717,846,690,
@@ -96,19 +78,15 @@ public class Algoritmo {
         for(Course course: rst){
             int minsections = 1 + studentsCourse.get(course.getIdCourse()).size()/CHILDSPERSECTION;
             course.setSections(minsections);
-            for(ArrayList<Tupla> ar: course.opciones()){
-                seccionesDisponibles.add(ar);
-            }
             
-            if(seccionesDisponibles.size()>0){
+            if(course.opciones().size()>0){
                 ArrayList<Integer> noAsign = studentSections(trst,course,minsections,
-                        seccionesDisponibles,studentsCourse.get(course.getIdCourse()),students);
+                        course.opciones(),studentsCourse.get(course.getIdCourse()),students);
                 if(noAsign != null)
                     course.setStudentsNoAsignados(noAsign);
             }
             else
                 System.out.println("FAILURE: " + course.getIdCourse());
-            seccionesDisponibles = new ArrayList<>();
         }
         
         XMLWriterDOM.xmlCreate(trst, null);
@@ -123,6 +101,8 @@ public class Algoritmo {
             retst.add(entry.getValue());
             System.out.println("");
         }
+        mv.addObject("TAMX",TAMX);
+        mv.addObject("TAMY",TAMY);
         mv.addObject("profesores", trst);
         mv.addObject("students",students);
         mv.addObject("Courses",rst);
