@@ -47,6 +47,44 @@ public class Consultas {
         return ret;
     } 
     
+    //public static getCoursesStudentRequest()
+    
+    public static HashMap<Integer,ArrayList<Integer>> getCoursesGroups(String yearid){
+        String consulta="select * from ClassGroups where yearid ="+yearid;
+        ArrayList<Integer> groups = new ArrayList();
+        HashMap<Integer,ArrayList<Integer>> classes = new HashMap();
+        HashMap<Integer,ArrayList<Integer>> courses = new HashMap();
+        try {
+            ResultSet rs = DBConnect.st.executeQuery(consulta);
+            while(rs.next()){
+                groups.add(rs.getInt("GroupID"));               
+            }
+            for(Integer g:groups){
+                classes.put(g, new ArrayList());
+                consulta="select * from ClassGroupClasses where GroupID="+g;
+                rs = DBConnect.st.executeQuery(consulta);
+                while(rs.next()){
+                    classes.get(g).add(rs.getInt("classid"));               
+                }
+                for(Integer c:classes.get(g)){
+                    if(!courses.containsKey(g))
+                        courses.put(g, new ArrayList());
+                    consulta="select * from classes where classid="+c;
+                    rs = DBConnect.st.executeQuery(consulta);
+                    while(rs.next()){
+                        if(!courses.containsKey(rs.getInt("courseid")))
+                            courses.put(rs.getInt("courseid"), new ArrayList());
+                        courses.get(rs.getInt("courseid")).add(g);               
+                    }
+                }
+            }
+            
+        } catch (SQLException ex) {
+            Logger.getLogger(Consultas.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return courses;
+    }
+    
     public static ArrayList<Template> getTemplates(String yearid){
         ArrayList<Template> ret = new ArrayList();
         String consulta="select * from ScheduleTemplate where yearid="+yearid;
@@ -428,7 +466,7 @@ public class Consultas {
         return ret;
     }
     
-    public ArrayList<Student> restriccionesStudent(int id,int numStudents[]){
+    public ArrayList<Student> restriccionesStudent(int id){
         ArrayList<Student> ret= new ArrayList<>();
         String consulta = "    select sr.studentid, p.gender\n" +
             "    from studentrequests sr, person p, person_student ps \n" +
@@ -443,22 +481,10 @@ public class Consultas {
         try {
             rs = DBConnect.st.executeQuery(consulta);
             while(rs.next()){
-                numStudents[1] = rs.getInt("studentid");
                 Student st = new Student(rs.getInt("studentid"));
                 st.setGenero(rs.getString("gender"));
                 ret.add(st);
             }
-            consulta = "select count(*) as cuenta\n" +
-"    from studentrequests sr, person p, person_student ps \n" +
-"     where sr.studentid = p.personid\n" +
-"    and ps.studentid = p.personid\n" +
-"    and sr.yearid = 264    and sr.courseid="+id+" and ps.status = 'enrolled'\n" +
-"    and ps.nextstatus = 'enrolled'";
-            rs = DBConnect.st.executeQuery(consulta);
-            while(rs.next()){
-                numStudents[0] = rs.getInt("cuenta");
-            }
-            
         } catch (SQLException ex) {
             Logger.getLogger(Consultas.class.getName()).log(Level.SEVERE, null, ex);
         }

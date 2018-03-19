@@ -54,19 +54,18 @@ public class Algoritmo {
      * algoritmo
      * @param mv 
      */
-    public void algo(ModelAndView mv){
+    public void algo(ModelAndView mv,String yearid){
         
         int[] idsprueba = {739,688,796,733,676,837,718,702,717,846,690,
                             721,735,722,680,706,755,746,872,873,935,650};
         ArrayList<Course> rst = cs.getRestricciones(idsprueba);
         ArrayList<Teacher> trst = cs.teachersList();
         ArrayList<ArrayList<Tupla>> seccionesDisponibles = new ArrayList<>();
-        HashMap<Integer,ArrayList<Integer>> studentsCourse = new HashMap<>();
+        HashMap<Integer,ArrayList<Integer>> studentsCourse = Consultas.getCoursesGroups(yearid);
         HashMap<Integer,Student> students = new HashMap<>();
         
-        int [] numst = new int[2];
         for(Course c : rst){
-            ArrayList<Student> st = cs.restriccionesStudent(c.getIdCourse(), numst);
+            ArrayList<Student> st = cs.restriccionesStudent(c.getIdCourse());
             ArrayList<Integer> stids= new ArrayList<>();
             for(Student s:st){
                 students.put(s.getId(), s);

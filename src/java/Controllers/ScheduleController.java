@@ -25,11 +25,12 @@ public class ScheduleController {
         String xs = hsr.getParameter("cols");
         String ys = hsr.getParameter("rows");
         int id = Integer.parseInt(hsr.getParameter("id"));
+        String yearid = hsr.getParameter("yearid");
         int x = Integer.parseInt(xs);
         int y = Integer.parseInt(ys);
         mv.addObject("hFilas",Consultas.getRowHeader(id, y));
         mv.addObject("hcols",Consultas.getColHeader(id, x));
-        (new Algoritmo(x,y)).algo(mv);
+        (new Algoritmo(x,y)).algo(mv,yearid);
         return mv;
     }
 }
