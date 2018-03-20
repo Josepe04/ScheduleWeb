@@ -37,6 +37,7 @@ public class Course {
         maxBlocksPerDay = 1;
         sections = 0;
         studentsNoAsignados = new ArrayList<>();
+        patronesStudents = new ArrayList<>();
     }
 
     public ArrayList<ArrayList<Tupla>> getPatronesStudents() {
@@ -44,7 +45,8 @@ public class Course {
     }
 
     public void setPatronesStudents(ArrayList<ArrayList<Tupla>> patronesStudents) {
-        this.patronesStudents = patronesStudents;
+        if(patronesStudents != null)
+            this.patronesStudents = patronesStudents;
     }
     
     public int getSectionsNoEnrolled() {
@@ -246,5 +248,10 @@ public class Course {
             }
         }
         return ret;
+    }
+    
+    @Override
+    public boolean equals(Object c){
+        return this.idCourse == ((Course)c).idCourse;
     }
 }

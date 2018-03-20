@@ -19,6 +19,7 @@ import java.io.StringWriter;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -78,7 +79,7 @@ public class Homepage extends MultiActionController  {
         String data = hsr.getParameter("templateInfo");
         String yearid = hsr.getParameter("yearid");
         String[] datost = data.split("-");
-        ModelAndView mv= new ModelAndView("redirect:/schedule/start.htm?yearid="+yearid+"id="+datost[0]+"&rows="+datost[1]+"&cols="
+        ModelAndView mv= new ModelAndView("redirect:/schedule/start.htm?yearid="+yearid+"&id="+datost[0]+"&rows="+datost[1]+"&cols="
                                     + datost[2]);
         ArrayList<Tupla<Integer,String>> ar=Consultas.getYears();
         ar.sort(new Comp());
@@ -91,7 +92,6 @@ public class Homepage extends MultiActionController  {
     public String getTemplates(HttpServletRequest hsr, HttpServletResponse hsr1) throws JSONException{
         String id = hsr.getParameter("id");
         ArrayList<Template> tmps = Consultas.getTemplates(id);
-        Consultas.getCoursesGroups(id);
         return (new Gson()).toJson(tmps);
     }
     

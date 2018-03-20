@@ -30,7 +30,8 @@ public class ScheduleController {
         int y = Integer.parseInt(ys);
         mv.addObject("hFilas",Consultas.getRowHeader(id, y));
         mv.addObject("hcols",Consultas.getColHeader(id, x));
-        (new Algoritmo(x,y)).algo(mv,yearid);
+        Algoritmo algo = new Algoritmo(x,y);
+        algo.algo(mv,yearid);
         return mv;
     }
 }

@@ -24,13 +24,15 @@ public class Algoritmo {
     public final static int CHILDSPERSECTION = 20;
     private List<Object> tabla;
     private ArrayList<String> Log;
+    Conjuntos<Integer> conjuntos;
     Consultas cs;
     
     public Algoritmo(){
         Log = new ArrayList<>();
         tabla = new ArrayList<>();
         tabla.add(new int[TAMX][TAMY]);
-         cs = new Consultas();
+        cs = new Consultas();
+        conjuntos = new Conjuntos<>();
     }
     
     public Algoritmo(int x, int y){
@@ -39,7 +41,8 @@ public class Algoritmo {
         Log = new ArrayList<>();
         tabla = new ArrayList<>();
         tabla.add(new int[TAMX][TAMY]);
-         cs = new Consultas();
+        cs = new Consultas();
+        conjuntos = new Conjuntos<>();
     }
     
     public boolean esSolucion(boolean[] asignados){
@@ -55,25 +58,20 @@ public class Algoritmo {
      * @param mv 
      */
     public void algo(ModelAndView mv,String yearid){
-        
-        int[] idsprueba = {739,688,796,733,676,837,718,702,717,846,690,
-                            721,735,722,680,706,755,746,872,873,935,650};
-        ArrayList<Course> rst = cs.getRestricciones(idsprueba);
-        ArrayList<Teacher> trst = cs.teachersList();
-        ArrayList<ArrayList<Tupla>> seccionesDisponibles = new ArrayList<>();
-        HashMap<Integer,ArrayList<Integer>> studentsCourse = Consultas.getCoursesGroups(yearid);
+        cs = new Consultas();
+        ArrayList<Integer> idCourses = new ArrayList(); 
+        ArrayList<Student> st = new ArrayList();
+        HashMap<Integer,ArrayList<Integer>> studentsCourse = Consultas.getCoursesGroups(st,idCourses,yearid);
         HashMap<Integer,Student> students = new HashMap<>();
-        
-        for(Course c : rst){
-            ArrayList<Student> st = cs.restriccionesStudent(c.getIdCourse());
-            ArrayList<Integer> stids= new ArrayList<>();
-            for(Student s:st){
-                students.put(s.getId(), s);
-                stids.add(s.getId());
-            }
-            studentsCourse.put(c.getIdCourse(),stids);
+        st = (new Conjuntos<Student>()).union(st,
+                cs.restriccionesStudent(idCourses,studentsCourse,yearid));  
+        for(Student s:st){
+            students.put(s.getId(), s);
         }
-        
+        ArrayList<Course> rst = cs.getRestricciones(Consultas.convertIntegers(idCourses));
+        ArrayList<Teacher> trst = cs.teachersList();
+      
+        int numcursos = 0;
         for(Course course: rst){
             int minsections = 1 + studentsCourse.get(course.getIdCourse()).size()/CHILDSPERSECTION;
             course.setSections(minsections);
@@ -86,6 +84,7 @@ public class Algoritmo {
             }
             else
                 System.out.println("FAILURE: " + course.getIdCourse());
+            numcursos++;
         }
         
         XMLWriterDOM.xmlCreate(trst, null);
@@ -184,7 +183,7 @@ public class Algoritmo {
                 }
             }
             if(i+1<stids.size())
-                diferencia = Conjuntos.diferencia(stids.get(i+1).y, stids.get(i).y);
+                diferencia = conjuntos.diferencia(stids.get(i+1).y, stids.get(i).y);
         }
         
         for(Integer st:idsAsignados){
@@ -195,7 +194,7 @@ public class Algoritmo {
         c.setPercentEnrolled(percent);
         if(idsAsignados.size()!= studentsCourse.size()){
             System.out.println("FAILURE");      
-            ArrayList<Integer> ret = Conjuntos.diferencia(studentsCourse, idsAsignados);
+            ArrayList<Integer> ret = conjuntos.diferencia(studentsCourse, idsAsignados);
             if(lastTeacher <= lastStudent){
                 Log.add("Los profesores asignados al curso:"+cs.nameCourse(c.getIdCourse())+" no tienen disponible ningun hueco compatible");
             }else{

@@ -27,6 +27,16 @@ public class Student {
         huecos = new int[Algoritmo.TAMX][Algoritmo.TAMY];
     }
     
+    public Student(int id,String name,String genero){
+        this.cursosNoAsignados = new ArrayList<>();
+        this.cursosAsignados = new ArrayList<>();
+        this.id = id;
+        huecos = new int[Algoritmo.TAMX][Algoritmo.TAMY];
+        this.name = name;
+        this.genero = genero;
+    }
+    
+    
     public ArrayList<ArrayList<Tupla>> listPatronesCompatibles(ArrayList<ArrayList<Tupla>> ar){
         ArrayList<ArrayList<Tupla>> ret = new ArrayList<>();
         boolean compatible;
@@ -107,7 +117,8 @@ public class Student {
         return huecos;
     }
     
-    public boolean equals(Student st){
-        return st.id == this.id;
+    @Override
+    public boolean equals(Object st){
+        return ((Student)st).id == this.id;
     }
 }

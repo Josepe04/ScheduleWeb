@@ -45,16 +45,16 @@
     </head>
     <body>
         <div class="col-xs-12">
-            <div class="col-xs-4">
-                <h3>Select Year</h3>
-                <select id="selectyear" onchange="templates()">
-                    <option></option>
-                    <c:forEach var="year" items="${years}">
-                        <option value="${year.x}">${year.y}</option>
-                    </c:forEach>
-                </select>
-            </div>
             <form:form action="menu/create.htm" method="POST">
+                <div class="col-xs-4">
+                    <h3>Select Year</h3>
+                    <select id="selectyear" name="yearid" onchange="templates()">
+                        <option></option>
+                        <c:forEach var="year" items="${years}">
+                            <option value="${year.x}">${year.y}</option>
+                        </c:forEach>
+                    </select>
+                </div>
                 <div class="col-xs-4">
                     <h3>Select Template</h3>
                     <select name="templateInfo" id="selecttemplate">

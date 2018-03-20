@@ -11,11 +11,11 @@ import java.util.ArrayList;
  *
  * @author Chema
  */
-public class Conjuntos {
+public class Conjuntos <T>{
 
-    public static ArrayList<Integer> union(ArrayList<Integer> primero, ArrayList<Integer> segundo) {
-        ArrayList<Integer> retVal = new ArrayList<Integer>(primero);
-        for (Integer worte : segundo) {
+    public ArrayList<T> union(ArrayList<T> primero, ArrayList<T> segundo) {
+        ArrayList<T> retVal = new ArrayList<T>(primero);
+        for (T worte : segundo) {
             if (!primero.contains(worte)) {
                 retVal.add(worte);
             }
@@ -23,10 +23,10 @@ public class Conjuntos {
         return retVal;
     }
 
-    public static ArrayList<Integer> interseccion(ArrayList<Integer> a, ArrayList<Integer> b) {
-        ArrayList<Integer> c = new ArrayList<Integer>();
-        ArrayList<Integer> iter = a.size() > b.size() ? a : b;
-        for (Integer elem : iter) {
+    public ArrayList<T> interseccion(ArrayList<T> a, ArrayList<T> b) {
+        ArrayList<T> c = new ArrayList<T>();
+        ArrayList<T> iter = a.size() > b.size() ? a : b;
+        for (T elem : iter) {
             if (a.contains(elem) && b.contains(elem)) {
                 c.add(elem);
             }
@@ -34,9 +34,9 @@ public class Conjuntos {
         return c;
     }
 
-    public static ArrayList<Integer> diferencia(ArrayList<Integer> a, ArrayList<Integer> b) {
-        ArrayList<Integer> c = new ArrayList<Integer>();
-        for (Integer elem : a) {
+    public ArrayList<T> diferencia(ArrayList<T> a, ArrayList<T> b) {
+        ArrayList<T> c = new ArrayList<T>();
+        for (T elem : a) {
             if (!b.contains(elem)) {
                 c.add(elem);
             }

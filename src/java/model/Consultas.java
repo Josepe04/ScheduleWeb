@@ -49,7 +49,7 @@ public class Consultas {
     
     //public static getCoursesStudentRequest()
     
-    public static HashMap<Integer,ArrayList<Integer>> getCoursesGroups(String yearid){
+    public static HashMap<Integer,ArrayList<Integer>> getCoursesGroups(ArrayList<Student> st,ArrayList<Integer> listaCourses,String yearid){
         String consulta="select * from ClassGroups where yearid ="+yearid;
         ArrayList<Integer> groups = new ArrayList();
         HashMap<Integer,ArrayList<Integer>> classes = new HashMap();
@@ -58,6 +58,7 @@ public class Consultas {
             ResultSet rs = DBConnect.st.executeQuery(consulta);
             while(rs.next()){
                 groups.add(rs.getInt("GroupID"));               
+                st.add(new Student(rs.getInt("GroupID"),"group"+rs.getInt("GroupID"),"group"));
             }
             for(Integer g:groups){
                 classes.put(g, new ArrayList());
@@ -67,13 +68,13 @@ public class Consultas {
                     classes.get(g).add(rs.getInt("classid"));               
                 }
                 for(Integer c:classes.get(g)){
-                    if(!courses.containsKey(g))
-                        courses.put(g, new ArrayList());
                     consulta="select * from classes where classid="+c;
                     rs = DBConnect.st.executeQuery(consulta);
                     while(rs.next()){
-                        if(!courses.containsKey(rs.getInt("courseid")))
+                        if(!courses.containsKey(rs.getInt("courseid"))){
                             courses.put(rs.getInt("courseid"), new ArrayList());
+                            listaCourses.add(rs.getInt("courseid"));
+                        }
                         courses.get(rs.getInt("courseid")).add(g);               
                     }
                 }
@@ -143,7 +144,6 @@ public class Consultas {
     }
     
     protected ArrayList<Course> getRestricciones(int[] ids){
-        teachers = new ArrayList<>();
         ArrayList<Course> ret = new ArrayList<>();
         String consulta = "";
         try {
@@ -466,28 +466,46 @@ public class Consultas {
         return ret;
     }
     
-    public ArrayList<Student> restriccionesStudent(int id){
+    /**
+     * 
+     * @param c
+     * @param stCourse
+     * @param id
+     * @param yearid
+     * @return 
+     */
+    public ArrayList<Student> restriccionesStudent(ArrayList<Integer> c,HashMap<Integer,ArrayList<Integer>> stCourse,String yearid){
         ArrayList<Student> ret= new ArrayList<>();
-        String consulta = "    select sr.studentid, p.gender\n" +
+        String consulta = "    select sr.courseid, sr.studentid, p.gender\n" +
             "    from studentrequests sr, person p, person_student ps \n" +
             "     where sr.studentid = p.personid\n" +
             "    and ps.studentid = p.personid\n" +
-            "    and sr.yearid = " +264+
-            "    and sr.courseid = " +id+
+            "    and sr.yearid = " +yearid+
             "    and ps.status = 'enrolled'\n" +
             "    and ps.nextstatus = 'enrolled'\n" +
             "    order by gender";
         ResultSet rs;
+        Conjuntos<Integer> conj = new Conjuntos(); 
+        ArrayList<Integer> idsCourse = new ArrayList();
         try {
             rs = DBConnect.st.executeQuery(consulta);
             while(rs.next()){
-                Student st = new Student(rs.getInt("studentid"));
+                int courseid = rs.getInt("courseid");
+                int studentid = rs.getInt("studentid");
+                Student st = new Student(studentid);
                 st.setGenero(rs.getString("gender"));
-                ret.add(st);
+                if(!idsCourse.contains(courseid))
+                    idsCourse.add(courseid);
+                if(!ret.contains(st))
+                    ret.add(st);
+                if(!stCourse.containsKey(courseid))
+                    stCourse.put(courseid, new ArrayList());
+                stCourse.get(courseid).add(studentid);
             }
         } catch (SQLException ex) {
             Logger.getLogger(Consultas.class.getName()).log(Level.SEVERE, null, ex);
         }
+        c = conj.union(c, idsCourse);
         if(ret.isEmpty()){
             ret.add(stDefault);
         }else{
@@ -497,6 +515,16 @@ public class Consultas {
         }
         return ret;
     }
+    
+    public static int[] convertIntegers(ArrayList<Integer> integers)
+{
+    int[] ret = new int[integers.size()];
+    for (int i=0; i < ret.length; i++)
+    {
+        ret[i] = integers.get(i).intValue();
+    }
+    return ret;
+}
     
     private String fetchNameCourse(int id){
         String ret = "";
