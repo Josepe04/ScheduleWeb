@@ -485,8 +485,6 @@ public class Consultas {
             "    and ps.nextstatus = 'enrolled'\n" +
             "    order by gender";
         ResultSet rs;
-        Conjuntos<Integer> conj = new Conjuntos(); 
-        ArrayList<Integer> idsCourse = new ArrayList();
         try {
             rs = DBConnect.st.executeQuery(consulta);
             while(rs.next()){
@@ -494,8 +492,8 @@ public class Consultas {
                 int studentid = rs.getInt("studentid");
                 Student st = new Student(studentid);
                 st.setGenero(rs.getString("gender"));
-                if(!idsCourse.contains(courseid))
-                    idsCourse.add(courseid);
+                if(!c.contains(courseid))
+                    c.add(courseid);
                 if(!ret.contains(st))
                     ret.add(st);
                 if(!stCourse.containsKey(courseid))
@@ -505,7 +503,6 @@ public class Consultas {
         } catch (SQLException ex) {
             Logger.getLogger(Consultas.class.getName()).log(Level.SEVERE, null, ex);
         }
-        c = conj.union(c, idsCourse);
         if(ret.isEmpty()){
             ret.add(stDefault);
         }else{

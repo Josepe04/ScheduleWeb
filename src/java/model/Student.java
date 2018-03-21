@@ -51,6 +51,16 @@ public class Student {
         return ret;
     } 
     
+    public ArrayList<Tupla<Integer,Integer>> posicionesOcupadas(){
+        ArrayList<Tupla<Integer,Integer>> ret = new ArrayList();
+        for(int i = 0;i < Algoritmo.TAMX;i++)
+            for(int j = 0;j < Algoritmo.TAMY; j++){
+                if(this.huecos[i][j] != 0)
+                    ret.add(new Tupla(i,j));
+            }
+        return ret;
+    }
+    
     public void addNoAsignado(Integer i){
         cursosNoAsignados.add(i);
     }

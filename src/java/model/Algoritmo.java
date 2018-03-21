@@ -87,8 +87,6 @@ public class Algoritmo {
             numcursos++;
         }
         
-        XMLWriterDOM.xmlCreate(trst, null);
-        
         for(Teacher teacher:trst){
             teacher.mostrarHuecos();
             System.out.println("");
@@ -99,6 +97,9 @@ public class Algoritmo {
             retst.add(entry.getValue());
             System.out.println("");
         }
+        
+        XMLWriterDOM.xmlCreate(trst, retst);
+        
         mv.addObject("TAMX",TAMX);
         mv.addObject("TAMY",TAMY);
         mv.addObject("profesores", trst);

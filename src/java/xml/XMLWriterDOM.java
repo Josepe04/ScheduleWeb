@@ -42,6 +42,8 @@ public class XMLWriterDOM {
             //append root element to document
             doc.appendChild(rootElement);
             
+            
+            ///TEACHERS
             Element teachersxml =
                 doc.createElement("Teachers");
             //append root element to document
@@ -49,17 +51,36 @@ public class XMLWriterDOM {
             
             //append first child element to root element
             for(Teacher t:teachers)
-                for(Integer i:t.getPrepsComplete())
-                    teachersxml.appendChild(getTeacher(doc,t.getIdTeacher()+"",i+"1"));
+                    teachersxml.appendChild(getPerson("Teacher",doc,t.getIdTeacher()+"",t.getPrepsComplete().toString()));
  
-            Element timetablesxml =
-                doc.createElement("Timetables");
-            rootElement.appendChild(timetablesxml);
+            
+            ///STUDENTS
+            Element studentsxml =
+                doc.createElement("Students");
+            //append root element to document
+            rootElement.appendChild(studentsxml);
+            for(Student t:st)
+                    studentsxml.appendChild(getPerson("Student",doc,t.getId()+"",t.getCursosAsignados().toString()));
+            
+            
+            ///TIME TABLES TEACHERS
+            Element teacherTimetablesxml =
+                doc.createElement("TeacherTimetable");
+            rootElement.appendChild(teacherTimetablesxml);
             
             for(Teacher t:teachers)
-                for(Integer i:t.getPrepsComplete())
-                    for(Tupla t2: t.getPosiciones(i))
-                        timetablesxml.appendChild(getTimetableLine(doc,t.getIdTeacher()+"",i+"1",t2.x.toString(),t2.y.toString()));
+                teacherTimetablesxml.appendChild(getTimetableLine(doc,t.getIdTeacher()+"",t.getAllPosiciones(),t.getHuecos()));
+            
+            //TIME TABLES STUDENTS
+            Element studenTimetablexml =
+                doc.createElement("StudentTimetable");
+            rootElement.appendChild(studenTimetablexml);
+            
+            for(Student t:st)
+                studenTimetablexml.appendChild(getTimetableLine(doc,t.getId()+"",t.posicionesOcupadas(),t.getHuecos()));
+            
+            
+            
             
             
             //for output to file, console
@@ -84,30 +105,30 @@ public class XMLWriterDOM {
     }
  
  
-    private static Node getTeacher(Document doc, String id, String clase) {
-        Element employee = doc.createElement("Teacher");
+    private static Node getPerson(String type,Document doc, String id, String clase) {
+        Element employee = doc.createElement(type);
  
         //set id attribute
         employee.setAttribute("id", id);
  
         //create name element
-        employee.appendChild(getEmployeeElements(doc, employee, "clase", clase));
- 
+        employee.appendChild(getEmployeeElements(doc, employee, "course", clase));
+        
         return employee;
     }
     
-    private static Node getTimetableLine(Document doc, String id, String clase,
-            String day, String begin) {
+    private static Node getTimetableLine(Document doc, String id,ArrayList<Tupla<Integer,Integer>> table,int[][] huecos) {
         Element employee = doc.createElement("timeLine");
  
         //set id attribute
         employee.setAttribute("id", id);
  
         //create name element
-        employee.appendChild(getEmployeeElements(doc, employee, "clase", clase));
-        employee.appendChild(getEmployeeElements(doc, employee, "day", day));
-        employee.appendChild(getEmployeeElements(doc, employee, "begin", begin));
- 
+        for(Tupla<Integer,Integer> t : table){
+            employee.appendChild(getEmployeeElements(doc, employee, "seccion", huecos[t.x][t.y]%100 + ""));
+            employee.appendChild(getEmployeeElements(doc, employee, "x", "" + t.x));
+            employee.appendChild(getEmployeeElements(doc, employee, "y", "" + t.y));
+        }
         return employee;
     }
  
