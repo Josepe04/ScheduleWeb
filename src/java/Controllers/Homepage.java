@@ -40,6 +40,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
+import xml.XMLReaderDOM;
 
 
 @Controller
@@ -54,6 +55,7 @@ public class Homepage extends MultiActionController  {
     @RequestMapping
     public ModelAndView inicio(HttpServletRequest hsr, HttpServletResponse hsr1) throws Exception {
         DBConnect db = new DBConnect();
+        XMLReaderDOM.xmlRead("/Users/Norhan/Documents/emps.xml");
         return new ModelAndView("userform");
     }
     

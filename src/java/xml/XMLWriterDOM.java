@@ -51,7 +51,7 @@ public class XMLWriterDOM {
             
             //append first child element to root element
             for(Teacher t:teachers)
-                    teachersxml.appendChild(getPerson("Teacher",doc,t.getIdTeacher()+"",t.getPrepsComplete().toString()));
+                teachersxml.appendChild(getTeacher(doc,t));
  
             
             ///STUDENTS
@@ -60,7 +60,7 @@ public class XMLWriterDOM {
             //append root element to document
             rootElement.appendChild(studentsxml);
             for(Student t:st)
-                    studentsxml.appendChild(getPerson("Student",doc,t.getId()+"",t.getCursosAsignados().toString()));
+                studentsxml.appendChild(getStudent(doc,t));
             
             
             ///TIME TABLES TEACHERS
@@ -114,6 +114,35 @@ public class XMLWriterDOM {
         //create name element
         employee.appendChild(getEmployeeElements(doc, employee, "course", clase));
         
+        return employee;
+    }
+    
+    private static Node getStudent(Document doc,Student st) {
+        Element employee = doc.createElement("Student");
+ 
+        //set id attribute
+        employee.setAttribute("id", st.getId()+"");
+ 
+        //create name element
+        employee.appendChild(getEmployeeElements(doc, employee, "course", st.getCursosAsignados().toString()));
+        employee.appendChild(getEmployeeElements(doc, employee, "courseno", st.getCursosNoAsignados().toString()));
+        employee.appendChild(getEmployeeElements(doc, employee, "genero", st.getGenero()));
+        
+        return employee;
+    }
+    //pg_dump -s -C -h localhost -U eduweb LessonsDemo | psql -h 192.168.1.9 -U eduweb Lessons
+
+    
+    private static Node getTeacher(Document doc, Teacher t) {
+        Element employee = doc.createElement("Teacher");
+ 
+        //set id attribute
+        employee.setAttribute("id", t.getIdTeacher()+"");
+        //create name element
+        employee.appendChild(getEmployeeElements(doc, employee, "course", t.getPrepsComplete().toString()));
+        employee.appendChild(getEmployeeElements(doc, employee, "secciones", t.getMaxSections()+""));
+        employee.appendChild(getEmployeeElements(doc, employee, "maxpreps", t.getPreps()+""));
+        employee.appendChild(getEmployeeElements(doc, employee, "maxbxd", t.getMaxBxD()+""));
         return employee;
     }
     

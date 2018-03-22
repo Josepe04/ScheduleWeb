@@ -73,6 +73,59 @@ public class Teacher{
         return idTeacher;
     }
 
+    public int[] getBlocksPerDay() {
+        return blocksPerDay;
+    }
+
+    public void setBlocksPerDay(int[] blocksPerDay) {
+        this.blocksPerDay = blocksPerDay;
+    }
+
+    public int getPreps() {
+        return Preps;
+    }
+
+    public void setPreps(int Preps) {
+        this.Preps = Preps;
+    }
+
+    public int getMaxBxD() {
+        return MaxBxD;
+    }
+
+    public void setMaxBxD(int MaxBxD) {
+        this.MaxBxD = MaxBxD;
+    }
+
+    public void setHuecos(int[][] huecos) {
+        this.huecos = huecos;
+    }
+
+    public void setIdTeacher(int idTeacher) {
+        this.idTeacher = idTeacher;
+    }
+
+    public void setMaxSections(int MaxSections) {
+        this.MaxSections = MaxSections;
+    }
+
+    public void setSecsComplete(int secsComplete) {
+        this.secsComplete = secsComplete;
+    }
+
+    public void setPrepsComplete(ArrayList<Integer> prepsComplete) {
+        this.prepsComplete = prepsComplete;
+    }
+    
+    public boolean isOcupado() {
+        return ocupado;
+    }
+
+    public void setOcupado(boolean ocupado) {
+        this.ocupado = ocupado;
+    }
+    
+
     public String getExcludeBlocks() {
         return ExcludeBlocks;
     }
