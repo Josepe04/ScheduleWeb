@@ -131,18 +131,6 @@ public class Teacher{
     }
 
     public void setExcludeBlocks(String ExcludeBlocks) {
-        int[] tupla = new int[2];
-        int i;
-        for(String s : ExcludeBlocks.split(";")){
-            i = 0;
-            for(String s2:s.split(",")){
-                if(s2.equals("*") && i<2)
-                    tupla[i] = -1;
-                else if(!s2.equals("") && i<2)
-                    tupla[i] = Integer.parseInt(s2);
-                i++;
-            }
-        }
         this.ExcludeBlocks = ExcludeBlocks;
     }
     

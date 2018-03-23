@@ -11,6 +11,8 @@ package xml;
  */
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
  
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -143,6 +145,8 @@ public class XMLWriterDOM {
         employee.appendChild(getEmployeeElements(doc, employee, "secciones", t.getMaxSections()+""));
         employee.appendChild(getEmployeeElements(doc, employee, "maxpreps", t.getPreps()+""));
         employee.appendChild(getEmployeeElements(doc, employee, "maxbxd", t.getMaxBxD()+""));
+        employee.appendChild(getEmployeeElements(doc, employee, "excludeblocks", t.getExcludeBlocks()+""));
+        
         return employee;
     }
     
@@ -151,16 +155,30 @@ public class XMLWriterDOM {
  
         //set id attribute
         employee.setAttribute("id", id);
- 
+        HashMap<Integer,String> secciones = new HashMap();
         //create name element
         for(Tupla<Integer,Integer> t : table){
-            employee.appendChild(getEmployeeElements(doc, employee, "seccion", huecos[t.x][t.y]%100 + ""));
-            employee.appendChild(getEmployeeElements(doc, employee, "x", "" + t.x));
-            employee.appendChild(getEmployeeElements(doc, employee, "y", "" + t.y));
+            int seccion = huecos[t.x][t.y];
+            if(secciones.containsKey(seccion))
+                secciones.put(seccion,secciones.get(seccion).concat("-"+t.x+","+t.y));
+            else{
+                secciones.put(seccion,t.x+","+t.y);
+            }
         }
+        String s = "";
+        boolean first = true;
+        for(Map.Entry<Integer, String> entry : secciones.entrySet()){
+            if(first)
+                s += "["+entry.getKey()+"="+entry.getValue()+"]";
+            else
+                s += "|["+entry.getKey()+"="+entry.getValue()+"]";
+            first = false;
+        }
+        employee.appendChild(getEmployeeElements(doc, employee, "seccion",s));
         return employee;
     }
  
+    
  
     //utility method to create text node
     private static Node getEmployeeElements(Document doc, Element element, String name, String value) {
