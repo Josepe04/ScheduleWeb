@@ -20,7 +20,7 @@ import xml.XMLWriterDOM;
  */
 public class Algoritmo {
     protected static int TAMX = 6;
-    protected static int TAMY = 5;
+    protected static int TAMY = 12;
     public final static int CHILDSPERSECTION = 20;
     private List<Object> tabla;
     private ArrayList<String> Log;

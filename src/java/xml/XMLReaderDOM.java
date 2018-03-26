@@ -23,7 +23,8 @@ import org.w3c.dom.Document;
  * @author Chema
  */
 public class XMLReaderDOM {
-    public static void xmlRead(String filepath) {
+    public static void xmlRead(String filepath,HashMap<Integer,Student> listaStudents, 
+            HashMap<Integer,Teacher> listaTeachers) {
         try {
             File fXmlFile = new File(filepath);
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
@@ -35,8 +36,7 @@ public class XMLReaderDOM {
             doc.getDocumentElement().normalize();
 
             System.out.println("Root element :" + doc.getDocumentElement().getNodeName());
-
-            ArrayList<Teacher> listaTeachers = new ArrayList();
+            
             //LECTURA TEACHERS
             NodeList nList = doc.getElementsByTagName("Teacher");
             System.out.println("----------------------------");
@@ -55,13 +55,13 @@ public class XMLReaderDOM {
                     String course = eElement.getElementsByTagName("course").item(0).getTextContent();
                     //String[] courses = course.substring(1,course.length()-1).split(",");
                     System.out.println("Cursos : " + course);
-                    listaTeachers.add(t);
+                    if(!listaTeachers.containsKey(t.getIdTeacher()))
+                        listaTeachers.put(t.getIdTeacher(), t);
                 }
                 
             }
             
             //LECTURA STUDENTS
-            HashMap<Integer,Student> listaStudents = new HashMap();
             nList = doc.getElementsByTagName("Student");
             System.out.println("----------------------------");
             for (int temp = 0; temp < nList.getLength(); temp++) {
@@ -97,17 +97,17 @@ public class XMLReaderDOM {
                 }
             }
             
-            nList = doc.getElementsByTagName("timeLine");
-            
             System.out.println("----------------------------");
+            
+            nList = doc.getElementsByTagName("timeLineStudent");        
             for(int temp = 0; temp < nList.getLength(); temp++){
                 Node nNode = nList.item(temp);
                 if(nNode.getNodeType() == Node.ELEMENT_NODE){
                     Element eElement = (Element) nNode;
                     int id = Integer.parseInt(eElement.getAttribute("id"));
-                    String secciones = eElement.getAttribute("seccion");
-                    if(secciones.contains("|")){
-                        String[] seccionList = secciones.split("|");
+                    String secciones = eElement.getElementsByTagName("seccion").item(0).getTextContent();
+                    if(secciones.contains("&")){
+                        String[] seccionList = secciones.split("&");
                         for(String s:seccionList){
                             ArrayList<Tupla> ar = new ArrayList();
                             String tupla[] = s.substring(1,s.length()-1).split("=");
@@ -131,6 +131,44 @@ public class XMLReaderDOM {
                         }
                         if(listaStudents.containsKey(id))
                             listaStudents.get(id).ocuparHueco(ar, Integer.parseInt(tupla[0]));
+                    }
+                    
+                }
+            }
+            
+            
+            nList = doc.getElementsByTagName("timeLineTeacher");        
+            for(int temp = 0; temp < nList.getLength(); temp++){
+                Node nNode = nList.item(temp);
+                if(nNode.getNodeType() == Node.ELEMENT_NODE){
+                    Element eElement = (Element) nNode;
+                    int id = Integer.parseInt(eElement.getAttribute("id"));
+                    String secciones = eElement.getElementsByTagName("seccion").item(0).getTextContent();
+                    if(secciones.contains("&")){
+                        String[] seccionList = secciones.split("&");
+                        for(String s:seccionList){
+                            ArrayList<Tupla> ar = new ArrayList();
+                            String tupla[] = s.substring(1,s.length()-1).split("=");
+                            for(String s2:tupla[1].split("-")){
+                                String xy[] = s2.split(",");
+                                Tupla<Integer,Integer> t = new Tupla(Integer.parseInt(xy[0]),
+                                        Integer.parseInt(xy[1]));
+                                ar.add(t);
+                            }
+                            if(listaTeachers.containsKey(id))
+                                listaTeachers.get(id).ocuparHueco(ar, Integer.parseInt(tupla[0]));
+                        }
+                    }else{
+                        ArrayList<Tupla> ar = new ArrayList();
+                        String tupla[] = secciones.substring(1,secciones.length()-1).split("=");
+                        for(String s2:tupla[1].split("-")){
+                            String xy[] = s2.split(",");
+                            Tupla<Integer,Integer> t = new Tupla(Integer.parseInt(xy[0]),
+                                    Integer.parseInt(xy[1]));
+                            ar.add(t);
+                        }
+                        if(listaTeachers.containsKey(id))
+                            listaTeachers.get(id).ocuparHueco(ar, Integer.parseInt(tupla[0]));
                     }
                     
                 }

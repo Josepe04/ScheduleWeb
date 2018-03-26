@@ -71,7 +71,7 @@ public class XMLWriterDOM {
             rootElement.appendChild(teacherTimetablesxml);
             
             for(Teacher t:teachers)
-                teacherTimetablesxml.appendChild(getTimetableLine(doc,t.getIdTeacher()+"",t.getAllPosiciones(),t.getHuecos()));
+                teacherTimetablesxml.appendChild(getTimetableLine("Teacher",doc,t.getIdTeacher()+"",t.getAllPosiciones(),t.getHuecos()));
             
             //TIME TABLES STUDENTS
             Element studenTimetablexml =
@@ -79,7 +79,7 @@ public class XMLWriterDOM {
             rootElement.appendChild(studenTimetablexml);
             
             for(Student t:st)
-                studenTimetablexml.appendChild(getTimetableLine(doc,t.getId()+"",t.posicionesOcupadas(),t.getHuecos()));
+                studenTimetablexml.appendChild(getTimetableLine("Student",doc,t.getId()+"",t.posicionesOcupadas(),t.getHuecos()));
             
             
             
@@ -150,8 +150,8 @@ public class XMLWriterDOM {
         return employee;
     }
     
-    private static Node getTimetableLine(Document doc, String id,ArrayList<Tupla<Integer,Integer>> table,int[][] huecos) {
-        Element employee = doc.createElement("timeLine");
+    private static Node getTimetableLine(String type,Document doc, String id,ArrayList<Tupla<Integer,Integer>> table,int[][] huecos) {
+        Element employee = doc.createElement("timeLine"+type);
  
         //set id attribute
         employee.setAttribute("id", id);
@@ -171,7 +171,7 @@ public class XMLWriterDOM {
             if(first)
                 s += "["+entry.getKey()+"="+entry.getValue()+"]";
             else
-                s += "|["+entry.getKey()+"="+entry.getValue()+"]";
+                s += "&["+entry.getKey()+"="+entry.getValue()+"]";
             first = false;
         }
         employee.appendChild(getEmployeeElements(doc, employee, "seccion",s));

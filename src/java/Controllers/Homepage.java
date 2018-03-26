@@ -29,6 +29,8 @@ import model.User;
 import javax.servlet.http.HttpSession;
 import model.Consultas;
 import model.DBConnect;
+import model.Student;
+import model.Teacher;
 import model.Template;
 import model.Tupla;
 
@@ -55,7 +57,10 @@ public class Homepage extends MultiActionController  {
     @RequestMapping
     public ModelAndView inicio(HttpServletRequest hsr, HttpServletResponse hsr1) throws Exception {
         DBConnect db = new DBConnect();
-        XMLReaderDOM.xmlRead("/Users/Norhan/Documents/emps.xml");
+        HashMap<Integer,Student> listaStudents = new HashMap(); 
+        HashMap<Integer,Teacher> listaTeachers = new HashMap();
+        XMLReaderDOM.xmlRead("/Users/Norhan/Documents/emps.xml",
+                listaStudents,listaTeachers);
         return new ModelAndView("userform");
     }
     
