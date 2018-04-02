@@ -49,8 +49,9 @@ public class Consultas {
     
     //public static getCoursesStudentRequest()
     
-    public static HashMap<Integer,ArrayList<Integer>> getCoursesGroups(ArrayList<Student> st,ArrayList<Integer> listaCourses,String yearid){
-        String consulta="select * from ClassGroups where yearid ="+yearid;
+    public static HashMap<Integer,ArrayList<Integer>> getCoursesGroups(ArrayList<Student> st,ArrayList<Integer> listaCourses,
+            String yearid, String tempid){
+        String consulta="select * from ClassGroups where yearid ="+yearid +" and templateid="+tempid;
         ArrayList<Integer> groups = new ArrayList();
         HashMap<Integer,ArrayList<Integer>> classes = new HashMap();
         HashMap<Integer,ArrayList<Integer>> courses = new HashMap();
@@ -143,15 +144,23 @@ public class Consultas {
         return ret;
     }
     
-    protected ArrayList<Course> getRestricciones(int[] ids){
+    protected ArrayList<Course> getRestricciones(int[] ids,int[] tempinfo){
         ArrayList<Course> ret = new ArrayList<>();
         String consulta = "";
         try {
             ResultSet rs;
             for(int i = 0; i < ids.length;i++){
-                Course r=new Course(ids[i]);
-                ret.add(r);
-                courseName.put(ids[i], fetchNameCourse(ids[i]));
+                consulta = "select * from courses where courseid="+ids[i]
+                        +" and Elementary="+tempinfo[0]
+                        +" and HS="+tempinfo[1]
+                        +" and MidleSchool="+tempinfo[2]
+                        +" and PreSchool="+tempinfo[3];
+                rs = DBConnect.st.executeQuery(consulta);
+                if(rs.next()){
+                    Course r=new Course(ids[i]);
+                    ret.add(r);
+                    courseName.put(ids[i], fetchNameCourse(ids[i]));
+                }
             }
             for(int i = 0; i < ret.size();i++){
                 consulta = "select udd.data\n" +
@@ -232,7 +241,10 @@ public class Consultas {
 
                 rs=DBConnect.st.executeQuery(consulta);
                 while(rs.next()){
-                    ret.get(i).setMinGapDays(rs.getInt(1));
+                    try{
+                        ret.get(i).setMinGapDays(rs.getInt(1));
+                    }catch(Exception e){        
+                    }
                 }
 
                 consulta="select udd.data\n" +
@@ -249,7 +261,7 @@ public class Consultas {
                 rs=DBConnect.st.executeQuery(consulta);
                 while(rs.next()){
                     try{
-                    ret.get(i).setRank(rs.getInt(1));
+                        ret.get(i).setRank(rs.getInt(1));
                     }catch(Exception e){
                     }
                 }
@@ -271,10 +283,11 @@ public class Consultas {
                 }
                 ArrayList<Integer> ar = new ArrayList<>();
                 for(String s2:s){
-                    if(!s2.equals("")){
-                        ar.add(Integer.parseInt(s2));
-                        if(!teachers.contains(Integer.parseInt(s2)))
-                            teachers.add(Integer.parseInt(s2));
+                    if(s2!=null){
+                        int idt = convertString(s2);
+                        ar.add(idt);
+                        if(!teachers.contains(idt))
+                            teachers.add(idt);
                     }
                 }
                 ret.get(i).setTrestricctions(ar);
@@ -466,11 +479,27 @@ public class Consultas {
         return ret;
     }
     
+    public int[] templateInfo(String tempid){
+        int[] ret = new int[4];
+        String consulta = "select * from ScheduleTemplate where templateid="+tempid;
+        try {
+            ResultSet rs = DBConnect.st.executeQuery(consulta);
+            while(rs.next()){
+                ret[0] = rs.getInt("Elementary");
+                ret[1] = rs.getInt("HighSchool");
+                ret[2] = rs.getInt("MiddleSchool");
+                ret[3] = rs.getInt("Preschool");
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(Consultas.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return ret;
+    }
+    
     /**
      * 
      * @param c
      * @param stCourse
-     * @param id
      * @param yearid
      * @return 
      */
@@ -513,15 +542,13 @@ public class Consultas {
         return ret;
     }
     
-    public static int[] convertIntegers(ArrayList<Integer> integers)
-{
-    int[] ret = new int[integers.size()];
-    for (int i=0; i < ret.length; i++)
-    {
-        ret[i] = integers.get(i).intValue();
+    public static int[] convertIntegers(ArrayList<Integer> integers) {
+        int[] ret = new int[integers.size()];
+        for (int i=0; i < ret.length; i++){
+            ret[i] = integers.get(i).intValue();
+        }
+        return ret;
     }
-    return ret;
-}
     
     private String fetchNameCourse(int id){
         String ret = "";
@@ -566,5 +593,28 @@ public class Consultas {
         return ret;
     }
     
+    private int convertString(String s){
+        int ret=0; 
+        for(int i = 1; i < s.length();i++){
+            switch(s.substring(i-1, i)){
+                case "0":
+                case "1":
+                case "2":
+                case "3":
+                case "4":
+                case "5":
+                case "6":
+                case "7":
+                case "8":
+                case "9":
+                    ret*=10;
+                    ret+=Integer.parseInt(s.substring(i-1, i));
+                    break;
+                default:
+                    break;
+            }
+        }
+        return ret;
+    }
     
 }

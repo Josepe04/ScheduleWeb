@@ -28,7 +28,7 @@ public class Teacher{
     
     public Teacher(){
         huecos = new int[Algoritmo.TAMX][Algoritmo.TAMY];
-        blocksPerDay = new int[Algoritmo.TAMX];
+        blocksPerDay = new int[Algoritmo.TAMY];
         for(int i = 0; i<blocksPerDay.length;i++){
             blocksPerDay[i] = 0;
         }
@@ -170,8 +170,10 @@ public class Teacher{
     }
     
     public void ocuparHueco(ArrayList<Tupla> ar,int id){
-        for(Tupla t:ar)
-            huecos[(Integer)t.x][(Integer)t.y]=id; 
+        for(Tupla t:ar){
+            huecos[(Integer)t.x][(Integer)t.y]=id;
+            blocksPerDay[(Integer)t.y]++;
+        }
         if(!prepsComplete.contains(id/100))
             prepsComplete.add(id/100);
         secsComplete++;
@@ -186,7 +188,9 @@ public class Teacher{
     }
     
     public boolean asignaturaCursable(int id){
-        if(ocupado || (!prepsComplete.contains(id) && prepsComplete.size()>=Preps))
+        if(this.Preps == 0 && this.MaxSections ==0)
+            return true;
+        else if(ocupado || (!prepsComplete.contains(id) && prepsComplete.size()>=Preps))
             return false;
         else
             return true;
@@ -194,7 +198,7 @@ public class Teacher{
     
     public boolean patronCompatible(ArrayList<Tupla> ar){
         for(Tupla t:ar)
-            if(huecos[(Integer)t.x][(Integer)t.y]!=0 || blocksPerDay[(Integer)t.x] >= MaxBxD)
+            if(huecos[(Integer)t.x][(Integer)t.y]!=0 || (blocksPerDay[(Integer)t.y] >= MaxBxD && MaxBxD>0))
                 return false;
         return true;
     }

@@ -57,10 +57,10 @@ public class Homepage extends MultiActionController  {
     @RequestMapping
     public ModelAndView inicio(HttpServletRequest hsr, HttpServletResponse hsr1) throws Exception {
         DBConnect db = new DBConnect();
-        HashMap<Integer,Student> listaStudents = new HashMap(); 
-        HashMap<Integer,Teacher> listaTeachers = new HashMap();
-        XMLReaderDOM.xmlRead("/Users/Norhan/Documents/emps.xml",
-                listaStudents,listaTeachers);
+//        HashMap<Integer,Student> listaStudents = new HashMap(); 
+//        HashMap<Integer,Teacher> listaTeachers = new HashMap();
+//        XMLReaderDOM.xmlRead("/Users/Norhan/Documents/emps.xml",
+//                listaStudents,listaTeachers);
         return new ModelAndView("userform");
     }
     
@@ -86,7 +86,7 @@ public class Homepage extends MultiActionController  {
         String data = hsr.getParameter("templateInfo");
         String yearid = hsr.getParameter("yearid");
         String[] datost = data.split("-");
-        ModelAndView mv= new ModelAndView("redirect:/schedule/start.htm?yearid="+yearid+"&id="+datost[0]+"&rows="+datost[1]+"&cols="
+        ModelAndView mv= new ModelAndView("redirect:/schedule/start.htm?tempid="+datost[0]+"&yearid="+yearid+"&id="+datost[0]+"&rows="+datost[1]+"&cols="
                                     + datost[2]);
         ArrayList<Tupla<Integer,String>> ar=Consultas.getYears();
         ar.sort(new Comp());

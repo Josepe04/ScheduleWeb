@@ -22,15 +22,12 @@ public class Algoritmo {
     protected static int TAMX = 6;
     protected static int TAMY = 12;
     public final static int CHILDSPERSECTION = 20;
-    private List<Object> tabla;
     private ArrayList<String> Log;
     Conjuntos<Integer> conjuntos;
     Consultas cs;
     
     public Algoritmo(){
         Log = new ArrayList<>();
-        tabla = new ArrayList<>();
-        tabla.add(new int[TAMX][TAMY]);
         cs = new Consultas();
         conjuntos = new Conjuntos<>();
     }
@@ -39,8 +36,6 @@ public class Algoritmo {
         TAMX = x;
         TAMY = y;
         Log = new ArrayList<>();
-        tabla = new ArrayList<>();
-        tabla.add(new int[TAMX][TAMY]);
         cs = new Consultas();
         conjuntos = new Conjuntos<>();
     }
@@ -57,18 +52,18 @@ public class Algoritmo {
      * algoritmo
      * @param mv 
      */
-    public void algo(ModelAndView mv,String yearid){
+    public void algo(ModelAndView mv,String yearid,String tempid){
         cs = new Consultas();
         ArrayList<Integer> idCourses = new ArrayList(); 
         ArrayList<Student> st = new ArrayList();
-        HashMap<Integer,ArrayList<Integer>> studentsCourse = Consultas.getCoursesGroups(st,idCourses,yearid);
+        HashMap<Integer,ArrayList<Integer>> studentsCourse = Consultas.getCoursesGroups(st,idCourses,yearid,tempid);
         HashMap<Integer,Student> students = new HashMap<>();
         st = (new Conjuntos<Student>()).union(st,
                 cs.restriccionesStudent(idCourses,studentsCourse,yearid));  
         for(Student s:st){
             students.put(s.getId(), s);
         }
-        ArrayList<Course> rst = cs.getRestricciones(Consultas.convertIntegers(idCourses));
+        ArrayList<Course> rst = cs.getRestricciones(Consultas.convertIntegers(idCourses),cs.templateInfo(tempid));
         ArrayList<Teacher> trst = cs.teachersList();
       
         int numcursos = 0;
@@ -91,14 +86,13 @@ public class Algoritmo {
             teacher.mostrarHuecos();
             System.out.println("");
         }
-        ArrayList<Student> retst = new ArrayList<>();
+        
         for(Map.Entry<Integer, Student> entry : students.entrySet()) {
             entry.getValue().mostrarHuecos();
-            retst.add(entry.getValue());
             System.out.println("");
         }
         
-        XMLWriterDOM.xmlCreate(trst, retst);
+//        XMLWriterDOM.xmlCreate(trst, retst);
         
         mv.addObject("TAMX",TAMX);
         mv.addObject("TAMY",TAMY);

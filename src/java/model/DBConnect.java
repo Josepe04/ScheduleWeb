@@ -30,10 +30,16 @@ public class DBConnect {
         }
     }
     public static Connection SQLConnection() throws SQLException {
+//        System.out.println("database.SQLMicrosoft.SQLConnection()");
+//        String url = "jdbc:sqlserver://deb-qat.odbc.renweb.com:1433;databaseName=deb_qat";
+//        String loginName = "DEB_QAT_CUST";
+//        String password = "UnderQuiet+227";
         System.out.println("database.SQLMicrosoft.SQLConnection()");
-        String url = "jdbc:sqlserver://deb-qat.odbc.renweb.com:1433;databaseName=deb_qat";
-        String loginName = "DEB_QAT_CUST";
-        String password = "UnderQuiet+227";
+        String url = "jdbc:sqlserver://is-pan.odbc.renweb.com:1433;databaseName=is_pan";
+        String loginName = "IS_PAN_CUST";
+        String password = "HotelBravo+943";
+        
+
         DriverManager.registerDriver(new SQLServerDriver());
         Connection cn = null;
         try {
@@ -46,4 +52,6 @@ public class DBConnect {
 
         return cn;
     }
+    
+    
 }

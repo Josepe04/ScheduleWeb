@@ -168,7 +168,8 @@
                             out.println("<tr>");
                             out.println("<td>Students no enrolled</td>");
                             out.println("<td>");
-                            studentNames += lista2.get(c.getStudentsNoAsignados().get(0)).getName();
+                            if(!c.getStudentsNoAsignados().isEmpty())
+                                studentNames += lista2.get(c.getStudentsNoAsignados().get(0)).getName();
                             for(int i = 1; i < c.getStudentsNoAsignados().size();i++){
                                 studentNames += " ,"+lista2.get(c.getStudentsNoAsignados().get(i)).getName();
                             }
@@ -381,10 +382,12 @@
                             swapcolor = true;
                         }
                         out.println("<td>"+entry.getValue().getName()+"</td>");
+                        ArrayList<Integer> sta;
                         for(Course c: courses){
-                            if(c.getStudentsAsignados().contains(entry.getValue().getId())){
+                            sta = c.getStudentsAsignados();
+                            if(sta!=null && sta.contains(entry.getValue().getId())){
                                 out.println("<td>"+1+"</td>");
-                            }else if(c.getStudentsNoAsignados().contains(entry.getValue().getId())){
+                            }else if(sta!=null && sta.contains(entry.getValue().getId())){
                                 out.println("<td>"+2+"</td>");
                             }else{
                                 out.println("<td>"+0+"</td>");

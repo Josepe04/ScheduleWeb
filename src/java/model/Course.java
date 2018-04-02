@@ -38,6 +38,7 @@ public class Course {
         sections = 0;
         studentsNoAsignados = new ArrayList<>();
         patronesStudents = new ArrayList<>();
+        trestricctions = new ArrayList();
     }
 
     public ArrayList<ArrayList<Tupla>> getPatronesStudents() {

@@ -22,6 +22,7 @@ public class ScheduleController {
     @RequestMapping("/schedule/start.htm")
     public ModelAndView scheduleStart(HttpServletRequest hsr, HttpServletResponse hsr1){
         ModelAndView mv = new ModelAndView("index");
+        String tempid = hsr.getParameter("tempid");
         String xs = hsr.getParameter("cols");
         String ys = hsr.getParameter("rows");
         int id = Integer.parseInt(hsr.getParameter("id"));
@@ -31,7 +32,7 @@ public class ScheduleController {
         mv.addObject("hFilas",Consultas.getRowHeader(id, y));
         mv.addObject("hcols",Consultas.getColHeader(id, x));
         Algoritmo algo = new Algoritmo(x,y);
-        algo.algo(mv,yearid);
+        algo.algo(mv,yearid,tempid);
         return mv;
     }
 }
