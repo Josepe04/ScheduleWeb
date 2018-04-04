@@ -149,7 +149,9 @@ public class Consultas {
         String consulta = "";
         try {
             ResultSet rs;
+            boolean tempcorrect;
             for(int i = 0; i < ids.length;i++){
+                tempcorrect = false;
                 consulta = "select * from courses where courseid="+ids[i]
                         +" and Elementary="+tempinfo[0]
                         +" and HS="+tempinfo[1]
@@ -157,9 +159,25 @@ public class Consultas {
                         +" and PreSchool="+tempinfo[3];
                 rs = DBConnect.st.executeQuery(consulta);
                 if(rs.next()){
-                    Course r=new Course(ids[i]);
-                    ret.add(r);
-                    courseName.put(ids[i], fetchNameCourse(ids[i]));
+                    tempcorrect=true;
+                }
+                consulta = "select udd.data\n" +
+                "                from uddata udd\n" +
+                "                inner join udfield udf\n" +
+                "                    on udd.fieldid = udf.fieldid\n" +
+                "                inner join udgroup udg\n" +
+                "                    on udg.groupid = udf.groupid\n" +
+                "                    and udg.grouptype = 'course'\n" +
+                "                    and udg.groupname = 'Schedule'\n" +
+                "                    and udf.fieldName = 'Schedule'\n" +
+                "                where udd.id ="+ids[i];
+                rs = DBConnect.st.executeQuery(consulta);
+                if(rs.next() && tempcorrect){
+                    if(rs.getInt(1)==1){
+                        Course r=new Course(ids[i]);
+                        ret.add(r);
+                        courseName.put(ids[i], fetchNameCourse(ids[i]));
+                    }
                 }
             }
             for(int i = 0; i < ret.size();i++){
@@ -331,6 +349,8 @@ public class Consultas {
         }
         return ret;
     } 
+    
+    
     
     private Teacher teacherDefault(){
         Teacher ret = new Teacher();
@@ -577,7 +597,7 @@ public class Consultas {
         return nameCourse(idc) + " Section: "+id;
     }
  
-    private String fetchName(int id){
+    public String fetchName(int id){
         String consulta = "select * from person where personid="+id;
         String ret = "";
         ResultSet rs;

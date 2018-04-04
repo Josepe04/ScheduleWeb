@@ -35,7 +35,7 @@ public class Course {
         this.idCourse = idCourse;
         huecos=new int[Algoritmo.TAMX][Algoritmo.TAMY];
         maxBlocksPerDay = 1;
-        sections = 0;
+        sections = 1;
         studentsNoAsignados = new ArrayList<>();
         patronesStudents = new ArrayList<>();
         trestricctions = new ArrayList();
@@ -55,7 +55,10 @@ public class Course {
     }
 
     public void updateSectionsNoEnrolled(int sectionsEnrolled) {
-        this.sectionsNoEnrolled = sections-sectionsEnrolled;
+        if(sectionsEnrolled<sections)
+            this.sectionsNoEnrolled = sections-sectionsEnrolled;
+        else
+            this.sectionsNoEnrolled = 1;
     }
 
     
