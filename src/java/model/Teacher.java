@@ -38,17 +38,11 @@ public class Teacher{
     }
     
     public int seccionesDisponibles(){
-        if(MaxSections>0)
-            return MaxSections - secsComplete;
-        else
-            return Algoritmo.TAMX*Algoritmo.TAMY-secsComplete;
+        return MaxSections - secsComplete;
     }
     
     public int prepsDisponibles(){
-        if(Preps>0)
-            return Preps - prepsComplete.size();
-        else
-            return (Algoritmo.TAMX*Algoritmo.TAMY)/3-prepsComplete.size();
+        return Preps - prepsComplete.size();
     }
     
     public HashMap<Integer,Integer> getSecciones() {
