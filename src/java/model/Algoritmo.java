@@ -68,7 +68,13 @@ public class Algoritmo {
       
         int numcursos = 0;
         for(Course course: rst){
-            int minsections = 1 + studentsCourse.get(course.getIdCourse()).size()/CHILDSPERSECTION;
+            int minsections = 1;
+            try{
+                minsections = 1 + studentsCourse.get(course.getIdCourse()).size()/course.getMaxChildPerSection();
+            }catch(ArithmeticException e){
+                //e.printStackTrace();
+                System.out.println("id:"+course.getIdCourse()+" name: "+cs.nameCourse(course.getIdCourse()));
+            }
             course.setSections(minsections);
             
             if(course.opciones().size()>0){
@@ -81,17 +87,6 @@ public class Algoritmo {
                 System.out.println("FAILURE: " + course.getIdCourse());
             numcursos++;
         }
-        
-        for(Teacher teacher:trst){
-            teacher.mostrarHuecos();
-            System.out.println("");
-        }
-        
-        for(Map.Entry<Integer, Student> entry : students.entrySet()) {
-            entry.getValue().mostrarHuecos();
-            System.out.println("");
-        }
-        
 //        XMLWriterDOM.xmlCreate(trst, retst);
         
         mv.addObject("TAMX",TAMX);

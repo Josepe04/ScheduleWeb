@@ -30,17 +30,102 @@ public class Course {
     private ArrayList<Integer> studentsNoAsignados; 
     private ArrayList<Integer> studentsAsignados;
     private ArrayList<ArrayList<Tupla>> patronesStudents; 
+    private int maxChildPerSection;
     
     public Course(int idCourse) {
         this.idCourse = idCourse;
         huecos=new int[Algoritmo.TAMX][Algoritmo.TAMY];
         maxBlocksPerDay = 1;
-        sections = 0;
+        sections = 1;
         studentsNoAsignados = new ArrayList<>();
         patronesStudents = new ArrayList<>();
         trestricctions = new ArrayList();
     }
-
+    
+    
+    /**
+     * Actualiza el nnumero de alumnos que
+     * no se han podido matricular.
+     * @param sectionsEnrolled 
+     */
+    public void updateSectionsNoEnrolled(int sectionsEnrolled) {
+        if(sectionsEnrolled<sections)
+            this.sectionsNoEnrolled = sections-sectionsEnrolled;
+        else
+            this.sectionsNoEnrolled = 1;
+    }
+    
+    /**
+     * Ocupa un hueco en una seccion
+     * @param sec
+     * @param list 
+     */
+    public void ocuparHueco(int sec,ArrayList<Tupla> list){
+        for(Tupla<Integer,Integer> t:list)
+            if(huecos[t.x][t.y] == 0)
+                huecos[t.x][t.y] = sec;
+    }
+    
+    /**
+     * Aumenta en uno el contador de secciones
+     * @return 
+     */
+    public boolean addSection(){
+        try{
+            if(sections+1 < Integer.parseInt(maxSections))
+                sections++;
+            return true;
+        }catch(Exception e){
+            sections++;
+            return true;
+        }
+    }
+    
+    public int[][] huecosStudents(){
+        int[][] ret = new int[Algoritmo.TAMX][Algoritmo.TAMY];
+        for(ArrayList<Tupla> ar:this.patronesStudents){
+            for(Tupla<Integer,Integer> t:ar){
+                ret[t.x][t.y] = 1;
+            }
+        }
+        return ret;
+    }
+    
+    /**
+     * Devuelve los huecos donde se puede colocar
+     * una seccion
+     * @return 
+     */
+    public ArrayList<ArrayList<Tupla>> opciones(){
+        ArrayList<ArrayList<Tupla>> ret = new ArrayList<>();
+        for(int j = 0;j<Algoritmo.TAMY;j++){
+            boolean anadir=false;
+            if(excludeBlocks==null || !excludeBlocks.contains(j+1)){
+                int k;
+                int gd= this.minGapDays;
+                gd++;
+                for(int i = 0; i < Algoritmo.TAMX;i++){
+                    ArrayList<Tupla> t = new ArrayList<>();
+                    int sum=0;
+                    k=this.blocksWeek;
+                    while(k>0){
+                        t.add(new Tupla((i+sum)%Algoritmo.TAMX,j));
+                        sum+=gd;
+                        k--;
+                    }  
+                    ret.add(t);
+                }
+                
+            }
+        }
+        return ret;
+    }
+    
+    
+    //---------------------------------
+    //-------GETTERS AND SETTERS-------
+    //---------------------------------
+    
     public ArrayList<ArrayList<Tupla>> getPatronesStudents() {
         return patronesStudents;
     }
@@ -54,11 +139,13 @@ public class Course {
         return sectionsNoEnrolled;
     }
 
-    public void updateSectionsNoEnrolled(int sectionsEnrolled) {
-        this.sectionsNoEnrolled = sections-sectionsEnrolled;
+    public int getMaxChildPerSection() {
+        return maxChildPerSection;
     }
 
-    
+    public void setMaxChildPerSection(int maxChildPerSection) {
+        this.maxChildPerSection = maxChildPerSection;
+    }
     
     public double getPercentEnrolled() {
         return percentEnrolled;
@@ -187,68 +274,6 @@ public class Course {
     
     public int[][] getHuecos() {
         return huecos;
-    }
-    
-    public int[][] huecosStudents(){
-        int[][] ret = new int[Algoritmo.TAMX][Algoritmo.TAMY];
-        for(ArrayList<Tupla> ar:this.patronesStudents){
-            for(Tupla<Integer,Integer> t:ar){
-                ret[t.x][t.y] = 1;
-            }
-        }
-        return ret;
-    }
-    
-    public void ocuparHueco(int sec,ArrayList<Tupla> list){
-        for(Tupla<Integer,Integer> t:list)
-            if(huecos[t.x][t.y] == 0)
-                huecos[t.x][t.y] = sec;
-    }
-    
-    public boolean addSection(){
-        try{
-            if(sections+1 < Integer.parseInt(maxSections))
-                sections++;
-            return true;
-        }catch(Exception e){
-            sections++;
-            return true;
-        }
-    }
-    
-    public ArrayList<Tupla> huecosLibres(){
-        ArrayList<Tupla> ret = new ArrayList<>();
-        for(int i = 0;i < Algoritmo.TAMX;i++)
-            for(int j = 0;j<Algoritmo.TAMY;j++){
-                if(huecos[i][j]==0)
-                    ret.add(new Tupla<Integer,Integer>(i,j));
-            }
-        return ret;
-    } 
-    
-    public ArrayList<ArrayList<Tupla>> opciones(){
-        ArrayList<ArrayList<Tupla>> ret = new ArrayList<>();
-        for(int j = 0;j<Algoritmo.TAMY;j++){
-            boolean anadir=false;
-            if(excludeBlocks==null || !excludeBlocks.contains(j+1)){
-                int k;
-                int gd= this.minGapDays;
-                gd++;
-                for(int i = 0; i < Algoritmo.TAMX;i++){
-                    ArrayList<Tupla> t = new ArrayList<>();
-                    int sum=0;
-                    k=this.blocksWeek;
-                    while(k>0){
-                        t.add(new Tupla((i+sum)%Algoritmo.TAMX,j));
-                        sum+=gd;
-                        k--;
-                    }  
-                    ret.add(t);
-                }
-                
-            }
-        }
-        return ret;
     }
     
     @Override

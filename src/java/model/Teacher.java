@@ -37,13 +37,109 @@ public class Teacher{
         secciones = new HashMap<>();
     }
     
-    public int seccionesDisponibles(){
-        return MaxSections - secsComplete;
+    /**
+     * Esta funcion devuelve todas las tuplas ocupadas 
+     * en la cuadricula del profesor.
+     * @return 
+     */
+    public ArrayList<Tupla<Integer,Integer>> getAllPosiciones(){
+        ArrayList<Tupla<Integer,Integer>> ret= new ArrayList<>();
+        for(int i = 0; i < Algoritmo.TAMX;i++)
+            for(int j = 0; j < Algoritmo.TAMY;j++)
+                    if(huecos[i][j] != 0)
+                        ret.add(new Tupla(i,j));
+        return ret;
     }
     
-    public int prepsDisponibles(){
-        return Preps - prepsComplete.size();
+    /**
+     * Muestra la cuadricula en la terminal
+     */
+    public void mostrarHuecos(){
+        for(int i = 0; i < Algoritmo.TAMY;i++){
+            for(int j = 0; j < Algoritmo.TAMX;j++){
+                System.out.print(" "+huecos[j][i]+" ");
+            }
+            System.out.println("");
+        }
     }
+    
+    /**
+     * Ocupa una seccion del profesor
+     * @param ar
+     * @param id 
+     */
+    public void ocuparHueco(ArrayList<Tupla> ar,int id){
+        for(Tupla t:ar){
+            huecos[(Integer)t.x][(Integer)t.y]=id;
+            blocksPerDay[(Integer)t.y]++;
+        }
+        if(!prepsComplete.contains(id/100))
+            prepsComplete.add(id/100);
+        secsComplete++;
+        if(secsComplete >= MaxSections)
+            ocupado = true;
+        if(secciones.containsKey(id/100)){
+            int aux = secciones.get(id/100)+1;
+            secciones.replace(id/100, aux);
+        }else{
+            secciones.put(id/100,1);
+        }
+    }
+    
+    /**
+     * Comprueba si el profesor puede cursar una nueva asignatura
+     * @param id
+     * @return 
+     */
+    public boolean asignaturaCursable(int id){
+        if(this.Preps == 0 && this.MaxSections ==0)
+            return true;
+        else if(ocupado || (!prepsComplete.contains(id) && prepsComplete.size()>=Preps))
+            return false;
+        else
+            return true;
+    }
+    
+    /**
+     * Comprueba si una seccion en concreto
+     * es compatible con el profesor.
+     * @param ar
+     * @return 
+     */
+    public boolean patronCompatible(ArrayList<Tupla> ar){
+        for(Tupla t:ar)
+            if(huecos[(Integer)t.x][(Integer)t.y]!=0 || (blocksPerDay[(Integer)t.y] >= MaxBxD && MaxBxD>0))
+                return false;
+        return true;
+    }
+    
+    /**
+     * Devuelve el numero de secciones disponibles que tiene el profesor
+     * @return 
+     */
+    public int seccionesDisponibles(){
+        if(MaxSections>0)
+            return MaxSections - secsComplete;
+        else
+            return Algoritmo.TAMX*Algoritmo.TAMY-secsComplete;
+    }
+    
+    /**
+     * Devuelve el numero de asignaturas que se le 
+     * pueden asignar al profesor.
+     * @return 
+     */
+    public int prepsDisponibles(){
+        if(Preps>0)
+            return Preps - prepsComplete.size();
+        else
+            return (Algoritmo.TAMX*Algoritmo.TAMY)/3-prepsComplete.size();
+    }
+    
+        
+    //---------------------------------
+    //-------GETTERS AND SETTERS-------
+    //---------------------------------
     
     public HashMap<Integer,Integer> getSecciones() {
         return secciones;
@@ -138,69 +234,8 @@ public class Teacher{
         return idTeacher +" sections: "+ MaxSections+" preps: "+ Preps+" maxbxd: "+ MaxBxD +" exclude: "+ExcludeBlocks;
     }
     
-    public ArrayList<Tupla> getPosiciones(int id){
-        ArrayList<Tupla> ret= new ArrayList<>();
-        for(int i = 0; i < Algoritmo.TAMX;i++)
-            for(int j = 0; j < Algoritmo.TAMY;j++)
-                    if(huecos[i][j] == id)
-                        ret.add(new Tupla(i,j));
-        return ret;
-    }
-    
-    public ArrayList<Tupla<Integer,Integer>> getAllPosiciones(){
-        ArrayList<Tupla<Integer,Integer>> ret= new ArrayList<>();
-        for(int i = 0; i < Algoritmo.TAMX;i++)
-            for(int j = 0; j < Algoritmo.TAMY;j++)
-                    if(huecos[i][j] != 0)
-                        ret.add(new Tupla(i,j));
-        return ret;
-    }
-    
     public int[][] getHuecos(){
         return huecos;
-    }
-    
-    public void mostrarHuecos(){
-        for(int i = 0; i < Algoritmo.TAMY;i++){
-            for(int j = 0; j < Algoritmo.TAMX;j++){
-                System.out.print(" "+huecos[j][i]+" ");
-            }
-            System.out.println("");
-        }
-    }
-    
-    public void ocuparHueco(ArrayList<Tupla> ar,int id){
-        for(Tupla t:ar){
-            huecos[(Integer)t.x][(Integer)t.y]=id;
-            blocksPerDay[(Integer)t.y]++;
-        }
-        if(!prepsComplete.contains(id/100))
-            prepsComplete.add(id/100);
-        secsComplete++;
-        if(secsComplete >= MaxSections)
-            ocupado = true;
-        if(secciones.containsKey(id/100)){
-            int aux = secciones.get(id/100)+1;
-            secciones.replace(id/100, aux);
-        }else{
-            secciones.put(id/100,1);
-        }
-    }
-    
-    public boolean asignaturaCursable(int id){
-        if(this.Preps == 0 && this.MaxSections ==0)
-            return true;
-        else if(ocupado || (!prepsComplete.contains(id) && prepsComplete.size()>=Preps))
-            return false;
-        else
-            return true;
-    }
-    
-    public boolean patronCompatible(ArrayList<Tupla> ar){
-        for(Tupla t:ar)
-            if(huecos[(Integer)t.x][(Integer)t.y]!=0 || (blocksPerDay[(Integer)t.y] >= MaxBxD && MaxBxD>0))
-                return false;
-        return true;
     }
     
     public ArrayList<Integer> getPrepsComplete() {
