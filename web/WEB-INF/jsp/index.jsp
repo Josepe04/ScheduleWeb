@@ -97,7 +97,7 @@
                 <li class="active"><a id="Courses" data-toggle="tab" href="#courses" role="tab" >Courses</a></li>
                 <li><a id="Teachers" data-toggle="tab" href="#teachers" role="tab">Teachers</a></li>
                 <li><a id="Students" data-toggle="tab" href="#students" role="tab">Students</a></li>
-                <li><a id="Log" data-toggle="tab" href="#log" role="tab">Log</a></li>                
+                <!--<li><a id="Log" data-toggle="tab" href="#log" role="tab">Log</a></li>-->                
             </ul>
         </div>
         
@@ -129,7 +129,7 @@
                             else
                                 out.println("<td></td>");
                             for(int j = 0; j < TAMX; j++){
-                                if(t.getHuecos()[j][i] != 0)
+                                if(!t.getHuecos()[j][i].equals("0"))
                                     out.println("<td> section "+t.getHuecos()[j][i]+"</td>");
                                 else
                                     out.println("<td> </td>");
@@ -358,7 +358,7 @@
                  %>
                 </div>
             </div>
-            <div role="tabpanel" class="col-xs-12 tab-pane" id="log">
+            <!--<div role="tabpanel" class="col-xs-12 tab-pane" id="log">
                 <legend id="showSTC">
                         Student Course
                         <span class="col-xs-12 text-right glyphicon glyphicon-triangle-bottom">
@@ -437,7 +437,7 @@
                     }
                     out.println("</table>");
                  %>
-                 </div> 
+                 </div> -->
                  <legend id="showLogComplete">
                         Log complete
                         <span class="col-xs-12 text-right glyphicon glyphicon-triangle-bottom">
@@ -452,7 +452,7 @@
                         }
                     %>
                 </div>
-            </div>
+            <!--</div>-->
         </div>
     </body>
 </html>

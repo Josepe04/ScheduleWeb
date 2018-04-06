@@ -75,7 +75,7 @@ public class Algoritmo {
                 //e.printStackTrace();
                 System.out.println("id:"+course.getIdCourse()+" name: "+cs.nameCourse(course.getIdCourse()));
             }
-            course.setSections(minsections);
+            course.setMinSections(minsections);
             
             if(course.opciones().size()>0){
                 ArrayList<Integer> noAsign = studentSections(trst,course,minsections,
@@ -132,36 +132,39 @@ public class Algoritmo {
         int lastStudent = -1;
         for(int i = 0;i < stids.size();i++){
             for(Teacher t : teachers){
+                boolean nextSection = false;
                 if(c.getTrestricctions().contains(t.idTeacher) &&
                         t.asignaturaCursable(c.getIdCourse()) && 
                         t.patronCompatible(sec.get(stids.get(i).x))){
                     int k = 0;
                     lastTeacher = i;
                     for(Integer j:diferencia){
-                        if((k<studentsCourse.size()/c.getSections()+1 || studentsCourse.size()==1) && !idsAsignados.contains(j) && 
+                        if((k<studentsCourse.size()/c.getMinSections()+1 || studentsCourse.size()==1) && !idsAsignados.contains(j) && 
                                 students.get(j).patronCompatible(sec.get(stids.get(i).x))){
                             idsAsignados.add(j);
-                            students.get(j).ocuparHueco(sec.get(stids.get(i).x), c.getIdCourse()*100+i+1);
+                            students.get(j).ocuparHueco(sec.get(stids.get(i).x), c.getIdCourse()*100+c.getSections());
                             k++;
                             lastStudent = i;
+                            nextSection = true;
                         }
                     }
-                    if(k<studentsCourse.size()/c.getSections()){
+                    if(k<studentsCourse.size()/c.getMinSections()){
                         for(Integer j:stids.get(i).y){
-                            if((k<studentsCourse.size()/c.getSections()+1 || studentsCourse.size()==1) && !idsAsignados.contains(j) && 
+                            if((k<studentsCourse.size()/c.getMinSections()+1 || studentsCourse.size()==1) && !idsAsignados.contains(j) && 
                                     students.get(j).patronCompatible(sec.get(stids.get(i).x))){
                                 idsAsignados.add(j);
-                                students.get(j).ocuparHueco(sec.get(stids.get(i).x), c.getIdCourse()*100+i+1);
+                                students.get(j).ocuparHueco(sec.get(stids.get(i).x), c.getIdCourse()*100+c.getSections());
                                 k++;
                                 lastStudent = i;
+                                nextSection = true;
                             }
                         }
                     }
                     if(k>0){
                         t.ocuparHueco(sec.get(stids.get(i).x), c.getIdCourse()*100+i);
-                        c.ocuparHueco(i+1, sec.get(stids.get(i).x));
+                        c.ocuparHueco(sec.get(stids.get(i).x));
                     }
-                    c.updateSectionsNoEnrolled(k);
+                    c.updateSectionsNoEnrolled(c.getSections());
                     if(idsAsignados.size() == studentsCourse.size()){
                         c.setStudentsAsignados(idsAsignados);
                         c.setPercentEnrolled(100);
@@ -182,11 +185,20 @@ public class Algoritmo {
         c.setStudentsAsignados(idsAsignados);
         double percent = ((double)idsAsignados.size())/((double)studentsCourse.size())*100;
         c.setPercentEnrolled(percent);
+        c.updateSectionsNoEnrolled(c.getMinSections()-c.getSections());
         if(idsAsignados.size()!= studentsCourse.size()){
             System.out.println("FAILURE");      
             ArrayList<Integer> ret = conjuntos.diferencia(studentsCourse, idsAsignados);
-            if(lastTeacher <= lastStudent){
-                Log.add("Los profesores asignados al curso:"+cs.nameCourse(c.getIdCourse())+" no tienen disponible ningun hueco compatible");
+            String tname = "";
+            for(Integer teacher: c.getTrestricctions()){
+                tname += cs.fetchName(teacher) + " ,";
+            }
+            if(tname.length()>2)
+                tname = tname.substring(0, tname.length()-1);
+            if(c.getTrestricctions().isEmpty())
+                Log.add("No hay profesores asignados al curso:"+cs.nameCourse(c.getIdCourse()));
+            else if(lastTeacher <= lastStudent){
+                Log.add("Los profesores"+tname+" asignados al curso:"+cs.nameCourse(c.getIdCourse())+" no tienen disponible ningun hueco compatible");
             }else{
                 Log.add("Los siguientes estudiantes no tienen secciones disponibles para el curso "+cs.nameCourse(c.getIdCourse())+":");
                 String anadir = "",anadir2="";

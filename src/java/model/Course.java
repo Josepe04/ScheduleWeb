@@ -13,12 +13,12 @@ import java.util.ArrayList;
  */
 public class Course {
     
-        //cuadricula
-    private int[][] huecos;
+    private String[][] huecos; // cuadricula
     private int idCourse; // id del curso
-    private int blocksWeek; //bloques por semana
-    private String maxSections; //maximo numero de grupos
+    private int blocksWeek; // bloques por semana
+    private String maxSections; // maximo numero de grupos
     private String minGapBlocks; // espacio minimo entre bloques
+    private int minSections;
     private int minGapDays; //cada cuantos dias entre bloques
     private int rank; // prioridad
     private boolean GR; //
@@ -34,7 +34,10 @@ public class Course {
     
     public Course(int idCourse) {
         this.idCourse = idCourse;
-        huecos=new int[Algoritmo.TAMX][Algoritmo.TAMY];
+        huecos=new String[Algoritmo.TAMX][Algoritmo.TAMY];
+        for(int i = 0;i<Algoritmo.TAMX;i++)
+            for(int j = 0; j < Algoritmo.TAMY;j++)
+                huecos[i][j] = "0";
         maxBlocksPerDay = 1;
         sections = 1;
         studentsNoAsignados = new ArrayList<>();
@@ -60,27 +63,20 @@ public class Course {
      * @param sec
      * @param list 
      */
-    public void ocuparHueco(int sec,ArrayList<Tupla> list){
-        for(Tupla<Integer,Integer> t:list)
-            if(huecos[t.x][t.y] == 0)
-                huecos[t.x][t.y] = sec;
+    public void ocuparHueco(ArrayList<Tupla> list){
+        for(Tupla<Integer,Integer> t:list){
+            if(huecos[t.x][t.y].equals("0"))
+                huecos[t.x][t.y] = ""+sections;
+            else
+                huecos[t.x][t.y] += " and "+sections;
+        }
+        sections++;
     }
     
     /**
-     * Aumenta en uno el contador de secciones
+     * Devuelve los huecos disponibles en los estudiantes no asignados al curso
      * @return 
      */
-    public boolean addSection(){
-        try{
-            if(sections+1 < Integer.parseInt(maxSections))
-                sections++;
-            return true;
-        }catch(Exception e){
-            sections++;
-            return true;
-        }
-    }
-    
     public int[][] huecosStudents(){
         int[][] ret = new int[Algoritmo.TAMX][Algoritmo.TAMY];
         for(ArrayList<Tupla> ar:this.patronesStudents){
@@ -98,6 +94,12 @@ public class Course {
      */
     public ArrayList<ArrayList<Tupla>> opciones(){
         ArrayList<ArrayList<Tupla>> ret = new ArrayList<>();
+        try{
+            if(maxSections == null && Integer.parseInt(maxSections)==0 
+                    && Integer.parseInt(maxSections) <= sections)
+                return ret;
+        }catch(Exception e){}
+        
         for(int j = 0;j<Algoritmo.TAMY;j++){
             boolean anadir=false;
             if(excludeBlocks==null || !excludeBlocks.contains(j+1)){
@@ -125,6 +127,14 @@ public class Course {
     //---------------------------------
     //-------GETTERS AND SETTERS-------
     //---------------------------------
+
+    public int getMinSections() {
+        return minSections;
+    }
+
+    public void setMinSections(int minSections) {
+        this.minSections = minSections;
+    }
     
     public ArrayList<ArrayList<Tupla>> getPatronesStudents() {
         return patronesStudents;
@@ -172,9 +182,6 @@ public class Course {
         this.studentsNoAsignados = studentsNoAsignados;
     }
 
-    public void setSections(int sections) {
-        this.sections = sections;
-    }
     private ArrayList<Integer> trestricctions;
 
     public int getSections() {
@@ -198,8 +205,8 @@ public class Course {
         this.blocksWeek = blocksWeek;
     }
 
-    public String getMaxSections() {
-        return maxSections;
+    public int getMaxSections() {
+        return Integer.parseInt(maxSections);
     }
 
     public void setMaxSections(String maxSections) {
@@ -272,7 +279,7 @@ public class Course {
         this.trestricctions = trestricctions;
     }
     
-    public int[][] getHuecos() {
+    public String[][] getHuecos() {
         return huecos;
     }
     

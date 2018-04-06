@@ -611,7 +611,7 @@ public class Consultas {
         try {
             rs = DBConnect.st.executeQuery(consulta);
             while(rs.next()){
-               ret= rs.getString("lastname")+" , ";
+               ret= rs.getString("lastname")+" ";
                ret += rs.getString("firstname");
             }
         } catch (SQLException ex) {
