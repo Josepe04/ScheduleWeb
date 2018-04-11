@@ -16,7 +16,7 @@
         
         <%@ include file="infouser.jsp" %>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Welcome to Spring Web MVC project</title>
+        <title>Menu</title>
         <style>
             .tcolores{
                 background-color: #8080804f;
@@ -57,6 +57,10 @@
                 
                 $("#showTeachers").click(function () {
                     $("#Teacherstable").toggleClass('in');
+                });
+                
+                $("#showTeachers2").click(function () {
+                    $("#Teacherstable2").toggleClass('in');
                 });
                 
                 $("#showTeachersdisp").click(function () {
@@ -248,6 +252,49 @@
                 %>
                 </div>
                 
+                <legend id="showTeachers2">
+                        Teachers Master Schedule
+                        <span class="col-xs-12 text-right glyphicon glyphicon-triangle-bottom">
+                        </span>
+                </legend>
+                <div class="form-group collapse" id="Teacherstable2">
+                <%
+                    int countDays = 0;
+                    for(String s:headCol){
+                        out.println("<h3>"+s+"</h3>");
+                        out.println("<table class='table'>");
+                        swapcolor = true;
+                        out.println("<tr>");
+                        out.println("<th>Teachers | Hours</th>");
+                        for(int i = 0; i < headRow.size(); i++){
+                            out.println("<th>"+headRow.get(i).text()+"</th>");
+                        }
+                        out.println("</tr>");
+                        for(int i = 0; i < TAMX;i++){
+                            for(Teacher t : lista){
+                                if(swapcolor){
+                                    out.println("<tr class='tcolores'>");
+                                    swapcolor = false;
+                                }else{
+                                    out.println("<tr>");
+                                    swapcolor = true;
+                                }
+                                out.println("<td>"+t.getName()+"</td>");
+                                for(int j = 0; j < TAMY;j++){
+                                    if(t.getHuecos()[countDays][j]!=0)
+                                        out.println("<td>"+cs.nameCourseAndSection(t.getHuecos()[countDays][j])+"</td>");
+                                    else
+                                        out.println("<td></td>");
+                                }
+                                out.println("</tr>");
+                            }
+                        }
+                        countDays++;
+                    }
+                    out.println("</table>");
+                %>
+                </div>
+                
                 <legend id="showTeachersdisp">
                         Availability
                         <span class="col-xs-12 text-right glyphicon glyphicon-triangle-bottom">
@@ -271,12 +318,12 @@
                             
                             out.println("<tr>");
                             out.println("<td>Section availability</td>");
-                            out.println("<td>"+t.seccionesDisponibles()+"</td>");
+                            out.println("<td>"+t.seccionesDisponibles(cs.getTotalBlocks())+"</td>");
                             out.println("</tr>");
                             
                             out.println("<tr>");
                             out.println("<td>Prep availability</td>");
-                            out.println("<td>"+t.prepsDisponibles()+"</td>");
+                            out.println("<td>"+t.prepsDisponibles(cs.getTotalBlocks())+"</td>");
                             out.println("</tr>");
                             
                             out.println("</table>");

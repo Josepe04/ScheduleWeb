@@ -60,17 +60,18 @@ public class Course {
     
     /**
      * Ocupa un hueco en una seccion
-     * @param sec
      * @param list 
      */
     public void ocuparHueco(ArrayList<Tupla> list){
-        for(Tupla<Integer,Integer> t:list){
-            if(huecos[t.x][t.y].equals("0"))
-                huecos[t.x][t.y] = ""+sections;
+        if(list!=null && !list.isEmpty()){
+            if(huecos[(Integer)list.get(0).x][(Integer)list.get(0).y].equals("0"))
+                for(Tupla<Integer,Integer> t:list)
+                    huecos[t.x][t.y] = ""+sections;
             else
-                huecos[t.x][t.y] += " and "+sections;
+                for(Tupla<Integer,Integer> t:list)
+                    huecos[t.x][t.y] += " and "+sections;
+            sections++;
         }
-        sections++;
     }
     
     /**

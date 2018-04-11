@@ -21,6 +21,7 @@ public class Consultas {
     private Teacher tdefault;
     private Student stDefault;
     private HashMap<Integer,String> courseName;
+    private int totalBlocks;
     
     public Consultas(){
         teachers = new ArrayList<>();
@@ -29,6 +30,7 @@ public class Consultas {
         stDefault.setGenero("Male");
         stDefault.setName("default");
         courseName = new HashMap<>();
+        totalBlocks = this.totalBlocks();
     }
     
     public static ArrayList<Tupla<Integer,String>> getYears(){
@@ -357,6 +359,36 @@ public class Consultas {
         return ret;
     } 
     
+    private int totalBlocks(){
+        String excludes = "";
+        int ret = Algoritmo.TAMX*Algoritmo.TAMY;
+        Course caux = new Course(1);
+        String consulta="select udd.data\n" +
+                "                from uddata udd\n" +
+                "                inner join udfield udf\n" +
+                "                    on udd.fieldid = udf.fieldid\n" +
+                "                inner join udgroup udg\n" +
+                "                    on udg.groupid = udf.groupid\n" +
+                "                    and udg.grouptype = 'school'\n" +
+                "                    and udg.groupname = 'Schedule'\n" +
+                "                    and udf.fieldName = 'ExcludeBlocks'";
+                
+                ResultSet rs;
+        try {
+            rs = DBConnect.st.executeQuery(consulta);
+        
+                while(rs.next()){
+                    if(!excludes.contains(rs.getString(1)))
+                        excludes+=rs.getString(1);
+                }
+                caux.setExcludeBlocks(excludes);
+                ret = caux.opciones().size();
+        } catch (SQLException ex) {
+            Logger.getLogger(Consultas.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return ret;
+    }
+    
     
     
     private Teacher teacherDefault(){
@@ -622,7 +654,7 @@ public class Consultas {
     
     private int convertString(String s){
         int ret=0; 
-        for(int i = 1; i < s.length();i++){
+        for(int i = 1; i <= s.length();i++){
             switch(s.substring(i-1, i)){
                 case "0":
                 case "1":
@@ -643,5 +675,19 @@ public class Consultas {
         }
         return ret;
     }
+
     
+    /*
+    -----------------------
+    --GETTERS AND SETTERS--
+    -----------------------
+    */
+    
+    public int getTotalBlocks() {
+        return totalBlocks;
+    }
+
+    public void setTotalBlocks(int totalBlocks) {
+        this.totalBlocks = totalBlocks;
+    }
 }

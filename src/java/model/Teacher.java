@@ -117,11 +117,11 @@ public class Teacher{
      * Devuelve el numero de secciones disponibles que tiene el profesor
      * @return 
      */
-    public int seccionesDisponibles(){
+    public int seccionesDisponibles(int totalBlocks){
         if(MaxSections>0)
             return MaxSections - secsComplete;
         else
-            return Algoritmo.TAMX*Algoritmo.TAMY-secsComplete;
+            return totalBlocks-secsComplete;
     }
     
     /**
@@ -129,11 +129,11 @@ public class Teacher{
      * pueden asignar al profesor.
      * @return 
      */
-    public int prepsDisponibles(){
+    public int prepsDisponibles(int totalBlocks){
         if(Preps>0)
             return Preps - prepsComplete.size();
         else
-            return (Algoritmo.TAMX*Algoritmo.TAMY)/3-prepsComplete.size();
+            return (totalBlocks/3)-prepsComplete.size();
     }
     
         

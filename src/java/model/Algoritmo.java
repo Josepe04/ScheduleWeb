@@ -66,7 +66,6 @@ public class Algoritmo {
         ArrayList<Course> rst = cs.getRestricciones(Consultas.convertIntegers(idCourses),cs.templateInfo(tempid));
         ArrayList<Teacher> trst = cs.teachersList();
       
-        int numcursos = 0;
         for(Course course: rst){
             int minsections = 1;
             try{
@@ -85,7 +84,6 @@ public class Algoritmo {
             }
             else
                 System.out.println("FAILURE: " + course.getIdCourse());
-            numcursos++;
         }
 //        XMLWriterDOM.xmlCreate(trst, retst);
         
@@ -161,7 +159,7 @@ public class Algoritmo {
                         }
                     }
                     if(k>0){
-                        t.ocuparHueco(sec.get(stids.get(i).x), c.getIdCourse()*100+i);
+                        t.ocuparHueco(sec.get(stids.get(i).x), c.getIdCourse()*100+c.getSections());
                         c.ocuparHueco(sec.get(stids.get(i).x));
                     }
                     c.updateSectionsNoEnrolled(c.getSections());
@@ -196,11 +194,11 @@ public class Algoritmo {
             if(tname.length()>2)
                 tname = tname.substring(0, tname.length()-1);
             if(c.getTrestricctions().isEmpty())
-                Log.add("No hay profesores asignados al curso:"+cs.nameCourse(c.getIdCourse()));
+                Log.add("-No hay profesores asignados al curso:"+cs.nameCourse(c.getIdCourse()));
             else if(lastTeacher <= lastStudent){
-                Log.add("Los profesores"+tname+" asignados al curso:"+cs.nameCourse(c.getIdCourse())+" no tienen disponible ningun hueco compatible");
+                Log.add("-Los profesores "+tname+" asignados al curso:"+cs.nameCourse(c.getIdCourse())+" no tienen disponible ningun hueco compatible");
             }else{
-                Log.add("Los siguientes estudiantes no tienen secciones disponibles para el curso "+cs.nameCourse(c.getIdCourse())+":");
+                Log.add("-Los siguientes estudiantes no tienen secciones disponibles para el curso "+cs.nameCourse(c.getIdCourse())+":");
                 String anadir = "",anadir2="";
                 ArrayList<ArrayList<Tupla>> aux = null;
                 for(Integer i: ret){
@@ -223,4 +221,4 @@ public class Algoritmo {
         }
         return null;
     }
-}
+    }

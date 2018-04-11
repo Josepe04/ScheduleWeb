@@ -61,7 +61,7 @@ public class Homepage extends MultiActionController  {
 //        HashMap<Integer,Teacher> listaTeachers = new HashMap();
 //        XMLReaderDOM.xmlRead("/Users/Norhan/Documents/emps.xml",
 //                listaStudents,listaTeachers);
-        return new ModelAndView("userform");
+        return menu(hsr,hsr1);
     }
     
     private class Comp implements Comparator<Tupla<Integer,String>>{
