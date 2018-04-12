@@ -19,6 +19,7 @@ import org.springframework.web.servlet.ModelAndView;
  */
 @Controller
 public class ScheduleController {
+    
     @RequestMapping("/schedule/start.htm")
     public ModelAndView scheduleStart(HttpServletRequest hsr, HttpServletResponse hsr1){
         ModelAndView mv = new ModelAndView("index");
@@ -33,6 +34,13 @@ public class ScheduleController {
         mv.addObject("hcols",Consultas.getColHeader(id, x));
         Algoritmo algo = new Algoritmo(x,y);
         algo.algo(mv,yearid,tempid);
+        String json = algo.teachersJSON();
         return mv;
+    }
+    
+    @RequestMapping("/schedule/teacherMasterSchedule.htm")
+    public String masterSchedule(HttpServletRequest hsr, HttpServletResponse hsr1){
+        
+        return "";
     }
 }

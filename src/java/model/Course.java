@@ -34,6 +34,7 @@ public class Course {
     
     public Course(int idCourse) {
         this.idCourse = idCourse;
+        this.rank = Integer.MAX_VALUE;
         huecos=new String[Algoritmo.TAMX][Algoritmo.TAMY];
         for(int i = 0;i<Algoritmo.TAMX;i++)
             for(int j = 0; j < Algoritmo.TAMY;j++)

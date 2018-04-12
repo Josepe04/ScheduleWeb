@@ -5,12 +5,10 @@
  */
 package model;
 
+import com.google.gson.Gson;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
 import org.springframework.web.servlet.ModelAndView;
 import xml.XMLWriterDOM;
 
@@ -23,9 +21,11 @@ public class Algoritmo {
     protected static int TAMY = 12;
     public final static int CHILDSPERSECTION = 20;
     private ArrayList<String> Log;
-    Conjuntos<Integer> conjuntos;
-    Consultas cs;
-    
+    private Conjuntos<Integer> conjuntos;
+    private Consultas cs;
+    private ArrayList<Teacher> teachers;
+    private ArrayList<Course> courses;
+    private HashMap<Integer,Student> students;
     public Algoritmo(){
         Log = new ArrayList<>();
         cs = new Consultas();
@@ -38,14 +38,6 @@ public class Algoritmo {
         Log = new ArrayList<>();
         cs = new Consultas();
         conjuntos = new Conjuntos<>();
-    }
-    
-    public boolean esSolucion(boolean[] asignados){
-        for(int i = 0; i < asignados.length;i++){
-            if(!asignados[i])
-                return false;
-        }
-        return true;
     }
     
     /**
@@ -64,6 +56,7 @@ public class Algoritmo {
             students.put(s.getId(), s);
         }
         ArrayList<Course> rst = cs.getRestricciones(Consultas.convertIntegers(idCourses),cs.templateInfo(tempid));
+        rst.sort(new CompCoursesRank());
         ArrayList<Teacher> trst = cs.teachersList();
       
         for(Course course: rst){
@@ -86,7 +79,9 @@ public class Algoritmo {
                 System.out.println("FAILURE: " + course.getIdCourse());
         }
 //        XMLWriterDOM.xmlCreate(trst, retst);
-        
+        this.teachers = trst;
+        this.students = students;
+        this.courses = rst;
         mv.addObject("TAMX",TAMX);
         mv.addObject("TAMY",TAMY);
         mv.addObject("profesores", trst);
@@ -96,7 +91,7 @@ public class Algoritmo {
         mv.addObject("log",Log);
     }
     
-    private class Comp implements Comparator<Tupla<Integer,ArrayList<Integer>>>{
+    private class CompConjuntos implements Comparator<Tupla<Integer,ArrayList<Integer>>>{
         @Override
         public int compare(Tupla<Integer,ArrayList<Integer>> e1, Tupla<Integer,ArrayList<Integer>> e2) {
             if(e1.y.size() < e2.y.size()){
@@ -106,6 +101,18 @@ public class Algoritmo {
             }
         }
     }
+    
+    private class CompCoursesRank implements Comparator<Course>{
+        @Override
+        public int compare(Course e1, Course e2) {
+            if(e1.getRank() < e2.getRank())
+                return -1;
+            else
+                return 1;
+        }
+    }
+    
+    
     
     private ArrayList<Integer> studentSections(ArrayList<Teacher> teachers,Course c,int minsections,ArrayList<ArrayList<Tupla>> sec,
         ArrayList<Integer> studentsCourse,HashMap<Integer,Student> students){
@@ -120,7 +127,7 @@ public class Algoritmo {
             }
         }
         try{
-            stids.sort(new Comp());
+            stids.sort(new CompConjuntos());
         }catch(Exception e){
             return null;
         }
@@ -221,4 +228,28 @@ public class Algoritmo {
         }
         return null;
     }
+
+    public String studentsJSON(){
+        if(this.students == null)
+            return "ejecuta el algoritmo";
+        else{
+            return (new Gson()).toJson(this.students);
+        }
     }
+    
+    public String teachersJSON(){
+        if(this.teachers == null)
+            return "ejecuta el algoritmo";
+        else{
+            return (new Gson()).toJson(this.teachers);
+        }
+    }
+
+    public String coursesJSON(){
+        if(this.courses == null)
+            return "ejecuta el algoritmo";
+        else{
+            return (new Gson()).toJson(this.courses);
+        }
+    }
+}

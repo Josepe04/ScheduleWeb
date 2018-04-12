@@ -390,7 +390,6 @@ public class Consultas {
     }
     
     
-    
     private Teacher teacherDefault(){
         Teacher ret = new Teacher();
         String consulta;
