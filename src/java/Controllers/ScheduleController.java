@@ -26,6 +26,7 @@ public class ScheduleController {
         String tempid = hsr.getParameter("tempid");
         String xs = hsr.getParameter("cols");
         String ys = hsr.getParameter("rows");
+        int roommode = Integer.parseInt(hsr.getParameter("roommode"));
         int id = Integer.parseInt(hsr.getParameter("id"));
         String yearid = hsr.getParameter("yearid");
         int x = Integer.parseInt(xs);
@@ -33,7 +34,7 @@ public class ScheduleController {
         mv.addObject("hFilas",Consultas.getRowHeader(id, y));
         mv.addObject("hcols",Consultas.getColHeader(id, x));
         Algoritmo algo = new Algoritmo(x,y);
-        algo.algo(mv,yearid,tempid);
+        algo.algo(mv,yearid,tempid,roommode);
         String json = algo.teachersJSON();
         return mv;
     }

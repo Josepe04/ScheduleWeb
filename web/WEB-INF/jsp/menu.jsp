@@ -60,6 +60,15 @@
                     <select name="templateInfo" id="selecttemplate">
                     </select>
                 </div>
+                <div>
+                    <h3>Select rooms schedule mode</h3>
+                    <select name="rooms">
+                        <option value="0">disabled</option>
+                        <option value="1">only courses with room restrictions</option>
+                        <option value="2">only default school user defined</option>
+                        <option value="3">both (courses and default)</option>
+                    </select>
+                </div>
                 <div class="col-xs-4">
                     <h3>Create Schedule</h3>
                     <input class="btn btn-primary btn-lg" type="submit" name="Submit" value="Create">

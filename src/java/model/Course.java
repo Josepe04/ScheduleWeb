@@ -31,6 +31,7 @@ public class Course {
     private ArrayList<Integer> studentsAsignados;
     private ArrayList<ArrayList<Tupla>> patronesStudents; 
     private int maxChildPerSection;
+    private ArrayList<Integer> rooms;
     
     public Course(int idCourse) {
         this.idCourse = idCourse;
@@ -44,19 +45,21 @@ public class Course {
         studentsNoAsignados = new ArrayList<>();
         patronesStudents = new ArrayList<>();
         trestricctions = new ArrayList();
+        rooms = new ArrayList();
     }
     
+    
+    public void addRoom(int id){
+        rooms.add(id);
+    }
     
     /**
      * Actualiza el nnumero de alumnos que
      * no se han podido matricular.
      * @param sectionsEnrolled 
      */
-    public void updateSectionsNoEnrolled(int sectionsEnrolled) {
-        if(sectionsEnrolled<sections)
-            this.sectionsNoEnrolled = sections-sectionsEnrolled;
-        else
-            this.sectionsNoEnrolled = 1;
+    public void setSectionsNoEnrolled(int sectionsEnrolled) {
+        this.sectionsNoEnrolled = sectionsEnrolled;
     }
     
     /**
@@ -129,6 +132,10 @@ public class Course {
     //---------------------------------
     //-------GETTERS AND SETTERS-------
     //---------------------------------
+
+    public ArrayList<Integer> getRooms() {
+        return rooms;
+    }
 
     public int getMinSections() {
         return minSections;

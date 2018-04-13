@@ -44,7 +44,7 @@ public class Algoritmo {
      * algoritmo
      * @param mv 
      */
-    public void algo(ModelAndView mv,String yearid,String tempid){
+    public void algo(ModelAndView mv,String yearid,String tempid,int roommode){
         cs = new Consultas();
         ArrayList<Integer> idCourses = new ArrayList(); 
         ArrayList<Student> st = new ArrayList();
@@ -55,10 +55,10 @@ public class Algoritmo {
         for(Student s:st){
             students.put(s.getId(), s);
         }
+        HashMap<Integer,Room> rooms = cs.getRooms();
         ArrayList<Course> rst = cs.getRestricciones(Consultas.convertIntegers(idCourses),cs.templateInfo(tempid));
         rst.sort(new CompCoursesRank());
         ArrayList<Teacher> trst = cs.teachersList();
-      
         for(Course course: rst){
             int minsections = 1;
             try{
@@ -68,12 +68,32 @@ public class Algoritmo {
                 System.out.println("id:"+course.getIdCourse()+" name: "+cs.nameCourse(course.getIdCourse()));
             }
             course.setMinSections(minsections);
-            
+            ArrayList<Integer> noAsign = (ArrayList<Integer>) studentsCourse.get(course.getIdCourse()).clone();
             if(course.opciones().size()>0){
-                ArrayList<Integer> noAsign = studentSections(trst,course,minsections,
-                        course.opciones(),studentsCourse.get(course.getIdCourse()),students);
-                if(noAsign != null)
+                //Segun el modo de gestion de clases cambia como rellenas la parte de studentsSections
+                if(roommode == 0){
+                    noAsign = studentSections(trst,course,minsections,
+                            course.opciones(),noAsign,students,null);
+                } else if(roommode == 1){
+                    for(int i = 0; i < course.getRooms().size() && noAsign != null;i++){
+                        Room r = rooms.get(course.getRooms().get(i));
+                        noAsign = studentSections(trst,course,minsections,
+                            r.patronescompatibles(course.opciones()),noAsign,students,r);
+                    }
+                }
+                
+                if(noAsign != null){
+                    int sectionsNoEnroled = noAsign.size()/course.getMaxChildPerSection();
+                    if(sectionsNoEnroled == 0) 
+                        sectionsNoEnroled=1;
                     course.setStudentsNoAsignados(noAsign);
+                    course.setSectionsNoEnrolled(sectionsNoEnroled);
+                    course.setPercentEnrolled((noAsign.size()/studentsCourse.get(course.getIdCourse()).size())*100);
+                }
+                else{
+                    course.setSectionsNoEnrolled(0);
+                    course.setPercentEnrolled(100);
+                }
             }
             else
                 System.out.println("FAILURE: " + course.getIdCourse());
@@ -115,7 +135,7 @@ public class Algoritmo {
     
     
     private ArrayList<Integer> studentSections(ArrayList<Teacher> teachers,Course c,int minsections,ArrayList<ArrayList<Tupla>> sec,
-        ArrayList<Integer> studentsCourse,HashMap<Integer,Student> students){
+        ArrayList<Integer> studentsCourse,HashMap<Integer,Student> students,Room r){
         ArrayList<Tupla<Integer,ArrayList<Integer>>> stids = new ArrayList<>();
         ArrayList<Integer> idsAsignados = new ArrayList<>();
         for(int i = 0; i < sec.size();i++){
@@ -137,10 +157,11 @@ public class Algoritmo {
         int lastStudent = -1;
         for(int i = 0;i < stids.size();i++){
             for(Teacher t : teachers){
-                boolean nextSection = false;
+                boolean compatibleRoom = r==null || r.patronCompatible(sec.get(stids.get(i).x));
                 if(c.getTrestricctions().contains(t.idTeacher) &&
                         t.asignaturaCursable(c.getIdCourse()) && 
-                        t.patronCompatible(sec.get(stids.get(i).x))){
+                        t.patronCompatible(sec.get(stids.get(i).x)) &&
+                        compatibleRoom){
                     int k = 0;
                     lastTeacher = i;
                     for(Integer j:diferencia){
@@ -150,7 +171,6 @@ public class Algoritmo {
                             students.get(j).ocuparHueco(sec.get(stids.get(i).x), c.getIdCourse()*100+c.getSections());
                             k++;
                             lastStudent = i;
-                            nextSection = true;
                         }
                     }
                     if(k<studentsCourse.size()/c.getMinSections()){
@@ -161,7 +181,6 @@ public class Algoritmo {
                                 students.get(j).ocuparHueco(sec.get(stids.get(i).x), c.getIdCourse()*100+c.getSections());
                                 k++;
                                 lastStudent = i;
-                                nextSection = true;
                             }
                         }
                     }
@@ -169,10 +188,7 @@ public class Algoritmo {
                         t.ocuparHueco(sec.get(stids.get(i).x), c.getIdCourse()*100+c.getSections());
                         c.ocuparHueco(sec.get(stids.get(i).x));
                     }
-                    c.updateSectionsNoEnrolled(c.getSections());
                     if(idsAsignados.size() == studentsCourse.size()){
-                        c.setStudentsAsignados(idsAsignados);
-                        c.setPercentEnrolled(100);
                         for(Integer st:idsAsignados){
                             students.get(st).addAsignado(c.getIdCourse());
                         }
@@ -187,10 +203,6 @@ public class Algoritmo {
         for(Integer st:idsAsignados){
             students.get(st).addAsignado(c.getIdCourse());
         }
-        c.setStudentsAsignados(idsAsignados);
-        double percent = ((double)idsAsignados.size())/((double)studentsCourse.size())*100;
-        c.setPercentEnrolled(percent);
-        c.updateSectionsNoEnrolled(c.getMinSections()-c.getSections());
         if(idsAsignados.size()!= studentsCourse.size()){
             System.out.println("FAILURE");      
             ArrayList<Integer> ret = conjuntos.diferencia(studentsCourse, idsAsignados);

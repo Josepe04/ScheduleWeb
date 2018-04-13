@@ -24,6 +24,15 @@ public class Room {
         this.huecos = new int[Algoritmo.TAMX][Algoritmo.TAMY]; 
     }
     
+    public ArrayList<ArrayList<Tupla>> patronescompatibles(ArrayList<ArrayList<Tupla>> sec){
+        ArrayList<ArrayList<Tupla>> ret = new ArrayList();
+        for(ArrayList<Tupla> ar:sec){
+            if(this.patronCompatible(ar))
+                ret.add(ar);
+        }
+        return ret;
+    }
+    
     public boolean ocuparHueco(int valor ,ArrayList<Tupla<Integer,Integer>> ar){
         for(Tupla<Integer,Integer> t:ar){
             if(huecos[t.x][t.y] == 0){
@@ -33,6 +42,10 @@ public class Room {
             }
         }
         return true;
+    }
+    
+    public boolean patronCompatible(ArrayList<Tupla> ar){
+        return ar.stream().noneMatch((t) -> (huecos[(Integer)t.x][(Integer)t.y] != 0));
     }
 
     

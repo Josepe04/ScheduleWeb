@@ -320,6 +320,33 @@ public class Consultas {
                 "                    on udg.groupid = udf.groupid\n" +
                 "                    and udg.grouptype = 'course'\n" +
                 "                    and udg.groupname = 'Schedule'\n" +
+                "                    and udf.fieldName = 'Rooms'\n" +
+                "                where udd.id ="+ret.get(i).getIdCourse();
+
+                rs=DBConnect.st.executeQuery(consulta);
+                String rooms = "";
+                while(rs.next()){
+                    rooms = rs.getString(1);
+                }
+                if(!rooms.equals(""))
+                    for(String room : rooms.split(",")){
+                        try{
+                            ret.get(i).addRoom(Integer.parseInt(room));
+                        }catch(Exception e){
+                            System.err.println("no se puede leer bien el campo rooms en el curso" 
+                                    + ret.get(i).getIdCourse());
+                        }
+                    }
+                
+                
+                consulta="select udd.data\n" +
+                "                from uddata udd\n" +
+                "                inner join udfield udf\n" +
+                "                    on udd.fieldid = udf.fieldid\n" +
+                "                inner join udgroup udg\n" +
+                "                    on udg.groupid = udf.groupid\n" +
+                "                    and udg.grouptype = 'course'\n" +
+                "                    and udg.groupname = 'Schedule'\n" +
                 "                    and udf.fieldName = 'ExcludeBlocks'\n" +
                 "                where udd.id ="+ret.get(i).getIdCourse();
 
@@ -359,6 +386,23 @@ public class Consultas {
         return ret;
     } 
     
+    public HashMap<Integer,Room> getRooms(){
+        HashMap<Integer,Room> rooms = new HashMap();
+        String consulta = "select * from rooms";
+        ResultSet rs;
+        try{
+            rs = DBConnect.st.executeQuery(consulta);
+            while(rs.next()){
+                int id = rs.getInt("roomid");
+                Room r = new Room(rs.getInt("roomid"),rs.getString("room"),rs.getInt("size"));
+                rooms.put(id, r);
+            }
+        }catch(SQLException ex){
+            Logger.getLogger(Consultas.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return rooms;
+    }
+    
     private int totalBlocks(){
         String excludes = "";
         int ret = Algoritmo.TAMX*Algoritmo.TAMY;
@@ -373,7 +417,7 @@ public class Consultas {
                 "                    and udg.groupname = 'Schedule'\n" +
                 "                    and udf.fieldName = 'ExcludeBlocks'";
                 
-                ResultSet rs;
+        ResultSet rs;
         try {
             rs = DBConnect.st.executeQuery(consulta);
         
