@@ -1,8 +1,8 @@
-<%@page import="model.Tupla"%>
+<%@page import="dataManage.Tupla"%>
 <%@page import="java.util.Map"%>
 <%@page import="java.util.HashMap"%>
 <%@page import="model.Course"%>
-<%@page import="model.Consultas"%>
+<%@page import="dataManage.Consultas"%>
 <%@page import="model.Student"%>
 <%@page import="model.Teacher"%>
 <%@page import="java.util.ArrayList"%>

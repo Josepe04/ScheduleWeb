@@ -8,7 +8,8 @@ package Controllers;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import model.Algoritmo;
-import model.Consultas;
+import dataManage.Consultas;
+import dataManage.Restrictions;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
@@ -26,6 +27,7 @@ public class ScheduleController {
         String tempid = hsr.getParameter("tempid");
         String xs = hsr.getParameter("cols");
         String ys = hsr.getParameter("rows");
+        String roomgroup = hsr.getParameter("grouproom");
         int roommode = Integer.parseInt(hsr.getParameter("roommode"));
         int id = Integer.parseInt(hsr.getParameter("id"));
         String yearid = hsr.getParameter("yearid");
@@ -34,8 +36,9 @@ public class ScheduleController {
         mv.addObject("hFilas",Consultas.getRowHeader(id, y));
         mv.addObject("hcols",Consultas.getColHeader(id, x));
         Algoritmo algo = new Algoritmo(x,y);
-        algo.algo(mv,yearid,tempid,roommode);
-        String json = algo.teachersJSON();
+        Restrictions r = new Restrictions(yearid,tempid,roomgroup);
+        algo.algo(mv,r,roommode);
+        String json = r.teachersJSON();
         return mv;
     }
     

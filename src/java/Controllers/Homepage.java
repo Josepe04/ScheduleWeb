@@ -27,12 +27,12 @@ import javax.servlet.http.HttpServletResponse;
 import model.LoginVerification;
 import model.User;
 import javax.servlet.http.HttpSession;
-import model.Consultas;
+import dataManage.Consultas;
 import model.DBConnect;
 import model.Student;
 import model.Teacher;
 import model.Template;
-import model.Tupla;
+import dataManage.Tupla;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
@@ -42,7 +42,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
-import xml.XMLReaderDOM;
+import dataManage.XMLReaderDOM;
 
 
 @Controller
@@ -82,8 +82,9 @@ public class Homepage extends MultiActionController  {
         String data = hsr.getParameter("templateInfo");
         String yearid = hsr.getParameter("yearid");
         String roomMode = hsr.getParameter("rooms");
+        String groupRoom = hsr.getParameter("groupofrooms");
         String[] datost = data.split("-");
-        ModelAndView mv= new ModelAndView("redirect:/schedule/start.htm?roommode="+roomMode+"&tempid="+datost[0]+"&yearid="+yearid+"&id="+datost[0]+"&rows="+datost[1]+"&cols="
+        ModelAndView mv= new ModelAndView("redirect:/schedule/start.htm?grouproom="+groupRoom+"&roommode="+roomMode+"&tempid="+datost[0]+"&yearid="+yearid+"&id="+datost[0]+"&rows="+datost[1]+"&cols="
                                     + datost[2]);
         ArrayList<Tupla<Integer,String>> ar=Consultas.getYears();
         ar.sort(new Comp());

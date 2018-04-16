@@ -5,6 +5,7 @@
  */
 package model;
 
+import dataManage.Tupla;
 import java.util.ArrayList;
 
 /**
@@ -33,7 +34,7 @@ public class Room {
         return ret;
     }
     
-    public boolean ocuparHueco(int valor ,ArrayList<Tupla<Integer,Integer>> ar){
+    public boolean ocuparHueco(int valor ,ArrayList<Tupla> ar){
         for(Tupla<Integer,Integer> t:ar){
             if(huecos[t.x][t.y] == 0){
                huecos[t.x][t.y] = valor; 

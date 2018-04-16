@@ -5,6 +5,7 @@
  */
 package model;
 
+import dataManage.Tupla;
 import java.util.ArrayList;
 
 /**

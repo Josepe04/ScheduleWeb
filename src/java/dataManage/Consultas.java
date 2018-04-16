@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package model;
+package dataManage;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -11,6 +11,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import model.Algoritmo;
+import model.Course;
+import model.DBConnect;
+import model.Room;
+import model.Student;
+import model.Teacher;
+import model.Template;
 
 /**
  *
@@ -146,7 +153,7 @@ public class Consultas {
         return ret;
     }
     
-    protected ArrayList<Course> getRestricciones(int[] ids,int[] tempinfo){
+    public ArrayList<Course> getRestricciones(int[] ids,int[] tempinfo){
         ArrayList<Course> ret = new ArrayList<>();
         String consulta = "";
         try {
@@ -450,7 +457,7 @@ public class Consultas {
 "            and udf.fieldName = 'MaxSections'";
             rs = DBConnect.st.executeQuery(consulta);
             while(rs.next()){
-                ret.MaxSections=rs.getInt(1);
+                ret.setMaxSections(rs.getInt(1));
             }
             
             consulta="select udd.data\n" +
@@ -464,7 +471,7 @@ public class Consultas {
 "            and udf.fieldName = 'MaxPreps'";
             rs = DBConnect.st.executeQuery(consulta);
             while(rs.next()){
-                ret.Preps=rs.getInt(1);
+                ret.setPreps(rs.getInt(1));
             }
             
             consulta="select udd.data\n" +
@@ -478,7 +485,7 @@ public class Consultas {
 "            and udf.fieldName = 'MaxBxD'\n";
             rs = DBConnect.st.executeQuery(consulta);
             while(rs.next()){
-                ret.MaxBxD=rs.getInt(1);
+                ret.setMaxBxD(rs.getInt(1));
             }
         } catch (Exception ex ) {
             Logger.getLogger(Consultas.class.getName()).log(Level.SEVERE, null, ex);
@@ -514,10 +521,10 @@ public class Consultas {
     "                where udd.id ="+id;
                 rs = DBConnect.st.executeQuery(consulta);
                 while(rs.next()){
-                    ret.MaxSections=rs.getInt(1);
+                    ret.setMaxSections(rs.getInt(1));
                 }
-                if(ret.MaxSections==0)
-                    ret.MaxSections = tdefault.MaxSections;
+                if(ret.getMaxSections()==0)
+                    ret.setMaxSections (tdefault.getMaxSections());
 
 
                 consulta="select udd.data\n" +
@@ -532,10 +539,10 @@ public class Consultas {
     "                where udd.id ="+id;
                 rs = DBConnect.st.executeQuery(consulta);
                 while(rs.next()){
-                    ret.Preps=rs.getInt(1);
+                    ret.setPreps(rs.getInt(1));
                 }
-                if(ret.Preps == 0)
-                    ret.Preps = tdefault.Preps;
+                if(ret.getPreps() == 0)
+                    ret.setPreps(tdefault.getPreps());
 
                 consulta="select udd.data\n" +
     "                from uddata udd\n" +
@@ -551,13 +558,13 @@ public class Consultas {
                 while(rs.next()){
                     String s = rs.getString(1);
                     try{
-                        ret.MaxBxD = Integer.parseInt(s);
+                        ret.setMaxBxD(Integer.parseInt(s));
                     }catch(Exception e){
-                        ret.MaxBxD = 1;
+                        ret.setMaxBxD(1);
                     }
                 }
-                if(ret.MaxBxD == 0)
-                    ret.MaxBxD = tdefault.MaxBxD;
+                if(ret.getMaxBxD() == 0)
+                    ret.setMaxBxD(tdefault.getMaxBxD());
 
                 consulta="select udd.data\n" +
     "                from uddata udd\n" +
@@ -573,7 +580,7 @@ public class Consultas {
                 while(rs.next()){
                     ret.setExcludeBlocks(rs.getString(1));
                 }
-                ret.idTeacher = id;
+                ret.setIdTeacher(id);
             } catch (Exception ex ) {
                 Logger.getLogger(Consultas.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -596,6 +603,39 @@ public class Consultas {
             Logger.getLogger(Consultas.class.getName()).log(Level.SEVERE, null, ex);
         }
         return ret;
+    }
+    
+    public ArrayList<Integer> roomsGroup(String groupOfRooms){
+        ArrayList<Integer> rooms = new ArrayList();
+        if(!groupOfRooms.equals("0")){
+            try {
+                String consulta="select udd.data\n" +
+                    "                from uddata udd\n" +
+                    "                inner join udfield udf\n" +
+                    "                    on udd.fieldid = udf.fieldid\n" +
+                    "                inner join udgroup udg\n" +
+                    "                    on udg.groupid = udf.groupid\n" +
+                    "                    and udg.grouptype = 'school'\n" +
+                    "                    and udg.groupname = 'Schedule'\n" +
+                    "                    and udf.fieldName = '"+groupOfRooms+"'";
+            
+                ResultSet rs = DBConnect.st.executeQuery(consulta);
+                while(rs.next()){
+                    groupOfRooms = rs.getString(1);
+                    String[] s = groupOfRooms.split(",");
+                    for(String s2:s){
+                        try{
+                            rooms.add(Integer.parseInt(s2));
+                        }catch(Exception ex){
+                            Logger.getLogger(Consultas.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    }
+                }
+            } catch (SQLException ex) {
+                Logger.getLogger(Consultas.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return rooms;
     }
     
     /**

@@ -5,6 +5,7 @@
  */
 package model;
 
+import dataManage.Tupla;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -15,14 +16,14 @@ import java.util.HashMap;
 public class Teacher{
     private int[][] huecos;
     private int[] blocksPerDay;
-    protected int idTeacher;
-    protected int MaxSections; // maxima secciones
+    private int idTeacher;
+    private int MaxSections; // maxima secciones
     private int secsComplete;
-    protected int Preps;//maximo asignaturas
+    private int Preps;//maximo asignaturas
     private ArrayList<Integer> prepsComplete;
-    protected int MaxBxD;//max blocksperday
+    private int MaxBxD;//max blocksperday
     private String ExcludeBlocks;
-    protected boolean ocupado;
+    private boolean ocupado;
     private String name;
     private HashMap<Integer,Integer> secciones;
     
@@ -140,6 +141,8 @@ public class Teacher{
     //---------------------------------
     //-------GETTERS AND SETTERS-------
     //---------------------------------
+    
+    
     
     public HashMap<Integer,Integer> getSecciones() {
         return secciones;
