@@ -1,3 +1,4 @@
+<%@page import="model.Room"%>
 <%@page import="dataManage.Tupla"%>
 <%@page import="java.util.Map"%>
 <%@page import="java.util.HashMap"%>
@@ -51,6 +52,10 @@
                     $("#Coursestable").toggleClass('in');
                 });
                 
+                $("#showRooms").click(function () {
+                    $("#roomstable").toggleClass('in');
+                });
+                
                 $("#showCoursesenrol").click(function () {
                     $("#Coursesenrol").toggleClass('in');
                 });
@@ -88,7 +93,11 @@
             List<Teacher> lista = (List)request.getAttribute("profesores");
             HashMap<Integer,Student> lista2 = (HashMap)request.getAttribute("students");
             ArrayList<String> log = (ArrayList<String>)request.getAttribute("log");
+            ArrayList<Integer> groupRooms = (ArrayList<Integer>)request.getAttribute("grouprooms");
+            HashMap<Integer,Room> rooms = (HashMap<Integer,Room>)request.getAttribute("rooms");
             boolean swapcolor = true;
+            double totalenrolled = 0;
+            double totalnoenrolled = 0;
             String headCols = "<tr><th>Period</th>";
             for(String s : headCol){
                 headCols+="<th>"+s;
@@ -101,7 +110,7 @@
                 <li class="active"><a id="Courses" data-toggle="tab" href="#courses" role="tab" >Courses</a></li>
                 <li><a id="Teachers" data-toggle="tab" href="#teachers" role="tab">Teachers</a></li>
                 <li><a id="Students" data-toggle="tab" href="#students" role="tab">Students</a></li>
-                <!--<li><a id="Log" data-toggle="tab" href="#log" role="tab">Log</a></li>-->                
+                <li><a id="Rooms" data-toggle="tab" href="#rooms" role="tab">Rooms</a></li>               
             </ul>
         </div>
         
@@ -270,25 +279,25 @@
                             out.println("<th>"+headRow.get(i).text()+"</th>");
                         }
                         out.println("</tr>");
-                        for(int i = 0; i < TAMX;i++){
-                            for(Teacher t : lista){
-                                if(swapcolor){
-                                    out.println("<tr class='tcolores'>");
-                                    swapcolor = false;
-                                }else{
-                                    out.println("<tr>");
-                                    swapcolor = true;
-                                }
-                                out.println("<td>"+t.getName()+"</td>");
-                                for(int j = 0; j < TAMY;j++){
-                                    if(t.getHuecos()[countDays][j]!=0)
-                                        out.println("<td>"+cs.nameCourseAndSection(t.getHuecos()[countDays][j])+"</td>");
-                                    else
-                                        out.println("<td></td>");
-                                }
-                                out.println("</tr>");
+                        
+                        for(Teacher t : lista){
+                            if(swapcolor){
+                                out.println("<tr class='tcolores'>");
+                                swapcolor = false;
+                            }else{
+                                out.println("<tr>");
+                                swapcolor = true;
                             }
+                            out.println("<td>"+t.getName()+"</td>");
+                            for(int i = 0; i < TAMY;i++){
+                                if(t.getHuecos()[countDays][i]!=0)
+                                    out.println("<td>"+cs.nameCourseAndSection(t.getHuecos()[countDays][i])+"</td>");
+                                else
+                                    out.println("<td></td>");
+                            }
+                            out.println("</tr>");
                         }
+                        
                         countDays++;
                     }
                     out.println("</table>");
@@ -401,10 +410,85 @@
                         out.println("<td>"+entry.getValue().getCursosAsignados().size()+"</td><td>"+entry.getValue().getCursosNoAsignados().size()+"</td>");
                         out.println("</tr>");
                         out.println("</table>");
+                        totalenrolled += entry.getValue().getCursosAsignados().size();
+                        totalnoenrolled += entry.getValue().getCursosNoAsignados().size();
                     }
                  %>
                 </div>
             </div>
+                
+            <div role="tabpanel" class="col-xs-12 tab-pane in active" id="rooms">
+                <legend id="showRooms">
+                    Schedule
+                    <span class="col-xs-12 text-right glyphicon glyphicon-triangle-bottom">
+                    </span>
+                </legend>
+                <div class="form-group collapse" id="roomstable">
+                    <%
+                        for(Integer roomid: groupRooms){
+                            out.println("<h3>"+rooms.get(roomid).getName()+"</h3>");
+                            out.println("<table id='table_id' class='table'>");
+                            out.println(headCols);
+                            swapcolor = true;
+                            for(int i = 0; i < TAMY; i++){
+                                if(swapcolor){
+                                    out.println("<tr class='tcolores'>");
+                                    swapcolor = false;
+                                }else{
+                                    out.println("<tr>");
+                                    swapcolor = true;
+                                }
+                                if(i<headRow.size())
+                                    out.println("<td>"+headRow.get(i).text()+"</td>");
+                                else
+                                    out.println("<td></td>");
+                                for(int j = 0; j < TAMX; j++){
+                                    if(rooms.get(roomid).getHuecos()[j][i] != 0)
+                                        out.println("<td>"+cs.nameCourseAndSection(rooms.get(roomid).getHuecos()[j][i])+"</td>");
+                                    else
+                                        out.println("<td></td>");
+                                }
+                                out.println("</tr>");
+                            }
+                            out.println("</table>");
+                        }
+                    %>
+                </div>
+                
+                <legend id="ocupacionrooms">
+                    ocupation
+                    <span class="col-xs-12 text-right glyphicon glyphicon-triangle-bottom">
+                    </span>
+                </legend>
+                <div class="form-group collapse" id="ocupacion">
+                    <%
+                        out.println("<table id='table_id' class='table'>");
+                        swapcolor = true;
+                        out.println("<tr>"
+                                + "<th>name</th>"
+                                + "<th>Aviavility</th>"
+                                + "<th>Ocupation</th>"
+                                + "<th>Ocupation percent"
+                                + "</tr>");
+                        for(Integer roomid: groupRooms){
+                            if(swapcolor){
+                                out.println("<tr class='tcolores'>");
+                                swapcolor = false;
+                            }else{
+                                out.println("<tr>");
+                                swapcolor = true;
+                            }
+                            out.println("<th>"+rooms.get(roomid).getName()+"</th>");
+                            out.println("<td>"+rooms.get(roomid).getDisponibilidad()+"</td>");
+                            out.println("<td>"+rooms.get(roomid).getOcupacion()+"</td>");
+                            out.println("<td>"+rooms.get(roomid).getPercentOcupation()+"</td>");
+                            out.println("</tr>");
+                        }
+                    %>
+                </div>
+            </div>
+                
+                
             <!--<div role="tabpanel" class="col-xs-12 tab-pane" id="log">
                 <legend id="showSTC">
                         Student Course
@@ -485,13 +569,23 @@
                     out.println("</table>");
                  %>
                  </div> -->
-                 <legend id="showLogComplete">
+                <legend id="showLogComplete">
                         Log complete
                         <span class="col-xs-12 text-right glyphicon glyphicon-triangle-bottom">
                         </span>
                 </legend>
                 <div class="form-group collapse" id="LogComplete">
                     <%
+                        out.println("<table id='table_id' class='table'>");
+                        out.println("<tr><th>Total students enrolled</th>"
+                                + "<th>Total students no enrolled</th>"
+                                + "<th>Percent students enrolled</th></tr>");
+                        out.println("<tr>");
+                        out.println("<td>"+totalenrolled+"</td><td>"+totalnoenrolled+"</td>");
+                        double totalRequest = totalenrolled+totalnoenrolled;
+                        out.println("<td>"+(totalenrolled/totalRequest)*100+"</td>");
+                        out.println("</tr>");
+                        out.println("</table>");
                         for(String s:log){
                             out.print("<p>");
                             out.print(s);

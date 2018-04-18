@@ -39,11 +39,11 @@
             }
             
             function hideroomsgroup(){
-                var selectval = $('#roomsmod').val();
-                if(selectval === 2 || selectval === 3){
-                    $('#grouprooms').show();
-                }else{
+                var selectval = $('#roomsmode').val();
+                if(selectval === 0 || selectval === 1){
                     $('#grouprooms').hide();
+                }else{
+                    $('#grouprooms').show();
                 }
             }
             /*private int id;

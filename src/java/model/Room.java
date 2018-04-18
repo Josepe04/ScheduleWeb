@@ -17,11 +17,15 @@ public class Room {
     private int[][] huecos;
     private String name;
     private int size;
-
+    private int disponibilidad;
+    private int ocupacion;
+    
+    
     public Room(int roomid, String name, int size) {
         this.roomid = roomid;
         this.name = name;
         this.size = size;
+        this.disponibilidad = Algoritmo.TAMX * Algoritmo.TAMY;
         this.huecos = new int[Algoritmo.TAMX][Algoritmo.TAMY]; 
     }
     
@@ -34,6 +38,8 @@ public class Room {
         return ret;
     }
     
+    
+    
     public boolean ocuparHueco(int valor ,ArrayList<Tupla> ar){
         for(Tupla<Integer,Integer> t:ar){
             if(huecos[t.x][t.y] == 0){
@@ -42,6 +48,8 @@ public class Room {
                 return false;
             }
         }
+        this.ocupacion++;
+        this.disponibilidad--;
         return true;
     }
     
@@ -51,6 +59,27 @@ public class Room {
 
     
     
+    
+    public int getDisponibilidad() {
+        return disponibilidad;
+    }
+
+    /*
+    /////////////////////
+    //GETTER AND SETTER//
+    /////////////////////
+     */
+    
+    public double getPercentOcupation(){
+        double o = this.ocupacion;
+        double d = this.disponibilidad;
+        return o/(o+d)*100;
+    }
+    
+    public int getOcupacion() {
+        return ocupacion;
+    }
+
     public int getRoomid() {
         return roomid;
     }
