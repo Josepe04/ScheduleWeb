@@ -153,7 +153,7 @@ public class Consultas {
         return ret;
     }
     
-    public ArrayList<Course> getRestricciones(int[] ids,int[] tempinfo){
+    public ArrayList<Course> getRestriccionesCourses(int[] ids,int[] tempinfo){
         ArrayList<Course> ret = new ArrayList<>();
         String consulta = "";
         try {
@@ -493,16 +493,16 @@ public class Consultas {
         return ret;
     }
     
-    public ArrayList<Teacher> teachersList(){
+    public ArrayList<Teacher> teachersList(String tempid){
         ArrayList<Teacher> ret = new ArrayList<>();
         for(Integer s:teachers){
             if(!s.equals(""))
-                ret.add(restriccionesTeacher(s));
+                ret.add(restriccionesTeacher(tempid,s));
         }
         return ret;
     }
     
-    public Teacher restriccionesTeacher(int id){
+    public Teacher restriccionesTeacher(String tempid,int id){
         Teacher ret = new Teacher();
         String consulta = "";
 
@@ -566,19 +566,14 @@ public class Consultas {
                 if(ret.getMaxBxD() == 0)
                     ret.setMaxBxD(tdefault.getMaxBxD());
 
-                consulta="select udd.data\n" +
-    "                from uddata udd\n" +
-    "                inner join udfield udf\n" +
-    "                    on udd.fieldid = udf.fieldid\n" +
-    "                inner join udgroup udg\n" +
-    "                    on udg.groupid = udf.groupid\n" +
-    "                    and udg.grouptype = 'Staff'\n" +
-    "                    and udg.groupname = 'Schedule'\n" +
-    "                    and udf.fieldName = 'ExcludedBlocks'\n" +
-    "                where udd.id="+id;
+                consulta="select * from ScheduleTemplateStaff where staffid="+id 
+                        +" and "+"templateid="+tempid;
                 rs = DBConnect.st.executeQuery(consulta);
                 while(rs.next()){
-                    ret.setExcludeBlocks(rs.getString(1));
+                    if(rs.getBoolean("scheduleblock")){
+                        Tupla t = new Tupla(rs.getInt("day")-1,rs.getInt("period")-1);
+                        ret.addExcludeBlock(t);
+                    }
                 }
                 ret.setIdTeacher(id);
             } catch (Exception ex ) {

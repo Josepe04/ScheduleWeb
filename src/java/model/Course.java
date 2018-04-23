@@ -23,7 +23,9 @@ public class Course {
     private int minGapDays; //cada cuantos dias entre bloques
     private int rank; // prioridad
     private boolean GR; //
-    private ArrayList<Integer> excludeBlocks; // bloques que no se puede
+    private ArrayList<Integer> excludeRows; // bloques que no se pueden usar
+    private ArrayList<Integer> excludeCols;
+    private ArrayList<Tupla<Integer,Integer>> excludeBlocks;
     private int maxBlocksPerDay;
     private int sections;
     private int sectionsNoEnrolled;
@@ -105,25 +107,34 @@ public class Course {
                     && Integer.parseInt(maxSections) <= sections)
                 return ret;
         }catch(Exception e){}
-        
         for(int j = 0;j<Algoritmo.TAMY;j++){
-            boolean anadir=false;
-            if(excludeBlocks==null || !excludeBlocks.contains(j+1)){
-                int k;
+            if((excludeRows==null && excludeCols==null && excludeBlocks==null)
+                    || !excludeRows.contains(j+1)){
+                int k,bloqueados;
                 int gd= this.minGapDays;
-                gd++;
+                if(gd == 0)
+                    gd++;
                 for(int i = 0; i < Algoritmo.TAMX;i++){
                     ArrayList<Tupla> t = new ArrayList<>();
                     int sum=0;
+                    bloqueados = 0;
                     k=this.blocksWeek;
                     while(k>0){
-                        t.add(new Tupla((i+sum)%Algoritmo.TAMX,j));
+                        Tupla taux = new Tupla((i+sum)%Algoritmo.TAMX,j); 
+                        if(!t.contains(taux) && !this.excludeBlocks.contains(taux) && 
+                                !this.excludeCols.contains((i+sum)%Algoritmo.TAMX)){
+                            t.add(taux);
+                            k--;
+                        } else {
+                            bloqueados++;
+                        }
+                        if(bloqueados > Algoritmo.TAMY)
+                            break;
                         sum+=gd;
-                        k--;
                     }  
-                    ret.add(t);
+                    if(k<=0 && !ret.contains(t))
+                        ret.add(t);
                 }
-                
             }
         }
         return ret;
@@ -263,20 +274,30 @@ public class Course {
         this.maxBlocksPerDay = maxBlocksPerDay;
     }
 
-    public ArrayList<Integer> getExcludeBlocks() {
-        return excludeBlocks;
-    }
-    
     public void setExcludeBlocks(String excludeBlocks) {
         String [] s = excludeBlocks.split(";");
         String[] elem;
         this.excludeBlocks = new ArrayList();
+        this.excludeCols = new ArrayList();
+        this.excludeRows = new ArrayList();
         if(!s[0].equals("")){
             for(String s2 : s){
                 elem = s2.split(",");
+                int row = -1;
+                int col = -1;
                 try{
-                    this.excludeBlocks.add(Integer.parseInt(elem[0]));
+                    row = Integer.parseInt(elem[0]);
                 }catch(Exception e){}
+                try{
+                    col = Integer.parseInt(elem[1]);
+                }catch(Exception e){}
+                if(row == -1){
+                    this.excludeCols.add(col);
+                }else if(col == -1){
+                    this.excludeRows.add(row);
+                }else{
+                    this.excludeBlocks.add(new Tupla(row,col));
+                }
             }
         }
     }

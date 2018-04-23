@@ -22,7 +22,7 @@ public class Teacher{
     private int Preps;//maximo asignaturas
     private ArrayList<Integer> prepsComplete;
     private int MaxBxD;//max blocksperday
-    private String ExcludeBlocks;
+    private ArrayList<Tupla> ExcludeBlocks;
     private boolean ocupado;
     private String name;
     private HashMap<Integer,Integer> secciones;
@@ -35,6 +35,7 @@ public class Teacher{
         }
         secsComplete = 0;
         prepsComplete = new ArrayList<>();
+        ExcludeBlocks = new ArrayList();
         secciones = new HashMap<>();
     }
     
@@ -109,7 +110,7 @@ public class Teacher{
      */
     public boolean patronCompatible(ArrayList<Tupla> ar){
         for(Tupla t:ar)
-            if(huecos[(Integer)t.x][(Integer)t.y]!=0 || (blocksPerDay[(Integer)t.y] >= MaxBxD && MaxBxD>0))
+            if(!ExcludeBlocks.contains(t) || huecos[(Integer)t.x][(Integer)t.y]!=0 || (blocksPerDay[(Integer)t.y] >= MaxBxD && MaxBxD>0))
                 return false;
         return true;
     }
@@ -225,13 +226,14 @@ public class Teacher{
     }
     
 
-    public String getExcludeBlocks() {
+    public ArrayList<Tupla> getExcludeBlocks() {
         return ExcludeBlocks;
     }
-
-    public void setExcludeBlocks(String ExcludeBlocks) {
-        this.ExcludeBlocks = ExcludeBlocks;
-    }
+    
+    public void addExcludeBlock(Tupla t){
+        if(!ExcludeBlocks.contains(t))
+            ExcludeBlocks.add(t);
+    } 
     
     public String toString(){
         return idTeacher +" sections: "+ MaxSections+" preps: "+ Preps+" maxbxd: "+ MaxBxD +" exclude: "+ExcludeBlocks;

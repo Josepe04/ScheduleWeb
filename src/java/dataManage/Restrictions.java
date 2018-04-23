@@ -28,9 +28,11 @@ public class Restrictions {
     public ArrayList<Course> courses;
     public ArrayList<Teacher> teachers;
     public ArrayList<Integer> groupRooms; 
+    public String tempid;
     
     public Restrictions(String yearid,String tempid,String groupofrooms){
-        cs = new Consultas();
+        this.tempid = tempid;
+        this.cs = new Consultas();
         this.idCourses = new ArrayList(); 
         this.groupRooms = cs.roomsGroup(groupofrooms);
         ArrayList<Student> st = new ArrayList();
@@ -42,9 +44,9 @@ public class Restrictions {
             this.students.put(s.getId(), s);
         }
         this.rooms = cs.getRooms();
-        this.courses = cs.getRestricciones(Consultas.convertIntegers(idCourses),cs.templateInfo(tempid));
+        this.courses = cs.getRestriccionesCourses(Consultas.convertIntegers(idCourses),cs.templateInfo(tempid));
         this.courses.sort(new Restrictions.CompCoursesRank());
-        this.teachers = cs.teachersList();
+        this.teachers = cs.teachersList(tempid);
     }
     
     private class CompCoursesRank implements Comparator<Course>{

@@ -69,6 +69,14 @@ public class Algoritmo {
                         noAsign = studentSections(r,r.teachers,course,minsections,
                                     course.opciones(),noAsign,r.students,r.groupRooms);
                         break;
+                    case 3:
+                        if(course.getRooms().isEmpty())
+                            noAsign = studentSections(r,r.teachers,course,minsections,
+                                    course.opciones(),noAsign,r.students,r.groupRooms);
+                        else
+                            noAsign = studentSections(r,r.teachers,course,minsections,
+                                    course.opciones(),noAsign,r.students,course.getRooms());
+                        break;
                     default:
                         break;
                 }
@@ -124,7 +132,7 @@ public class Algoritmo {
         //Crea una lista con conjuntos de estudiantes compatibles con cada seccion
         //disponible del curso.
         for(int i = 0; i < sec.size();i++){
-            stids.add(new Tupla<Integer,ArrayList<Integer>>(i,new ArrayList<>()));
+            stids.add(new Tupla(i,new ArrayList<>()));
             for(Integer j:studentsCourse){
                 if(students.get(j).patronCompatible(sec.get(i))){
                     stids.get(i).y.add(j);
