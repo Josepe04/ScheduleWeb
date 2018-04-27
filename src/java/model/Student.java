@@ -6,7 +6,11 @@
 package model;
 
 import dataManage.Tupla;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -20,6 +24,28 @@ public class Student {
     private ArrayList<Integer> cursosNoAsignados;
     private ArrayList<Integer> cursosAsignados;
 
+    public void insertarOActualizarDB(){
+        String consulta="select * from students where id="+id;
+        boolean actualizar = false;
+        try {
+            ResultSet rs = DBConnect.own.executeQuery(consulta);
+            while(rs.next()){
+                actualizar = true;
+            }
+            if(!actualizar){
+                name = name.replace("\'", "\'\'");
+                name = name.replace("\"", "\"\"");
+                genero = genero.replace("\'", "\'\'");
+                genero = genero.replace("\"", "\"\"");
+                consulta="insert into students values("+id+",'"+genero
+                        + "','"+name.replace("'", "''")+"')";
+                DBConnect.own.executeUpdate(consulta);
+            }
+        } catch (Exception ex) {
+            Logger.getLogger(Teacher.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
     
     public Student(int id){
         this.cursosNoAsignados = new ArrayList<>();

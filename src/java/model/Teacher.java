@@ -6,8 +6,12 @@
 package model;
 
 import dataManage.Tupla;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -22,10 +26,30 @@ public class Teacher{
     private int Preps;//maximo asignaturas
     private ArrayList<Integer> prepsComplete;
     private int MaxBxD;//max blocksperday
-    private ArrayList<Tupla> ExcludeBlocks;
+    private ArrayList<Tupla> excludeBlocks;
     private boolean ocupado;
     private String name;
     private HashMap<Integer,Integer> secciones;
+    private ArrayList excludeCols;
+    private ArrayList excludeRows;
+    
+    public void insertarOActualizarDB(){
+        String consulta="select * from teachers where id="+idTeacher;
+        boolean actualizar = false;
+        try {
+            ResultSet rs = DBConnect.own.executeQuery(consulta);
+            while(rs.next()){
+                actualizar = true;
+            }
+            if(!actualizar){
+                consulta="insert into teachers values("+idTeacher+","+MaxSections
+                        + ","+Preps+","+MaxBxD+",'"+excludeBlocks.toString()+"','"+name+"')";
+                DBConnect.own.executeUpdate(consulta);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(Teacher.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
     
     public Teacher(){
         huecos = new int[Algoritmo.TAMX][Algoritmo.TAMY];
@@ -35,7 +59,7 @@ public class Teacher{
         }
         secsComplete = 0;
         prepsComplete = new ArrayList<>();
-        ExcludeBlocks = new ArrayList();
+        excludeBlocks = new ArrayList();
         secciones = new HashMap<>();
     }
     
@@ -110,7 +134,7 @@ public class Teacher{
      */
     public boolean patronCompatible(ArrayList<Tupla> ar){
         for(Tupla t:ar)
-            if(!ExcludeBlocks.contains(t) || huecos[(Integer)t.x][(Integer)t.y]!=0 || (blocksPerDay[(Integer)t.y] >= MaxBxD && MaxBxD>0))
+            if(!excludeBlocks.contains(t) || huecos[(Integer)t.x][(Integer)t.y]!=0 || (blocksPerDay[(Integer)t.y] >= MaxBxD && MaxBxD>0))
                 return false;
         return true;
     }
@@ -227,16 +251,38 @@ public class Teacher{
     
 
     public ArrayList<Tupla> getExcludeBlocks() {
-        return ExcludeBlocks;
+        return excludeBlocks;
     }
     
     public void addExcludeBlock(Tupla t){
-        if(!ExcludeBlocks.contains(t))
-            ExcludeBlocks.add(t);
+        if(!excludeBlocks.contains(t))
+            excludeBlocks.add(t);
     } 
     
     public String toString(){
-        return idTeacher +" sections: "+ MaxSections+" preps: "+ Preps+" maxbxd: "+ MaxBxD +" exclude: "+ExcludeBlocks;
+        return idTeacher +" sections: "+ MaxSections+" preps: "+ Preps+" maxbxd: "+ MaxBxD +" exclude: "+excludeBlocks;
+    }
+    
+    public void setExcludeBlocks(String excludeBlocks) {
+        String [] s = excludeBlocks.split(";");
+        String[] elem;
+        this.excludeBlocks = new ArrayList();
+        if(!s[0].equals("")){
+            for(String s2 : s){
+                elem = s2.split(",");
+                int row = -1;
+                int col = -1;
+                try{
+                    row = Integer.parseInt(elem[0]);
+                }catch(Exception e){}
+                try{
+                    col = Integer.parseInt(elem[1]);
+                }catch(Exception e){}
+                if(row!=-1 && col!=-1){
+                    this.excludeBlocks.add(new Tupla(row,col));
+                }
+            }
+        }
     }
     
     public int[][] getHuecos(){

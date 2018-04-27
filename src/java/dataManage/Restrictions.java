@@ -9,6 +9,7 @@ import com.google.gson.Gson;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Map;
 import model.Algoritmo;
 import model.Course;
 import model.Room;
@@ -30,23 +31,39 @@ public class Restrictions {
     public ArrayList<Integer> groupRooms; 
     public String tempid;
     
-    public Restrictions(String yearid,String tempid,String groupofrooms){
+    public Restrictions(String yearid,String tempid,String groupofrooms,int mode){
         this.tempid = tempid;
         this.cs = new Consultas();
-        this.idCourses = new ArrayList(); 
-        this.groupRooms = cs.roomsGroup(groupofrooms);
-        ArrayList<Student> st = new ArrayList();
-        this.studentsCourse = Consultas.getCoursesGroups(st,idCourses,yearid,tempid);
-        this.students = new HashMap<>();
-        st = (new Conjuntos<Student>()).union(st,
-                cs.restriccionesStudent(idCourses,studentsCourse,yearid));  
-        for(Student s:st){
-            this.students.put(s.getId(), s);
+        this.idCourses = new ArrayList();
+        if(mode==0){
+            this.groupRooms = cs.roomsGroup(groupofrooms);
+            ArrayList<Student> st = new ArrayList();
+            this.studentsCourse = Consultas.getCoursesGroups(st,idCourses,yearid,tempid);
+            this.students = new HashMap<>();
+            st = (new Conjuntos<Student>()).union(st,
+                    cs.restriccionesStudent(idCourses,studentsCourse,yearid));  
+            for(Student s:st){
+                this.students.put(s.getId(), s);
+            }
+            this.rooms = cs.getRooms();
+            this.courses = cs.getRestriccionesCourses(Consultas.convertIntegers(idCourses),cs.templateInfo(tempid));
+            this.courses.sort(new Restrictions.CompCoursesRank());
+            this.teachers = cs.teachersList(tempid);
+        }else{
+            
         }
-        this.rooms = cs.getRooms();
-        this.courses = cs.getRestriccionesCourses(Consultas.convertIntegers(idCourses),cs.templateInfo(tempid));
-        this.courses.sort(new Restrictions.CompCoursesRank());
-        this.teachers = cs.teachersList(tempid);
+    }
+    
+    public void syncOwnDB(){
+        for(Teacher t:teachers)
+            t.insertarOActualizarDB();
+        for(Course c: courses)
+            c.insertarOActualizarCurso();
+        for(Map.Entry<Integer, Student> entry : students.entrySet())
+            entry.getValue().insertarOActualizarDB();
+        for(Map.Entry<Integer, Room> entry : rooms.entrySet())
+            entry.getValue().insertarOActualizarDB();
+        
     }
     
     private class CompCoursesRank implements Comparator<Course>{

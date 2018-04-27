@@ -40,11 +40,17 @@ public class Consultas {
         totalBlocks = this.totalBlocks();
     }
     
+    /*
+    --------------------------------------
+    ---FUNCIONES PARA EXTRACCION DE DATOS-
+    ---DE RENWEB.-------------------------
+    --------------------------------------
+    */
     public static ArrayList<Tupla<Integer,String>> getYears(){
         ArrayList<Tupla<Integer,String>> ret = new ArrayList<>();
         String consulta="select * from SchoolYear";
         try {
-            ResultSet rs = DBConnect.st.executeQuery(consulta);
+            ResultSet rs = DBConnect.renweb.executeQuery(consulta);
             while(rs.next()){
                 int yearid = rs.getInt("yearid");
                 String yearName = rs.getString("SchoolYear");
@@ -56,8 +62,6 @@ public class Consultas {
         return ret;
     } 
     
-    //public static getCoursesStudentRequest()
-    
     public static HashMap<Integer,ArrayList<Integer>> getCoursesGroups(ArrayList<Student> st,ArrayList<Integer> listaCourses,
             String yearid, String tempid){
         String consulta="select * from ClassGroups where yearid ="+yearid +" and templateid="+tempid;
@@ -65,7 +69,7 @@ public class Consultas {
         HashMap<Integer,ArrayList<Integer>> classes = new HashMap();
         HashMap<Integer,ArrayList<Integer>> courses = new HashMap();
         try {
-            ResultSet rs = DBConnect.st.executeQuery(consulta);
+            ResultSet rs = DBConnect.renweb.executeQuery(consulta);
             while(rs.next()){
                 groups.add(rs.getInt("GroupID"));               
                 st.add(new Student(rs.getInt("GroupID"),"group"+rs.getInt("GroupID"),"group"));
@@ -73,13 +77,13 @@ public class Consultas {
             for(Integer g:groups){
                 classes.put(g, new ArrayList());
                 consulta="select * from ClassGroupClasses where GroupID="+g;
-                rs = DBConnect.st.executeQuery(consulta);
+                rs = DBConnect.renweb.executeQuery(consulta);
                 while(rs.next()){
                     classes.get(g).add(rs.getInt("classid"));               
                 }
                 for(Integer c:classes.get(g)){
                     consulta="select * from classes where classid="+c;
-                    rs = DBConnect.st.executeQuery(consulta);
+                    rs = DBConnect.renweb.executeQuery(consulta);
                     while(rs.next()){
                         if(!courses.containsKey(rs.getInt("courseid"))){
                             courses.put(rs.getInt("courseid"), new ArrayList());
@@ -100,7 +104,7 @@ public class Consultas {
         ArrayList<Template> ret = new ArrayList();
         String consulta="select * from ScheduleTemplate where yearid="+yearid;
         try {
-            ResultSet rs = DBConnect.st.executeQuery(consulta);
+            ResultSet rs = DBConnect.renweb.executeQuery(consulta);
             while(rs.next()){
                 String name = rs.getString("TemplateName");
                 int cols = rs.getInt("cols");
@@ -122,7 +126,7 @@ public class Consultas {
             consulta = "select * from ScheduleTemplateTimeTable "
                     + "where templateid="+id+" and Row="+i+" and Col=0";
             try {
-                rs = DBConnect.st.executeQuery(consulta);
+                rs = DBConnect.renweb.executeQuery(consulta);
                 while(rs.next()){ 
                     ret.add(new Tupla(rs.getString("TemplateTime"),
                             rs.getString("TemplateText")));
@@ -142,7 +146,7 @@ public class Consultas {
             consulta = "select * from ScheduleTemplateTimeTable "
                     + "where templateid="+id+" and Col="+i+" and Row=0";
             try {
-                rs = DBConnect.st.executeQuery(consulta);
+                rs = DBConnect.renweb.executeQuery(consulta);
                 while(rs.next()){ 
                     ret.add(rs.getString("TemplateText"));
                 }
@@ -166,7 +170,7 @@ public class Consultas {
                         +" and HS="+tempinfo[1]
                         +" and MidleSchool="+tempinfo[2]
                         +" and PreSchool="+tempinfo[3];
-                rs = DBConnect.st.executeQuery(consulta);
+                rs = DBConnect.renweb.executeQuery(consulta);
                 if(rs.next()){
                     tempcorrect=true;
                 }
@@ -180,7 +184,7 @@ public class Consultas {
                 "                    and udg.groupname = 'Schedule'\n" +
                 "                    and udf.fieldName = 'Schedule'\n" +
                 "                where udd.id ="+ids[i];
-                rs = DBConnect.st.executeQuery(consulta);
+                rs = DBConnect.renweb.executeQuery(consulta);
                 if(rs.next() && tempcorrect){
                     if(rs.getInt(1)==1){
                         Course r=new Course(ids[i]);
@@ -201,7 +205,7 @@ public class Consultas {
                 "                    and udf.fieldName = 'BlocksPerWeek'\n" +
                 "                where udd.id ="+ret.get(i).getIdCourse();
 
-                rs=DBConnect.st.executeQuery(consulta);
+                rs=DBConnect.renweb.executeQuery(consulta);
                 while(rs.next()){
                     ret.get(i).setBlocksWeek(rs.getInt(1));
                 }
@@ -217,7 +221,7 @@ public class Consultas {
                 "                    and udf.fieldName = 'GR'\n" +
                 "                where udd.id="+ret.get(i).getIdCourse();
 
-                rs=DBConnect.st.executeQuery(consulta);
+                rs=DBConnect.renweb.executeQuery(consulta);
                 while(rs.next()){
                     ret.get(i).setGR(rs.getBoolean(1));
                 }
@@ -233,7 +237,7 @@ public class Consultas {
                 "                    and udf.fieldName = 'MaxSections'\n" +
                 "                where udd.id ="+ret.get(i).getIdCourse();
 
-                rs=DBConnect.st.executeQuery(consulta);
+                rs=DBConnect.renweb.executeQuery(consulta);
                 while(rs.next()){
                     ret.get(i).setMaxSections(rs.getString(1));
 
@@ -250,7 +254,7 @@ public class Consultas {
                 "                    and udf.fieldName = 'MinGapBlocks'\n" +
                 "                where udd.id ="+ret.get(i).getIdCourse();
 
-                rs=DBConnect.st.executeQuery(consulta);
+                rs=DBConnect.renweb.executeQuery(consulta);
                 while(rs.next()){
                     ret.get(i).setMinGapBlocks(rs.getString(1));
                 }
@@ -266,7 +270,7 @@ public class Consultas {
                 "                    and udf.fieldName = 'MinGapDays'\n" +
                 "                where udd.id ="+ret.get(i).getIdCourse();
 
-                rs=DBConnect.st.executeQuery(consulta);
+                rs=DBConnect.renweb.executeQuery(consulta);
                 while(rs.next()){
                     try{
                         ret.get(i).setMinGapDays(rs.getInt(1));
@@ -285,7 +289,7 @@ public class Consultas {
                 "                    and udf.fieldName = 'Rank'\n" +
                 "                where udd.id ="+ret.get(i).getIdCourse();
 
-                rs=DBConnect.st.executeQuery(consulta);
+                rs=DBConnect.renweb.executeQuery(consulta);
                 while(rs.next()){
                     try{
                         ret.get(i).setRank(rs.getInt(1));
@@ -303,7 +307,7 @@ public class Consultas {
                 "                    and udf.fieldName = 'Teachers'\n" +
                 "                where udd.id ="+ret.get(i).getIdCourse();
 
-                rs=DBConnect.st.executeQuery(consulta);
+                rs=DBConnect.renweb.executeQuery(consulta);
                 String[] s=new String[2];
                 while(rs.next()){
                     s=rs.getString(1).split(",");
@@ -330,7 +334,7 @@ public class Consultas {
                 "                    and udf.fieldName = 'Rooms'\n" +
                 "                where udd.id ="+ret.get(i).getIdCourse();
 
-                rs=DBConnect.st.executeQuery(consulta);
+                rs=DBConnect.renweb.executeQuery(consulta);
                 String rooms = "";
                 while(rs.next()){
                     rooms = rs.getString(1);
@@ -357,7 +361,7 @@ public class Consultas {
                 "                    and udf.fieldName = 'ExcludeBlocks'\n" +
                 "                where udd.id ="+ret.get(i).getIdCourse();
 
-                rs=DBConnect.st.executeQuery(consulta);
+                rs=DBConnect.renweb.executeQuery(consulta);
                 String excludes = "";
                 while(rs.next()){
                     excludes+=rs.getString(1);
@@ -373,7 +377,7 @@ public class Consultas {
                 "                    and udg.groupname = 'Schedule'\n" +
                 "                    and udf.fieldName = 'ExcludeBlocks'";
                 
-                rs=DBConnect.st.executeQuery(consulta);
+                rs=DBConnect.renweb.executeQuery(consulta);
                 while(rs.next()){
                     if(!excludes.contains(rs.getString(1)))
                         excludes+=rs.getString(1);
@@ -382,10 +386,12 @@ public class Consultas {
                 
                 consulta="select MaxSize from courses where courseid="
                         +ret.get(i).getIdCourse();
-                rs=DBConnect.st.executeQuery(consulta);
+                rs=DBConnect.renweb.executeQuery(consulta);
                 while(rs.next()){
                     ret.get(i).setMaxChildPerSection(rs.getInt(1));
                 }
+                //prueba
+                ret.get(i).insertarOActualizarCurso();
             }
         } catch (SQLException ex) {
             Logger.getLogger(Consultas.class.getName()).log(Level.SEVERE, null, ex);
@@ -398,7 +404,7 @@ public class Consultas {
         String consulta = "select * from rooms";
         ResultSet rs;
         try{
-            rs = DBConnect.st.executeQuery(consulta);
+            rs = DBConnect.renweb.executeQuery(consulta);
             while(rs.next()){
                 int id = rs.getInt("roomid");
                 Room r = new Room(rs.getInt("roomid"),rs.getString("room"),rs.getInt("size"));
@@ -426,7 +432,7 @@ public class Consultas {
                 
         ResultSet rs;
         try {
-            rs = DBConnect.st.executeQuery(consulta);
+            rs = DBConnect.renweb.executeQuery(consulta);
         
                 while(rs.next()){
                     if(!excludes.contains(rs.getString(1)))
@@ -455,7 +461,7 @@ public class Consultas {
 "            and udg.grouptype = 'school'\n" +
 "            and udg.groupname = 'Schedule'\n" +
 "            and udf.fieldName = 'MaxSections'";
-            rs = DBConnect.st.executeQuery(consulta);
+            rs = DBConnect.renweb.executeQuery(consulta);
             while(rs.next()){
                 ret.setMaxSections(rs.getInt(1));
             }
@@ -469,7 +475,7 @@ public class Consultas {
 "            and udg.grouptype = 'school'\n" +
 "            and udg.groupname = 'Schedule'\n" +
 "            and udf.fieldName = 'MaxPreps'";
-            rs = DBConnect.st.executeQuery(consulta);
+            rs = DBConnect.renweb.executeQuery(consulta);
             while(rs.next()){
                 ret.setPreps(rs.getInt(1));
             }
@@ -483,7 +489,7 @@ public class Consultas {
 "            and udg.grouptype = 'school'\n" +
 "            and udg.groupname = 'Schedule'\n" +
 "            and udf.fieldName = 'MaxBxD'\n";
-            rs = DBConnect.st.executeQuery(consulta);
+            rs = DBConnect.renweb.executeQuery(consulta);
             while(rs.next()){
                 ret.setMaxBxD(rs.getInt(1));
             }
@@ -519,7 +525,7 @@ public class Consultas {
     "                    and udg.groupname = 'Schedule'\n" +
     "                    and udf.fieldName = 'MaxSections'\n" +
     "                where udd.id ="+id;
-                rs = DBConnect.st.executeQuery(consulta);
+                rs = DBConnect.renweb.executeQuery(consulta);
                 while(rs.next()){
                     ret.setMaxSections(rs.getInt(1));
                 }
@@ -537,7 +543,7 @@ public class Consultas {
     "                    and udg.groupname = 'Schedule'\n" +
     "                    and udf.fieldName = 'Preps'\n" +
     "                where udd.id ="+id;
-                rs = DBConnect.st.executeQuery(consulta);
+                rs = DBConnect.renweb.executeQuery(consulta);
                 while(rs.next()){
                     ret.setPreps(rs.getInt(1));
                 }
@@ -554,7 +560,7 @@ public class Consultas {
     "                    and udg.groupname = 'Schedule'\n" +
     "                    and udf.fieldName = 'MaxBxD'\n" +
     "                where udd.id ="+id;
-                rs = DBConnect.st.executeQuery(consulta);
+                rs = DBConnect.renweb.executeQuery(consulta);
                 while(rs.next()){
                     String s = rs.getString(1);
                     try{
@@ -568,7 +574,7 @@ public class Consultas {
 
                 consulta="select * from ScheduleTemplateStaff where staffid="+id 
                         +" and "+"templateid="+tempid;
-                rs = DBConnect.st.executeQuery(consulta);
+                rs = DBConnect.renweb.executeQuery(consulta);
                 while(rs.next()){
                     if(rs.getBoolean("scheduleblock")){
                         Tupla t = new Tupla(rs.getInt("day")-1,rs.getInt("period")-1);
@@ -583,11 +589,125 @@ public class Consultas {
         return ret;
     }
     
+    //FUNCION NO PROBADA
+    private void setExcludeBlocksTeacher(Teacher t,String tempid){
+        String consulta="select * from ScheduleTemplateStaff where staffid="+t.getIdTeacher();
+        try{
+            ResultSet rs = DBConnect.renweb.executeQuery(consulta);
+            while(rs.next()){
+                if(rs.getBoolean("scheduleblock")){
+                    ArrayList<Tupla> ar = conversionTemplatesBlocks(tempid,rs.getString("templateid"),
+                            rs.getInt("day"),rs.getInt("period"));
+                    for(Tupla t2:ar)
+                        t.addExcludeBlock(t2);
+                }
+            }
+        }catch(Exception e){
+
+        }
+    }
+    
+    private boolean esMultiplo(int x,int y){
+        if(x%y==0 || y%x==0)
+            return true;
+        else
+            return false;
+    }
+    
+    //FUNCION NO PROBADA
+    private ArrayList<Tupla> conversionTemplatesBlocks(String iddestino,String idorigen,int day,int period){
+        ArrayList<Tupla> ret = new ArrayList();
+        ArrayList<Integer> colsBlock = new ArrayList();
+        ArrayList<Integer> rowsBlock = new ArrayList();
+        int maxtemp1=0,maxtemp2=0;
+        String consulta="select cols as maximo "
+                + "from ScheduleTemplate where TemplateID="+iddestino; 
+        try {
+            ResultSet rs = DBConnect.renweb.executeQuery(consulta);
+            while(rs.next()){
+                maxtemp1=rs.getInt("maximo");
+            }
+            consulta="select cols as maximo "
+                + "from ScheduleTemplate where TemplateID="+idorigen;
+            rs = DBConnect.renweb.executeQuery(consulta);
+            while(rs.next()){
+                maxtemp2=rs.getInt("maximo");
+            }
+            if(esMultiplo(maxtemp1,maxtemp2)){
+                int colblock=day;
+                if(maxtemp1 <= maxtemp2){
+                    while (colblock > maxtemp1){
+                        colblock-=maxtemp1;
+                    }
+                    colsBlock.add(colblock);
+                }else{
+                    while (colblock < maxtemp1){
+                        colsBlock.add(colblock);
+                        colblock+=maxtemp1;
+                    }
+                }    
+            }
+            
+            //saco los intervalos de tiempo de cada bloque en su respectivo template
+            int minutosOrigenIni = 0;
+            int minutosOrigenFin = 0;
+            int minutosDestinoIni = 0;
+            int minutosDestinoFin = 0;
+            consulta="select TemplateTime "
+                + "from ScheduleTemplateTimeTable where TemplateID="+idorigen 
+                + " and col="+day+" and row="+period;
+            rs = DBConnect.renweb.executeQuery(consulta);
+            while(rs.next()){
+                String[] time = rs.getString(1).split("-");
+                String[]tmaux = time[0].split(":");
+                minutosOrigenIni = Integer.parseInt(tmaux[0])*60 
+                        + Integer.parseInt(tmaux[1]);
+                tmaux = time[1].split(":");
+                minutosOrigenFin = Integer.parseInt(tmaux[0])*60 
+                        + Integer.parseInt(tmaux[1]);
+            }
+            for(int i=0;i < maxtemp2;i++){
+                consulta="select TemplateTime "
+                    + "from ScheduleTemplateTimeTable where TemplateID="+iddestino 
+                    + " and col=1 and row="+i;
+                rs = DBConnect.renweb.executeQuery(consulta);
+                while(rs.next()){
+                    String[] time = rs.getString(1).split("-");
+                    String[]tmaux = time[0].split(":");
+                    minutosDestinoIni = Integer.parseInt(tmaux[0])*60 
+                            + Integer.parseInt(tmaux[1]);
+                    tmaux = time[1].split(":");
+                    minutosDestinoFin = Integer.parseInt(tmaux[0])*60 
+                            + Integer.parseInt(tmaux[1]);
+                    if(!rowsBlock.contains(i) && minutosDestinoIni < minutosOrigenIni || minutosOrigenFin < minutosDestinoFin)
+                        rowsBlock.add(i);
+                }
+            }
+            
+            if(colsBlock.isEmpty()){
+                for(int i = 0; i < maxtemp1;i++){
+                    for(Integer row : rowsBlock){
+                        ret.add(new Tupla(i,row));
+                    }
+                }
+            } else {
+                for(Integer i : colsBlock)
+                    for(Integer row : rowsBlock){
+                        ret.add(new Tupla(i,row));
+                    }
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(Consultas.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return ret;
+    }
+    
+    
     public int[] templateInfo(String tempid){
         int[] ret = new int[4];
         String consulta = "select * from ScheduleTemplate where templateid="+tempid;
         try {
-            ResultSet rs = DBConnect.st.executeQuery(consulta);
+            ResultSet rs = DBConnect.renweb.executeQuery(consulta);
             while(rs.next()){
                 ret[0] = rs.getInt("Elementary");
                 ret[1] = rs.getInt("HighSchool");
@@ -614,7 +734,7 @@ public class Consultas {
                     "                    and udg.groupname = 'Schedule'\n" +
                     "                    and udf.fieldName = '"+groupOfRooms+"'";
             
-                ResultSet rs = DBConnect.st.executeQuery(consulta);
+                ResultSet rs = DBConnect.renweb.executeQuery(consulta);
                 while(rs.next()){
                     groupOfRooms = rs.getString(1);
                     String[] s = groupOfRooms.split(",");
@@ -652,7 +772,7 @@ public class Consultas {
             "    order by gender";
         ResultSet rs;
         try {
-            rs = DBConnect.st.executeQuery(consulta);
+            rs = DBConnect.renweb.executeQuery(consulta);
             while(rs.next()){
                 int courseid = rs.getInt("courseid");
                 int studentid = rs.getInt("studentid");
@@ -691,7 +811,7 @@ public class Consultas {
         String ret = "";
         try {
             String consulta = "select * from courses where courseid = "+id;
-            ResultSet rs = DBConnect.st.executeQuery(consulta);
+            ResultSet rs = DBConnect.renweb.executeQuery(consulta);
             while(rs.next()){
                 ret = rs.getString("title");
             }
@@ -719,7 +839,7 @@ public class Consultas {
         String ret = "";
         ResultSet rs;
         try {
-            rs = DBConnect.st.executeQuery(consulta);
+            rs = DBConnect.renweb.executeQuery(consulta);
             while(rs.next()){
                ret= rs.getString("lastname")+" ";
                ret += rs.getString("firstname");
@@ -754,6 +874,56 @@ public class Consultas {
         return ret;
     }
 
+    /*
+    ------------------------
+    --CONSULTAS OWN SERVER--
+    ------------------------
+    */
+    
+    
+    public ArrayList<Course> getCoursesOwnDB(){
+        ArrayList<Course> ret = new ArrayList();
+        String consulta="select * from courses";
+        try{
+                ResultSet rs = DBConnect.own.executeQuery(consulta);
+                while(rs.next()){
+                        Course c = new Course(rs.getInt("id"));
+                        c.setBlocksWeek(rs.getInt("blocksperweek"));
+                        c.setMaxSections(""+rs.getInt("maxsections"));
+                        c.setMinGapBlocks(""+rs.getInt("mingapblocks"));
+                        c.setMinGapDays(rs.getInt("mingapdays"));
+                        c.setRank(rs.getInt("rank"));
+                        c.setGR(rs.getBoolean("gender"));
+                        c.setExcludeBlocksOwnDB(rs.getString("excludeblocks"));
+                        c.setMaxBlocksPerDay(rs.getInt("maxblocksperday"));
+                        c.setRooms(rs.getString("rooms"));
+                        c.setExcludeCols("excludecols");
+                        c.setExcludeRows("ecluderows");
+                }
+        } catch(Exception e){
+        }
+        return ret;
+    }
+ 
+
+    public ArrayList<Teacher> getTeachers(){
+        ArrayList<Teacher> ret = new ArrayList();
+        String consulta="select * from courses";
+        try{
+            ResultSet rs = DBConnect.own.executeQuery(consulta);
+            while(rs.next()){
+                Teacher t = new Teacher();
+                t.setIdTeacher(rs.getInt("id"));
+                t.setMaxSections(rs.getInt("maxsections"));
+                t.setPreps(rs.getInt("maxpreps"));
+                t.setMaxBxD(rs.getInt("maxblocksperday"));
+                t.setExcludeBlocks(rs.getString("excludeblocks"));
+                t.setName(rs.getString("name"));
+            }
+        } catch(Exception e){
+        }
+        return ret;
+    }
     
     /*
     -----------------------

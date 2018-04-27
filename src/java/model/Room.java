@@ -6,7 +6,11 @@
 package model;
 
 import dataManage.Tupla;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -20,6 +24,23 @@ public class Room {
     private int disponibilidad;
     private int ocupacion;
     
+    public void insertarOActualizarDB(){
+        String consulta="select * from rooms where id="+roomid;
+        boolean actualizar = false;
+        try {
+            ResultSet rs = DBConnect.own.executeQuery(consulta);
+            while(rs.next()){
+                actualizar = true;
+            }
+            if(!actualizar){
+                consulta="insert into rooms values("+roomid+",'"+name
+                        + "',"+size+")";
+                DBConnect.own.executeUpdate(consulta);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(Teacher.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
     
     public Room(int roomid, String name, int size) {
         this.roomid = roomid;

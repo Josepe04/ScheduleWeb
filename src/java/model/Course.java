@@ -6,7 +6,11 @@
 package model;
 
 import dataManage.Tupla;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -147,6 +151,16 @@ public class Course {
 
     public ArrayList<Integer> getRooms() {
         return rooms;
+    }
+
+    public void setRooms(String rooms) {
+        String rparse1 = rooms.substring(1,rooms.length()-1);
+        String[] rparse2 = rparse1.split(",");
+        for(String s:rparse2){
+            try{
+                this.rooms.add(Integer.parseInt(s));
+            }catch(Exception e){}
+        }
     }
 
     public int getMinSections() {
@@ -313,6 +327,105 @@ public class Course {
     public String[][] getHuecos() {
         return huecos;
     }
+    
+    private String excludeBlocksToString(){
+        String ret = "";
+        for(Tupla t : this.excludeBlocks){
+            ret+=t.x.toString()+","+t.y.toString()+";";
+        }
+        return ret;
+    }
+    
+    public void setExcludeBlocksOwnDB(String excludeblocks){
+        String [] s = excludeblocks.split(";");
+        String[] elem;
+        this.excludeBlocks = new ArrayList();
+        if(!s[0].equals("")){
+            for(String s2 : s){
+                elem = s2.split(",");
+                int row = -1;
+                int col = -1;
+                try{
+                    row = Integer.parseInt(elem[0]);
+                }catch(Exception e){}
+                try{
+                    col = Integer.parseInt(elem[1]);
+                }catch(Exception e){}
+                if(row != -1 && col!=-1){
+                    this.excludeBlocks.add(new Tupla(row,col));
+                }
+            }
+        }
+    }
+    
+    public void setExcludeCols(String cols){
+        String [] s = cols.split(",");
+        String[] elem;
+        this.excludeCols = new ArrayList();
+        if(!s[0].equals("")){
+            for(String s2 : s){
+                int col = -1;
+                try{
+                    col = Integer.parseInt(s2);
+                }catch(Exception e){}
+                if(col!=-1){
+                    this.excludeCols.add(col);
+                }
+            }
+        }
+    }
+    
+    public void setExcludeRows(String rows){
+        String [] s = rows.split(",");
+        String[] elem;
+        this.excludeRows = new ArrayList();
+        if(!s[0].equals("")){
+            for(String s2 : s){
+                int row = -1;
+                try{
+                    row = Integer.parseInt(s2);
+                }catch(Exception e){}
+                if(row!=-1){
+                    this.excludeRows.add(row);
+                }
+            }
+        }
+    }
+    
+    /**
+     * inserta o actualiza si ya existe ,el curso en nuestra base de datos.
+     */
+    public void insertarOActualizarCurso(){
+        String consulta = "select * from courses where id="+this.idCourse;
+        boolean actualizar = false;
+        try {
+            ResultSet rs = DBConnect.own.executeQuery(consulta);
+            while(rs.next())
+                actualizar = true;
+            if(!actualizar){
+                int maxsec = 0,mingapblocks=0;
+                try{
+                    maxsec = Integer.parseInt(this.maxSections);
+                }catch(Exception e){}
+                
+                try{
+                    mingapblocks = Integer.parseInt(this.minGapBlocks);
+                }catch(Exception e){}
+                
+                consulta = "insert into courses values("+this.idCourse+","+this.blocksWeek+","
+                    +maxsec+","+mingapblocks+","
+                    +this.minGapDays+","+this.rank+","+this.GR+",'"
+                    +excludeBlocksToString()+"',"+this.maxBlocksPerDay+",'"
+                    +this.rooms.toString()+"','"+this.excludeCols.toString()
+                    +"','"+this.excludeRows.toString()+"')";
+                DBConnect.own.executeUpdate(consulta);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(Course.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+    }
+    
     
     @Override
     public boolean equals(Object c){
