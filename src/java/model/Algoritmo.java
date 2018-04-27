@@ -81,6 +81,8 @@ public class Algoritmo {
                         break;
                 }
                 
+                //si no asign es distinto de null quiere decir que no se han podido 
+                //asignar todos los estudiantes al curso
                 if(noAsign != null){
                     int sectionsNoEnroled = noAsign.size()/course.getMaxChildPerSection();
                     if(sectionsNoEnroled == 0) 

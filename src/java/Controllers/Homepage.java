@@ -56,7 +56,7 @@ public class Homepage extends MultiActionController  {
     
     @RequestMapping
     public ModelAndView inicio(HttpServletRequest hsr, HttpServletResponse hsr1) throws Exception {
-        DBConnect db = new DBConnect();
+        DBConnect db = new DBConnect(hsr);
         return menu(hsr,hsr1);
     }
     
@@ -199,12 +199,12 @@ public class Homepage extends MultiActionController  {
         boolean padre = false, profesor = false;
         try {
             String consulta = "SELECT count(*) AS cuenta FROM Staff where Faculty = 1 and StaffID =" + user.getId();
-            ResultSet rs = DBConnect.st.executeQuery(consulta);
+            ResultSet rs = DBConnect.renweb.executeQuery(consulta);
             if (rs.next()) {
                 profesor = rs.getInt("cuenta") > 0;
             }
             consulta = "SELECT count(*) AS cuenta FROM Parent_Student where ParentID =" + user.getId();
-            ResultSet rs2 = DBConnect.st.executeQuery(consulta);
+            ResultSet rs2 = DBConnect.renweb.executeQuery(consulta);
             if (rs2.next()) {
                 padre = rs2.getInt("cuenta") > 0;
             }

@@ -21,8 +21,8 @@ import org.springframework.web.servlet.ModelAndView;
 @Controller
 public class ScheduleController {
     
-    @RequestMapping("/schedule/start.htm")
-    public ModelAndView scheduleStart(HttpServletRequest hsr, HttpServletResponse hsr1){
+    @RequestMapping("/schedule/renweb.htm")
+    public ModelAndView scheduleEduweb(HttpServletRequest hsr, HttpServletResponse hsr1){
         ModelAndView mv = new ModelAndView("index");
         String tempid = hsr.getParameter("tempid");
         String xs = hsr.getParameter("cols");
@@ -36,7 +36,29 @@ public class ScheduleController {
         mv.addObject("hFilas",Consultas.getRowHeader(id, y));
         mv.addObject("hcols",Consultas.getColHeader(id, x));
         Algoritmo algo = new Algoritmo(x,y);
-        Restrictions r = new Restrictions(yearid,tempid,roomgroup);
+        Restrictions r = new Restrictions(yearid,tempid,roomgroup,1);
+        r.syncOwnDB();
+        algo.algo(mv,r,roommode);
+        String json = r.teachersJSON();
+        return mv;
+    }
+    @RequestMapping("/schedule/own.htm")
+    public ModelAndView scheduleOwn(HttpServletRequest hsr, HttpServletResponse hsr1){
+        ModelAndView mv = new ModelAndView("index");
+        String tempid = hsr.getParameter("tempid");
+        String xs = hsr.getParameter("cols");
+        String ys = hsr.getParameter("rows");
+        String roomgroup = hsr.getParameter("grouproom");
+        int roommode = Integer.parseInt(hsr.getParameter("roommode"));
+        int id = Integer.parseInt(hsr.getParameter("id"));
+        String yearid = hsr.getParameter("yearid");
+        int x = Integer.parseInt(xs);
+        int y = Integer.parseInt(ys);
+        mv.addObject("hFilas",Consultas.getRowHeader(id, y));
+        mv.addObject("hcols",Consultas.getColHeader(id, x));
+        Algoritmo algo = new Algoritmo(x,y);
+        Restrictions r = new Restrictions(yearid,tempid,roomgroup,1);
+        r.syncOwnDB();
         algo.algo(mv,r,roommode);
         String json = r.teachersJSON();
         return mv;
