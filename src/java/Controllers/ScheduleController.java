@@ -42,6 +42,15 @@ public class ScheduleController {
         String json = r.teachersJSON();
         return mv;
     }
+    
+    /**
+     * to do:
+     * -Teneis que revisar si funciona todo correctamente y si no le faltan datos
+     *  a la DB.
+     * @param hsr
+     * @param hsr1
+     * @return 
+     */
     @RequestMapping("/schedule/own.htm")
     public ModelAndView scheduleOwn(HttpServletRequest hsr, HttpServletResponse hsr1){
         ModelAndView mv = new ModelAndView("index");
@@ -57,10 +66,9 @@ public class ScheduleController {
         mv.addObject("hFilas",Consultas.getRowHeader(id, y));
         mv.addObject("hcols",Consultas.getColHeader(id, x));
         Algoritmo algo = new Algoritmo(x,y);
-        Restrictions r = new Restrictions(yearid,tempid,roomgroup,1);
-        r.syncOwnDB();
+        Restrictions r = new Restrictions(yearid,tempid,roomgroup);
+        r.extraerDatosOwnDB();
         algo.algo(mv,r,roommode);
-        String json = r.teachersJSON();
         return mv;
     }
     

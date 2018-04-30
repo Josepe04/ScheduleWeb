@@ -36,6 +36,8 @@ public class Room {
                 consulta="insert into rooms values("+roomid+",'"+name
                         + "',"+size+")";
                 DBConnect.own.executeUpdate(consulta);
+            }else{
+                //to do: UPDATE
             }
         } catch (SQLException ex) {
             Logger.getLogger(Teacher.class.getName()).log(Level.SEVERE, null, ex);

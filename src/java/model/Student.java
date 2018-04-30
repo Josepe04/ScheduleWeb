@@ -40,6 +40,8 @@ public class Student {
                 consulta="insert into students values("+id+",'"+genero
                         + "','"+name.replace("'", "''")+"')";
                 DBConnect.own.executeUpdate(consulta);
+            }else{
+                //to do: UPDATE
             }
         } catch (Exception ex) {
             Logger.getLogger(Teacher.class.getName()).log(Level.SEVERE, null, ex);

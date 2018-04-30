@@ -81,6 +81,15 @@
                 });
             });
         </script>
+        <!--
+        TO DO:
+            -En la parte de master schedule de teachers los titulos de las tablas no 
+            estan bien.
+            -Hay que mostrar tambien el master schedule de rooms, fijaros en el de teachers
+            y hacerlo parecido.
+            -Cuando carga la pagina la primera vez aparecen las pestañas de rooms en la parte
+            de courses.
+        -->
     </head>
     <body>
         <%

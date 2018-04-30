@@ -45,6 +45,8 @@ public class Teacher{
                 consulta="insert into teachers values("+idTeacher+","+MaxSections
                         + ","+Preps+","+MaxBxD+",'"+excludeBlocks.toString()+"','"+name+"')";
                 DBConnect.own.executeUpdate(consulta);
+            }else{
+                //to do: UPDATE
             }
         } catch (SQLException ex) {
             Logger.getLogger(Teacher.class.getName()).log(Level.SEVERE, null, ex);
@@ -133,8 +135,12 @@ public class Teacher{
      * @return 
      */
     public boolean patronCompatible(ArrayList<Tupla> ar){
+        /*
+        TO DO:
+            -Revisar la parte del if que esta comentada. 
+        */
         for(Tupla t:ar)
-            if(!excludeBlocks.contains(t) || huecos[(Integer)t.x][(Integer)t.y]!=0 || (blocksPerDay[(Integer)t.y] >= MaxBxD && MaxBxD>0))
+            if(huecos[(Integer)t.x][(Integer)t.y]!=0) //|| !excludeBlocks.contains(t) || (blocksPerDay[(Integer)t.y] >= MaxBxD && MaxBxD>0))
                 return false;
         return true;
     }

@@ -39,6 +39,7 @@ public class Course {
     private ArrayList<ArrayList<Tupla>> patronesStudents; 
     private int maxChildPerSection;
     private ArrayList<Integer> rooms;
+    private ArrayList<Integer> trestricctions;
     
     public Course(int idCourse) {
         this.idCourse = idCourse;
@@ -217,7 +218,7 @@ public class Course {
         this.studentsNoAsignados = studentsNoAsignados;
     }
 
-    private ArrayList<Integer> trestricctions;
+    
 
     public int getSections() {
         return sections;
@@ -417,8 +418,10 @@ public class Course {
                     +this.minGapDays+","+this.rank+","+this.GR+",'"
                     +excludeBlocksToString()+"',"+this.maxBlocksPerDay+",'"
                     +this.rooms.toString()+"','"+this.excludeCols.toString()
-                    +"','"+this.excludeRows.toString()+"')";
+                    +"','"+this.trestricctions.toString()+"','"+this.excludeRows.toString()+"')";
                 DBConnect.own.executeUpdate(consulta);
+            }else{
+                //to do: UPDATE
             }
         } catch (SQLException ex) {
             Logger.getLogger(Course.class.getName()).log(Level.SEVERE, null, ex);

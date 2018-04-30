@@ -589,7 +589,8 @@ public class Consultas {
         return ret;
     }
     
-    //FUNCION NO PROBADA
+    //to do: FUNCION NO PROBADA CONVIERTE EXCLUDE BLOCKS ENTRE TEMPLATES
+    //SE LO EXPLIQUE A DAVID EL ULTIMO DIA.
     private void setExcludeBlocksTeacher(Teacher t,String tempid){
         String consulta="select * from ScheduleTemplateStaff where staffid="+t.getIdTeacher();
         try{
@@ -884,6 +885,7 @@ public class Consultas {
     public ArrayList<Course> getCoursesOwnDB(){
         ArrayList<Course> ret = new ArrayList();
         String consulta="select * from courses";
+        String teachers = "";
         try{
                 ResultSet rs = DBConnect.own.executeQuery(consulta);
                 while(rs.next()){
@@ -899,6 +901,19 @@ public class Consultas {
                         c.setRooms(rs.getString("rooms"));
                         c.setExcludeCols("excludecols");
                         c.setExcludeRows("ecluderows");
+                        teachers = rs.getString("teachers");
+                        teachers = teachers.replace("[", "");
+                        teachers = teachers.replace("]", "");
+                        String [] tlist = teachers.split(",");
+                        ArrayList<Integer> tids = new ArrayList();
+                        for(String s : tlist){
+                            try{
+                                tids.add(Integer.parseInt(s));
+                            }catch(Exception e){
+                            }
+                        }
+                        c.setTrestricctions(tids);
+                        ret.add(c);
                 }
         } catch(Exception e){
         }
@@ -906,9 +921,9 @@ public class Consultas {
     }
  
 
-    public ArrayList<Teacher> getTeachers(){
+    public ArrayList<Teacher> getTeachersOwnDB(){
         ArrayList<Teacher> ret = new ArrayList();
-        String consulta="select * from courses";
+        String consulta="select * from teachers";
         try{
             ResultSet rs = DBConnect.own.executeQuery(consulta);
             while(rs.next()){
@@ -919,12 +934,62 @@ public class Consultas {
                 t.setMaxBxD(rs.getInt("maxblocksperday"));
                 t.setExcludeBlocks(rs.getString("excludeblocks"));
                 t.setName(rs.getString("name"));
+                ret.add(t);
             }
         } catch(Exception e){
         }
         return ret;
     }
     
+    public HashMap<Integer,Room> getRoomsOwnDB(){
+         HashMap<Integer,Room> ret = new  HashMap();
+        String consulta="select * from rooms";
+        try{
+            ResultSet rs = DBConnect.own.executeQuery(consulta);
+            while(rs.next()){
+                int id = rs.getInt("id");
+                Room r = new Room(id,rs.getString("name"),rs.getInt("size"));
+                ret.put(id, r);
+            }
+        } catch(Exception e){
+        }
+        return ret;
+    }
+    
+    public HashMap<Integer,Student> getStudnetsOwnDB(){
+        HashMap<Integer,Student> ret = new HashMap();
+        String consulta="select * from students";
+        try{
+            ResultSet rs = DBConnect.own.executeQuery(consulta);
+            while(rs.next()){
+                int id = rs.getInt("id");
+                Student st = new Student(id,rs.getString("name"),rs.getString("genero")); 
+                ret.put(id, st);
+            }
+        } catch(Exception e){
+        }
+        return ret;
+    }
+    
+    public HashMap<Integer,ArrayList<Integer>> getStudentsCourseOwnDB(){
+        HashMap<Integer,ArrayList<Integer>> ret = new HashMap();
+        String consulta="select * from students_course";
+        try{
+            ResultSet rs = DBConnect.own.executeQuery(consulta);
+            while(rs.next()){
+                int idc = rs.getInt("id_course");
+                int ids = rs.getInt("id_student");
+                if(ret.containsKey(idc))
+                    ret.get(idc).add(ids);
+                else{
+                   ret.put(idc, new ArrayList());
+                   ret.get(idc).add(ids);
+                }
+            }
+        } catch(Exception e){
+        }
+        return ret;
+    }
     /*
     -----------------------
     --GETTERS AND SETTERS--

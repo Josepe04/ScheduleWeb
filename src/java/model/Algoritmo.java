@@ -209,6 +209,7 @@ public class Algoritmo {
                             for(Integer st:idsAsignados){
                                 students.get(st).addAsignado(c.getIdCourse());
                             }
+                            c.setStudentsAsignados(idsAsignados);
                             return null;
                         }
                     } else{
@@ -220,9 +221,12 @@ public class Algoritmo {
                 diferencia = conjuntos.diferencia(stids.get(i+1).y, stids.get(i).y);
         }
         
+        c.setStudentsAsignados(idsAsignados);
         for(Integer st:idsAsignados){
             students.get(st).addAsignado(c.getIdCourse());
         }
+        //Si los estudiantes asignados son menos que el numero de students request
+        //creamos una entrada en el log y ponemos el porcentaje de acierto en el curso.
         if(idsAsignados.size()!= studentsCourse.size()){
             System.out.println("FAILURE");      
             ArrayList<Integer> ret = conjuntos.diferencia(studentsCourse, idsAsignados);
@@ -238,7 +242,7 @@ public class Algoritmo {
                 Log.add("-Los profesores "+tname+" asignados al curso:"+r.cs.nameCourse(c.getIdCourse())+" no tienen disponible ningun hueco compatible");
             }else{
                 Log.add("-Los siguientes estudiantes no tienen secciones disponibles para el curso "+r.cs.nameCourse(c.getIdCourse())+":");
-                String anadir = "",anadir2="";
+                String anadir = "";
                 ArrayList<ArrayList<Tupla>> aux = null;
                 for(Integer i: ret){
                     anadir+=students.get(i).getName()+",";
@@ -249,9 +253,7 @@ public class Algoritmo {
                 }
                 c.setPatronesStudents(aux);
                 anadir = anadir.substring(0,anadir.length()-2)+".";
-                Log.add(anadir);
-                //Log.add("Para este conjunto de estudiantes tenemos disponibles los siguientes patrones en común:");
-                
+                Log.add(anadir);           
             }
             for(Integer st:ret){
                 students.get(st).addNoAsignado(c.getIdCourse());
