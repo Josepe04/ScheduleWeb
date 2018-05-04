@@ -105,29 +105,29 @@ public class Course {
      * una seccion
      * @return 
      */
-    public ArrayList<ArrayList<Tupla>> opciones(){
+    public ArrayList<ArrayList<Tupla>> opciones(){ // AQUI ES DONDE SE LIMUTAN LOS HUECOS DISPONIBLES PARA EL ALGORITMO
         ArrayList<ArrayList<Tupla>> ret = new ArrayList<>();
         try{
             if(maxSections == null && Integer.parseInt(maxSections)==0 
                     && Integer.parseInt(maxSections) <= sections)
                 return ret;
         }catch(Exception e){}
-        for(int j = 0;j<Algoritmo.TAMY;j++){
+        for(int j = 0;j<Algoritmo.TAMY;j++){ // AQUI ES EL FALLO COMPARA LA HORA CON EL DIA TENIENDO EN CUENTA QUE LAS Y SON LAS HORAS Y LAS X LOS DIAS
             if((excludeRows==null && excludeCols==null && excludeBlocks==null)
                     || !excludeRows.contains(j+1)){
                 int k,bloqueados;
                 int gd= this.minGapDays;
                 if(gd == 0)
                     gd++;
-                for(int i = 0; i < Algoritmo.TAMX;i++){
-                    ArrayList<Tupla> t = new ArrayList<>();
+                for(int i = 0; i < Algoritmo.TAMX;i++){ // cambiar!
+                    ArrayList<Tupla> t = new ArrayList<>(); 
                     int sum=0;
                     bloqueados = 0;
                     k=this.blocksWeek;
                     while(k>0){
-                        Tupla taux = new Tupla((i+sum)%Algoritmo.TAMX,j); 
+                        Tupla taux = new Tupla((i+sum)%Algoritmo.TAMX,j);  // cambiar!
                         if(!t.contains(taux) && !this.excludeBlocks.contains(taux) && 
-                                !this.excludeCols.contains((i+sum)%Algoritmo.TAMX)){
+                                !this.excludeCols.contains((i+sum)%Algoritmo.TAMX)){ 
                             t.add(taux);
                             k--;
                         } else {
@@ -418,7 +418,7 @@ public class Course {
                     +this.minGapDays+","+this.rank+","+this.GR+",'"
                     +excludeBlocksToString()+"',"+this.maxBlocksPerDay+",'"
                     +this.rooms.toString()+"','"+this.excludeCols.toString()
-                    +"','"+this.trestricctions.toString()+"','"+this.excludeRows.toString()+"')";
+                    +"','"+this.excludeRows.toString()+"','"+this.trestricctions.toString()+"')";
                 DBConnect.own.executeUpdate(consulta);
             }else{
                 //to do: UPDATE

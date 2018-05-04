@@ -11,7 +11,7 @@ import java.util.ArrayList;
  *
  * @author Chema
  */
-public class Conjuntos <T>{
+public class Conjuntos <T>{ // CLASE ENCARGADA DE COMPARAR ARRAYLIST (UNION, INTERSECCION, COMPARACION)
 
     public ArrayList<T> union(ArrayList<T> primero, ArrayList<T> segundo) {
         ArrayList<T> retVal = new ArrayList<T>(primero);

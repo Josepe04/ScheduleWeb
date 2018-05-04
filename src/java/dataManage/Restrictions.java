@@ -90,7 +90,7 @@ public class Restrictions {
         for(Map.Entry<Integer, Room> entry : rooms.entrySet())
             entry.getValue().insertarOActualizarDB();
         for(Map.Entry<Integer, ArrayList<Integer>> entry : studentsCourse.entrySet()){
-            for(Integer id:entry.getValue()){
+            for(Integer id:entry.getValue()){ //TARDA ***
                 String consulta="insert into students_course values("+entry.getKey()+","+id+",false)";
                 try {
                     DBConnect.own.executeUpdate(consulta);

@@ -45,14 +45,15 @@ public class Algoritmo {
      */
     public void algo(ModelAndView mv,Restrictions r,int roommode){
         for(Course course: r.courses){
-            int minsections = 1;
+            int minsections = 1; //falla al dividir entre 0
             try{
-                minsections = 1 + r.studentsCourse.get(course.getIdCourse()).size()/course.getMaxChildPerSection();
+                //MINIMO DE SECCIONES NECESARIAS PARA TODOS LOS ESTUDIANTES (TENIENDO EN CUENTA EL NUMERO MAX  DE ALUMNOS POR AULA)
+                minsections = 1 + r.studentsCourse.get(course.getIdCourse()).size()/course.getMaxChildPerSection(); 
             }catch(ArithmeticException e){
                 //e.printStackTrace();
                 System.out.println("id:"+course.getIdCourse()+" name: "+r.cs.nameCourse(course.getIdCourse()));
             }
-            course.setMinSections(minsections);
+            course.setMinSections(minsections); 
             ArrayList<Integer> noAsign = (ArrayList<Integer>) r.studentsCourse.get(course.getIdCourse()).clone();
             if(course.opciones().size()>0){
                 //Segun el modo de gestion de clases cambia como rellenas la parte de studentsSections

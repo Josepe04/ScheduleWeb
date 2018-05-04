@@ -46,7 +46,7 @@ public class Consultas {
     ---DE RENWEB.-------------------------
     --------------------------------------
     */
-    public static ArrayList<Tupla<Integer,String>> getYears(){
+    public static ArrayList<Tupla<Integer,String>> getYears(){ // OBTIENE EL GETYEARS FALTA FILTRAR POR COLEGIO 
         ArrayList<Tupla<Integer,String>> ret = new ArrayList<>();
         String consulta="select * from SchoolYear";
         try {
@@ -120,11 +120,15 @@ public class Consultas {
     
     public static ArrayList<Tupla<String,String>> getRowHeader(int id,int rows){
         String consulta = "";
+        
         ResultSet rs;
         ArrayList<Tupla<String,String>> ret = new ArrayList();
         for(int i = 1; i <= rows; i++){
             consulta = "select * from ScheduleTemplateTimeTable "
                     + "where templateid="+id+" and Row="+i+" and Col=0";
+        // SELECT count(*) FROM IS_PAN.dbo.ScheduleTemplateTimeTable where templateid = 51 and col =0; para las rows
+        // SELECT count(*) FROM IS_PAN.dbo.ScheduleTemplateTimeTable where templateid = 51 and row =0; para las cols
+        
             try {
                 rs = DBConnect.renweb.executeQuery(consulta);
                 while(rs.next()){ 
@@ -138,11 +142,14 @@ public class Consultas {
         return ret;
     }
     
-    public static ArrayList<String> getColHeader(int id,int cols){
+    public static ArrayList<String> getColHeader(int id,int cols){ //modificar 
         String consulta = "";
         ResultSet rs;
         ArrayList<String> ret = new ArrayList();
         for(int i = 1; i <= cols; i++){
+                // SELECT count(*) FROM IS_PAN.dbo.ScheduleTemplateTimeTable where templateid = 51 and col =0; para las rows
+        // SELECT count(*) FROM IS_PAN.dbo.ScheduleTemplateTimeTable where templateid = 51 and row =0; para las cols
+      
             consulta = "select * from ScheduleTemplateTimeTable "
                     + "where templateid="+id+" and Col="+i+" and Row=0";
             try {
@@ -156,7 +163,7 @@ public class Consultas {
         }
         return ret;
     }
-    
+    //AQUI ES DONDE TARDA *****
     public ArrayList<Course> getRestriccionesCourses(int[] ids,int[] tempinfo){
         ArrayList<Course> ret = new ArrayList<>();
         String consulta = "";
@@ -851,7 +858,7 @@ public class Consultas {
         return ret;
     }
     
-    private int convertString(String s){
+    private int convertString(String s){ // "crea identificador"
         int ret=0; 
         for(int i = 1; i <= s.length();i++){
             switch(s.substring(i-1, i)){
