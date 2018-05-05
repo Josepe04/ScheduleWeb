@@ -33,9 +33,9 @@ public class DBConnect {
     public DBConnect (HttpServletRequest hsr){
         try {
             cn = SQLConnection();
-            cn2 = SQLConnection2(hsr);
+         //   cn2 = SQLConnection2(hsr);
             renweb = cn.createStatement();
-            own = cn2.createStatement();
+           // own = cn2.createStatement();
         } catch (SQLException ex) {
             Logger.getLogger(DBConnect.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -60,7 +60,7 @@ public class DBConnect {
 
             cn = DriverManager.getConnection(url, loginName, password);
         } catch (SQLException ex) {
-            System.out.println("No se puede conectar con el Motor");
+             System.out.println("No se puede conectar con el Motor");
             System.err.println(ex.getMessage());
         }
 

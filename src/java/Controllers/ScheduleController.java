@@ -28,6 +28,7 @@ public class ScheduleController {
         String xs = hsr.getParameter("cols");
         String ys = hsr.getParameter("rows");
         String roomgroup = hsr.getParameter("grouproom");
+        String posSelectTemplate = hsr.getParameter("posSelectTemplate");
         int roommode = Integer.parseInt(hsr.getParameter("roommode"));
         int id = Integer.parseInt(hsr.getParameter("id"));
         String yearid = hsr.getParameter("yearid");
@@ -58,7 +59,7 @@ public class ScheduleController {
         String xs = hsr.getParameter("cols");
         String ys = hsr.getParameter("rows");
         String roomgroup = hsr.getParameter("grouproom");
-        int roommode = Integer.parseInt(hsr.getParameter("roommode"));
+        int roommode = Integer.parseInt(hsr.getParameter("roommode")); //VERIFICAR
         int id = Integer.parseInt(hsr.getParameter("id"));
         String yearid = hsr.getParameter("yearid");
         int x = Integer.parseInt(xs);

@@ -113,8 +113,7 @@ public class Course {
                 return ret;
         }catch(Exception e){}
         for(int j = 0;j<Algoritmo.TAMY;j++){ // AQUI ES EL FALLO COMPARA LA HORA CON EL DIA TENIENDO EN CUENTA QUE LAS Y SON LAS HORAS Y LAS X LOS DIAS
-            if((excludeRows==null && excludeCols==null && excludeBlocks==null)
-                    || !excludeRows.contains(j+1)){
+            if((excludeRows==null && excludeCols==null && excludeBlocks==null)  || !excludeRows.contains(j+1)){
                 int k,bloqueados;
                 int gd= this.minGapDays;
                 if(gd == 0)
@@ -142,7 +141,7 @@ public class Course {
                 }
             }
         }
-        return ret;
+    return ret;
     }
     
     

@@ -77,14 +77,19 @@ public class Homepage extends MultiActionController  {
     }
     
     
-    @RequestMapping("/menu/create.htm")
+    @RequestMapping("/menu/create.htm") // DATA ES ID DE TEMPLATE
     public ModelAndView create(HttpServletRequest hsr, HttpServletResponse hsr1){
         String data = hsr.getParameter("templateInfo");
+        
+        String posSelectTemplate = data.split("#")[1];
+        data = data.split("#")[0];
+        
+        posSelectTemplate = posSelectTemplate.split(" ")[0];
         String yearid = hsr.getParameter("yearid");
-        String roomMode = hsr.getParameter("rooms");
+        String roomMode = hsr.getParameter("rooms"); 
         String groupRoom = hsr.getParameter("groupofrooms");
         String[] datost = data.split("-");
-        ModelAndView mv= new ModelAndView("redirect:/schedule/renweb.htm?grouproom="+groupRoom+"&roommode="+roomMode+"&tempid="+datost[0]+"&yearid="+yearid+"&id="+datost[0]+"&rows="+datost[1]+"&cols="
+        ModelAndView mv= new ModelAndView("redirect:/schedule/renweb.htm?grouproom="+groupRoom+"&roommode="+roomMode+"&tempid="+datost[0]+"&posSelectTemplate="+posSelectTemplate+"&yearid="+yearid+"&id="+datost[0]+"&rows="+datost[1]+"&cols="
                                     + datost[2]);
         ArrayList<Tupla<Integer,String>> ar=Consultas.getYears();
         ar.sort(new Comp());

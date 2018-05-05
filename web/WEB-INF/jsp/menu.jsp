@@ -15,8 +15,8 @@
     <head>
         <%@ include file="infouser.jsp" %>
         <script>
-            function templates(){
-                var id = $( "#selectyear option:selected" ).val();
+            function templates() {
+                var id = $("#selectyear option:selected").val();
                 $.ajax({
                     type: "POST",
                     url: "menu/temp.htm?id=" + id,
@@ -25,9 +25,10 @@
                     success: function (data) {
                         var tmps = JSON.parse(data);
                         $('#selecttemplate').empty();
-                        for(var t in tmps){
-                            $('#selecttemplate').append("<option value='"+tmps[t].id+"-"+tmps[t].rows+
-                                    "-"+tmps[t].cols+"'>"+tmps[t].name+"</option>");
+                        var ind = 1;
+                        for (var t in tmps) {
+                            $('#selecttemplate').append("<option value='" + tmps[t].id + "-" + tmps[t].rows + "-" + tmps[t].cols + "#" + ind + "'>" + tmps[t].name + "</option>");
+                            ind++;
                         }
                     },
                     error: function (xhr, ajaxOptions, thrownError) {
@@ -37,19 +38,19 @@
                     }
                 });
             }
-            
-            function hideroomsgroup(){
+
+            function hideroomsgroup() {
                 var selectval = $('#roomsmode').val();
-                if(selectval === 0 || selectval === 1){
+                if (selectval === 0 || selectval === 1) {
                     $('#grouprooms').hide();
-                }else{
+                } else {
                     $('#grouprooms').show();
                 }
             }
             /*private int id;
-    private int cols;
-    private int rows;
-    private String name;*/
+             private int cols;
+             private int rows;
+             private String name;*/
         </script>
     </head>
     <body>
@@ -71,7 +72,7 @@
                 </div>
                 <div class="col-xs-3">
                     <h3>Select rooms schedule mode</h3>
-                    <select id="roomsmode"name="rooms" onchange="hideroomsgroup()">
+                    <select id="roomsmode" name="rooms" onchange="hideroomsgroup()">
                         <option value="0">disabled</option>
                         <option value="1">only courses with room restrictions</option>
                         <option value="2">only default school user defined</option>
@@ -84,7 +85,7 @@
                         <option value="rooms04">rooms 04</option>
                     </select>
                 </div>
-                    
+
                 <div class="col-xs-3">
                     <h3>Create Schedule</h3>
                     <input class="btn btn-primary btn-lg" type="submit" name="Submit" value="Create">
