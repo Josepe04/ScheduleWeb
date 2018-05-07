@@ -23,7 +23,7 @@ public class Algoritmo {
 
     public static int TAMX = 6;
     public static int TAMY = 12;
-    public final static int CHILDSPERSECTION = 20;
+    public final static int CHILDSPERSECTION = 25;
     private ArrayList<String> Log;
     private Conjuntos<Integer> conjuntos;
 
@@ -124,7 +124,6 @@ public class Algoritmo {
         mv.addObject("cs", r.cs);
         mv.addObject("rooms", r.rooms);
         mv.addObject("grouprooms", r.groupRooms);
-
         mv.addObject("log", Log);
     }
 
@@ -139,11 +138,31 @@ public class Algoritmo {
             }
         }
     }
-
+    private void deleteInStids( ArrayList<Tupla<Integer, ArrayList<Integer>>> stids,int pos){
+        for (int i = 0; i < stids.size(); i++) {
+            if(stids.get(i).getX() == pos)
+                stids.remove(i);
+        }
+    }
+    
+    private void updateStidsWithUserDefined( ArrayList<Tupla<Integer, ArrayList<Integer>>> stids, ArrayList<ArrayList<Boolean>> totalBlocks){ // se encarga de descartar las filas que han sido bloqueadas desde confiuration school 
+        int contador=0;
+        for (int i = 0; i < totalBlocks.size(); i++) {
+            if(!totalBlocks.get(i).isEmpty()){
+                for (int j = 0; j < totalBlocks.get(i).size(); j++) {
+                    if(!totalBlocks.get(i).get(j)){
+                       deleteInStids(stids,contador);
+                    }
+                    contador++;
+                }
+            }
+        }
+    }
     private ArrayList<Integer> studentSections(Restrictions r, ArrayList<Teacher> teachers, Course c, int minsections, ArrayList<ArrayList<Tupla>> sec,
             ArrayList<Integer> studentsCourse, HashMap<Integer, Student> students, ArrayList<Integer> rooms) {
         ArrayList<Tupla<Integer, ArrayList<Integer>>> stids = new ArrayList<>();
         ArrayList<Integer> idsAsignados = new ArrayList<>();
+        
         //Crea una lista con conjuntos de estudiantes compatibles con cada seccion
         //disponible del curso.
         for (int i = 0; i < sec.size(); i++) {
@@ -154,12 +173,15 @@ public class Algoritmo {
                 }
             }
         }
+        updateStidsWithUserDefined(stids,r.totalBlocks);
+        
         //Ordena la lista de conjuntos por numero de estudiantes de mayor a menor.
         try {
             stids.sort(new CompConjuntos());
         } catch (Exception e) {
             return null;
         }
+        
         //inicializo el conjunto de estudiantes seleccionables
         ArrayList<Integer> diferencia;
         if (!stids.isEmpty()) {
@@ -169,6 +191,7 @@ public class Algoritmo {
         }
         int lastTeacher = -1;
         int lastStudent = -1;
+        
         //recorro la lista de conjuntos y la de profesores
         for (int i = 0; i < stids.size(); i++) {
             for (Teacher t : teachers) {
@@ -271,7 +294,9 @@ public class Algoritmo {
                     }
                 }
                 c.setPatronesStudents(aux);
-                anadir = anadir.substring(0, anadir.length() - 2) + ".";
+                
+                
+                //anadir = anadir.substring(0, anadir.length() - 2) + ".";
                 Log.add(anadir);
             }
             for (Integer st : ret) {

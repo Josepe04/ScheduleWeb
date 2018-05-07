@@ -34,14 +34,17 @@ public class Restrictions {
     public ArrayList<Teacher> teachers;
     public ArrayList<Integer> groupRooms; 
     public String tempid;
+    public ArrayList<ArrayList<Boolean>> totalBlocks;
     
     public Restrictions(String yearid,String tempid,String groupofrooms){
         this.tempid = tempid;
         this.cs = new Consultas();
+        this.totalBlocks = this.cs.getTotalBlocksStart();
         this.idCourses = new ArrayList();
         this.students = new HashMap<>();
         this.groupRooms = cs.roomsGroup(groupofrooms);
         this.rooms = new HashMap();
+        
     }
     
     public Restrictions(String yearid,String tempid,String groupofrooms,int mode){
@@ -50,10 +53,10 @@ public class Restrictions {
         this.idCourses = new ArrayList();
         this.groupRooms = cs.roomsGroup(groupofrooms);
         ArrayList<Student> st = new ArrayList();
-        this.studentsCourse = Consultas.getCoursesGroups(st,idCourses,yearid,tempid);
+        this.studentsCourse = Consultas.getCoursesGroups(st,idCourses,yearid,tempid); //20sg
         this.students = new HashMap<>();
         st = (new Conjuntos<Student>()).union(st,
-                cs.restriccionesStudent(idCourses,studentsCourse,yearid));  
+                cs.restriccionesStudent(idCourses,studentsCourse,yearid));  //1min 20 sg
         for(Student s:st){
             this.students.put(s.getId(), s);
         }
@@ -75,6 +78,7 @@ public class Restrictions {
        this.teachers = cs.getTeachersOwnDB();
        this.studentsCourse = cs.getStudentsCourseOwnDB();
        
+       cs.fillHashCourses(this.courses);
     }
     
     /**

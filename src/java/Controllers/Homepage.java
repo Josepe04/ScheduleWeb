@@ -89,7 +89,7 @@ public class Homepage extends MultiActionController  {
         String roomMode = hsr.getParameter("rooms"); 
         String groupRoom = hsr.getParameter("groupofrooms");
         String[] datost = data.split("-");
-        ModelAndView mv= new ModelAndView("redirect:/schedule/renweb.htm?grouproom="+groupRoom+"&roommode="+roomMode+"&tempid="+datost[0]+"&posSelectTemplate="+posSelectTemplate+"&yearid="+yearid+"&id="+datost[0]+"&rows="+datost[1]+"&cols="
+        ModelAndView mv= new ModelAndView("redirect:/schedule/own.htm?grouproom="+groupRoom+"&roommode="+roomMode+"&tempid="+datost[0]+"&posSelectTemplate="+posSelectTemplate+"&yearid="+yearid+"&id="+datost[0]+"&rows="+datost[1]+"&cols="
                                     + datost[2]);
         ArrayList<Tupla<Integer,String>> ar=Consultas.getYears();
         ar.sort(new Comp());

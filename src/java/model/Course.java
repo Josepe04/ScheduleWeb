@@ -17,7 +17,7 @@ import java.util.logging.Logger;
  * @author Norhan
  */
 public class Course {
-    
+
     private String[][] huecos; // cuadricula
     private int idCourse; // id del curso
     private int blocksWeek; // bloques por semana
@@ -29,25 +29,28 @@ public class Course {
     private boolean GR; //
     private ArrayList<Integer> excludeRows; // bloques que no se pueden usar
     private ArrayList<Integer> excludeCols;
-    private ArrayList<Tupla<Integer,Integer>> excludeBlocks;
+    private ArrayList<Tupla<Integer,Integer>> preferedBlocks;
+    private ArrayList<Tupla<Integer, Integer>> excludeBlocks;
     private int maxBlocksPerDay;
     private int sections;
     private int sectionsNoEnrolled;
     private double percentEnrolled;
-    private ArrayList<Integer> studentsNoAsignados; 
+    private ArrayList<Integer> studentsNoAsignados;
     private ArrayList<Integer> studentsAsignados;
-    private ArrayList<ArrayList<Tupla>> patronesStudents; 
+    private ArrayList<ArrayList<Tupla>> patronesStudents;
     private int maxChildPerSection;
     private ArrayList<Integer> rooms;
     private ArrayList<Integer> trestricctions;
-    
+
     public Course(int idCourse) {
         this.idCourse = idCourse;
         this.rank = Integer.MAX_VALUE;
-        huecos=new String[Algoritmo.TAMX][Algoritmo.TAMY];
-        for(int i = 0;i<Algoritmo.TAMX;i++)
-            for(int j = 0; j < Algoritmo.TAMY;j++)
+        huecos = new String[Algoritmo.TAMX][Algoritmo.TAMY];
+        for (int i = 0; i < Algoritmo.TAMX; i++) {
+            for (int j = 0; j < Algoritmo.TAMY; j++) {
                 huecos[i][j] = "0";
+            }
+        }
         maxBlocksPerDay = 1;
         sections = 1;
         studentsNoAsignados = new ArrayList<>();
@@ -55,96 +58,132 @@ public class Course {
         trestricctions = new ArrayList();
         rooms = new ArrayList();
     }
-    
-    
-    public void addRoom(int id){
+
+    public void addRoom(int id) {
         rooms.add(id);
     }
-    
+
     /**
-     * Actualiza el nnumero de alumnos que
-     * no se han podido matricular.
-     * @param sectionsEnrolled 
+     * Actualiza el nnumero de alumnos que no se han podido matricular.
+     *
+     * @param sectionsEnrolled
      */
     public void setSectionsNoEnrolled(int sectionsEnrolled) {
         this.sectionsNoEnrolled = sectionsEnrolled;
     }
-    
+
     /**
      * Ocupa un hueco en una seccion
-     * @param list 
+     *
+     * @param list
      */
-    public void ocuparHueco(ArrayList<Tupla> list){
-        if(list!=null && !list.isEmpty()){
-            if(huecos[(Integer)list.get(0).x][(Integer)list.get(0).y].equals("0"))
-                for(Tupla<Integer,Integer> t:list)
-                    huecos[t.x][t.y] = ""+sections;
-            else
-                for(Tupla<Integer,Integer> t:list)
-                    huecos[t.x][t.y] += " and "+sections;
+    public void ocuparHueco(ArrayList<Tupla> list) {
+        if (list != null && !list.isEmpty()) {
+            if (huecos[(Integer) list.get(0).x][(Integer) list.get(0).y].equals("0")) {
+                for (Tupla<Integer, Integer> t : list) {
+                    huecos[t.x][t.y] = "" + sections;
+                }
+            } else {
+                for (Tupla<Integer, Integer> t : list) {
+                    huecos[t.x][t.y] += " and " + sections;
+                }
+            }
             sections++;
         }
     }
-    
+
     /**
      * Devuelve los huecos disponibles en los estudiantes no asignados al curso
-     * @return 
+     *
+     * @return
      */
-    public int[][] huecosStudents(){
+    public int[][] huecosStudents() {
         int[][] ret = new int[Algoritmo.TAMX][Algoritmo.TAMY];
-        for(ArrayList<Tupla> ar:this.patronesStudents){
-            for(Tupla<Integer,Integer> t:ar){
+        for (ArrayList<Tupla> ar : this.patronesStudents) {
+            for (Tupla<Integer, Integer> t : ar) {
                 ret[t.x][t.y] = 1;
             }
         }
         return ret;
     }
-    
+
     /**
-     * Devuelve los huecos donde se puede colocar
-     * una seccion
-     * @return 
+     * Devuelve los huecos donde se puede colocar una seccion
+     *
+     * @return
      */
-    public ArrayList<ArrayList<Tupla>> opciones(){ // AQUI ES DONDE SE LIMUTAN LOS HUECOS DISPONIBLES PARA EL ALGORITMO
+    public ArrayList<ArrayList<Tupla>> opciones() { // AQUI ES DONDE SE LIMUTAN LOS HUECOS DISPONIBLES PARA EL ALGORITMO
         ArrayList<ArrayList<Tupla>> ret = new ArrayList<>();
-        try{
-            if(maxSections == null && Integer.parseInt(maxSections)==0 
-                    && Integer.parseInt(maxSections) <= sections)
+        try {
+            if (maxSections == null && Integer.parseInt(maxSections) == 0
+                    && Integer.parseInt(maxSections) <= sections) {
                 return ret;
-        }catch(Exception e){}
-        for(int j = 0;j<Algoritmo.TAMY;j++){ // AQUI ES EL FALLO COMPARA LA HORA CON EL DIA TENIENDO EN CUENTA QUE LAS Y SON LAS HORAS Y LAS X LOS DIAS
-            if((excludeRows==null && excludeCols==null && excludeBlocks==null)  || !excludeRows.contains(j+1)){
-                int k,bloqueados;
-                int gd= this.minGapDays;
-                if(gd == 0)
+            }
+        } catch (Exception e) {
+        }
+        for (int j = 0; j < Algoritmo.TAMY; j++) { // AQUI ES EL FALLO COMPARA LA HORA CON EL DIA TENIENDO EN CUENTA QUE LAS Y SON LAS HORAS Y LAS X LOS DIAS
+            if ((excludeRows == null && excludeCols == null && excludeBlocks == null) || !excludeRows.contains(j + 1)) {
+                int k, bloqueados;
+                int gd = this.minGapDays;
+                if (gd == 0) {
                     gd++;
-                for(int i = 0; i < Algoritmo.TAMX;i++){ // cambiar!
-                    ArrayList<Tupla> t = new ArrayList<>(); 
-                    int sum=0;
+                }
+                for (int i = 0; i < Algoritmo.TAMX; i++) { // cambiar!
+                    ArrayList<Tupla> t = new ArrayList<>();
+                    int sum = 0;
                     bloqueados = 0;
-                    k=this.blocksWeek;
-                    while(k>0){
-                        Tupla taux = new Tupla((i+sum)%Algoritmo.TAMX,j);  // cambiar!
-                        if(!t.contains(taux) && !this.excludeBlocks.contains(taux) && 
-                                !this.excludeCols.contains((i+sum)%Algoritmo.TAMX)){ 
+                    k = this.blocksWeek;
+                    while (k > 0) {
+                        Tupla taux = new Tupla((i + sum) % Algoritmo.TAMX, j);  // cambiar!
+                        if (!t.contains(taux) && !this.excludeBlocks.contains(taux)
+                                && !this.excludeCols.contains((i + sum) % Algoritmo.TAMX)) {
                             t.add(taux);
                             k--;
                         } else {
                             bloqueados++;
                         }
-                        if(bloqueados > Algoritmo.TAMY)
+                        if (bloqueados > Algoritmo.TAMY) {
                             break;
-                        sum+=gd;
-                    }  
-                    if(k<=0 && !ret.contains(t))
+                        }
+                        sum += gd;
+                    }
+                    if (k <= 0 && !ret.contains(t)) {
                         ret.add(t);
+                    }
                 }
             }
         }
-    return ret;
+        return ret;
     }
-    
-    
+
+    public ArrayList<ArrayList<Boolean>> opcionesStart() { // AQUI ES DONDE SE LIMUTAN LOS HUECOS DISPONIBLES INICIO
+        ArrayList<ArrayList<Boolean>> ret = new ArrayList<>();
+        for (int j = 1; j <= Algoritmo.TAMY; j++) { // AQUI ES EL FALLO COMPARA LA HORA CON EL DIA TENIENDO EN CUENTA QUE LAS Y SON LAS HORAS Y LAS X LOS DIAS
+            if (!excludeCols.contains(j)) {
+                ArrayList<Boolean> t = new ArrayList<>();
+                for (int i = 1; i <= Algoritmo.TAMX; i++) { // cambiar!  
+                    int bloqueados = 0;
+                    Tupla taux = new Tupla(j - 1, i - 1);
+                    if (!this.excludeBlocks.contains(taux) && !this.excludeRows.contains(i)) {
+                        t.add(true);
+                    } else {
+                        bloqueados++;
+                        t.add(false);
+                    }
+                }
+                ret.add(t);
+            } else {
+                ArrayList<Boolean> auxFalse = new ArrayList();
+
+                for (int i = 1; i <= Algoritmo.TAMX; i++) {
+                    auxFalse.add(false);
+                }
+
+                ret.add(auxFalse);
+            }
+        }
+        return ret;
+    }
     //---------------------------------
     //-------GETTERS AND SETTERS-------
     //---------------------------------
@@ -154,12 +193,13 @@ public class Course {
     }
 
     public void setRooms(String rooms) {
-        String rparse1 = rooms.substring(1,rooms.length()-1);
+        String rparse1 = rooms.substring(1, rooms.length() - 1);
         String[] rparse2 = rparse1.split(",");
-        for(String s:rparse2){
-            try{
+        for (String s : rparse2) {
+            try {
                 this.rooms.add(Integer.parseInt(s));
-            }catch(Exception e){}
+            } catch (Exception e) {
+            }
         }
     }
 
@@ -170,16 +210,17 @@ public class Course {
     public void setMinSections(int minSections) {
         this.minSections = minSections;
     }
-    
+
     public ArrayList<ArrayList<Tupla>> getPatronesStudents() {
         return patronesStudents;
     }
 
     public void setPatronesStudents(ArrayList<ArrayList<Tupla>> patronesStudents) {
-        if(patronesStudents != null)
+        if (patronesStudents != null) {
             this.patronesStudents = patronesStudents;
+        }
     }
-    
+
     public int getSectionsNoEnrolled() {
         return sectionsNoEnrolled;
     }
@@ -191,7 +232,7 @@ public class Course {
     public void setMaxChildPerSection(int maxChildPerSection) {
         this.maxChildPerSection = maxChildPerSection;
     }
-    
+
     public double getPercentEnrolled() {
         return percentEnrolled;
     }
@@ -199,8 +240,7 @@ public class Course {
     public void setPercentEnrolled(double percentEnrolled) {
         this.percentEnrolled = percentEnrolled;
     }
-    
-    
+
     public ArrayList<Integer> getStudentsAsignados() {
         return studentsAsignados;
     }
@@ -208,7 +248,7 @@ public class Course {
     public void setStudentsAsignados(ArrayList<Integer> studentsAsignados) {
         this.studentsAsignados = studentsAsignados;
     }
-    
+
     public ArrayList<Integer> getStudentsNoAsignados() {
         return studentsNoAsignados;
     }
@@ -217,13 +257,10 @@ public class Course {
         this.studentsNoAsignados = studentsNoAsignados;
     }
 
-    
-
     public int getSections() {
         return sections;
     }
-    
-    
+
     public int getIdCourse() {
         return idCourse;
     }
@@ -279,7 +316,7 @@ public class Course {
     public void setGR(boolean GR) {
         this.GR = GR;
     }
-    
+
     public int getMaxBlocksPerDay() {
         return maxBlocksPerDay;
     }
@@ -289,33 +326,35 @@ public class Course {
     }
 
     public void setExcludeBlocks(String excludeBlocks) {
-        String [] s = excludeBlocks.split(";");
+        String[] s = excludeBlocks.split(";");
         String[] elem;
         this.excludeBlocks = new ArrayList();
         this.excludeCols = new ArrayList();
         this.excludeRows = new ArrayList();
-        if(!s[0].equals("")){
-            for(String s2 : s){
+        if (!s[0].equals("")) {
+            for (String s2 : s) {
                 elem = s2.split(",");
                 int row = -1;
                 int col = -1;
-                try{
+                try {
                     row = Integer.parseInt(elem[0]);
-                }catch(Exception e){}
-                try{
+                } catch (Exception e) {
+                }
+                try {
                     col = Integer.parseInt(elem[1]);
-                }catch(Exception e){}
-                if(row == -1){
+                } catch (Exception e) {
+                }
+                if (row == -1) {
                     this.excludeCols.add(col);
-                }else if(col == -1){
+                } else if (col == -1) {
                     this.excludeRows.add(row);
-                }else{
-                    this.excludeBlocks.add(new Tupla(row,col));
+                } else {
+                    this.excludeBlocks.add(new Tupla(row, col));
                 }
             }
         }
     }
-    
+
     public ArrayList<Integer> getTrestricctions() {
         return trestricctions;
     }
@@ -323,114 +362,134 @@ public class Course {
     public void setTrestricctions(ArrayList<Integer> trestricctions) {
         this.trestricctions = trestricctions;
     }
-    
+
     public String[][] getHuecos() {
         return huecos;
     }
-    
-    private String excludeBlocksToString(){
+
+    private String excludeBlocksToString() {
         String ret = "";
-        for(Tupla t : this.excludeBlocks){
-            ret+=t.x.toString()+","+t.y.toString()+";";
+        for (Tupla t : this.excludeBlocks) {
+            ret += t.x.toString() + "," + t.y.toString() + ";";
         }
         return ret;
     }
-    
-    public void setExcludeBlocksOwnDB(String excludeblocks){
-        String [] s = excludeblocks.split(";");
+
+    public void setExcludeBlocksOwnDB(String excludeblocks) {
+        String[] s = excludeblocks.split(";");
         String[] elem;
         this.excludeBlocks = new ArrayList();
-        if(!s[0].equals("")){
-            for(String s2 : s){
+        if (!s[0].equals("")) {
+            for (String s2 : s) {
                 elem = s2.split(",");
                 int row = -1;
                 int col = -1;
-                try{
+                try {
                     row = Integer.parseInt(elem[0]);
-                }catch(Exception e){}
-                try{
+                } catch (Exception e) {
+                }
+                try {
                     col = Integer.parseInt(elem[1]);
-                }catch(Exception e){}
-                if(row != -1 && col!=-1){
-                    this.excludeBlocks.add(new Tupla(row,col));
+                } catch (Exception e) {
+                }
+                if (row != -1 && col != -1) {
+                    this.excludeBlocks.add(new Tupla(row, col));
                 }
             }
         }
     }
+
+    public ArrayList<Tupla<Integer,Integer>> getPreferedBlocks() {
+        return preferedBlocks;
+    }
+
+    public void setPreferedBlocks(ArrayList<Tupla<Integer,Integer>> preferedBlocks) {
+        this.preferedBlocks = preferedBlocks;
+    }
+
     
-    public void setExcludeCols(String cols){
-        String [] s = cols.split(",");
+    public void setPreferedBlocks(String s) {
+     //falta terminar
+    }
+
+       
+    public void setExcludeCols(String cols) {
+        String[] s = cols.split(",");
         String[] elem;
         this.excludeCols = new ArrayList();
-        if(!s[0].equals("")){
-            for(String s2 : s){
+        if (!s[0].equals("")) {
+            for (String s2 : s) {
                 int col = -1;
-                try{
+                try {
                     col = Integer.parseInt(s2);
-                }catch(Exception e){}
-                if(col!=-1){
+                } catch (Exception e) {
+                }
+                if (col != -1) {
                     this.excludeCols.add(col);
                 }
             }
         }
     }
-    
-    public void setExcludeRows(String rows){
-        String [] s = rows.split(",");
+
+    public void setExcludeRows(String rows) {
+        String[] s = rows.split(",");
         String[] elem;
         this.excludeRows = new ArrayList();
-        if(!s[0].equals("")){
-            for(String s2 : s){
+        if (!s[0].equals("")) {
+            for (String s2 : s) {
                 int row = -1;
-                try{
+                try {
                     row = Integer.parseInt(s2);
-                }catch(Exception e){}
-                if(row!=-1){
+                } catch (Exception e) {
+                }
+                if (row != -1) {
                     this.excludeRows.add(row);
                 }
             }
         }
     }
-    
+
     /**
      * inserta o actualiza si ya existe ,el curso en nuestra base de datos.
      */
-    public void insertarOActualizarCurso(){
-        String consulta = "select * from courses where id="+this.idCourse;
+    public void insertarOActualizarCurso() {
+        String consulta = "select * from courses where id=" + this.idCourse;
         boolean actualizar = false;
         try {
             ResultSet rs = DBConnect.own.executeQuery(consulta);
-            while(rs.next())
+            while (rs.next()) {
                 actualizar = true;
-            if(!actualizar){
-                int maxsec = 0,mingapblocks=0;
-                try{
+            }
+            if (!actualizar) {
+                int maxsec = 0, mingapblocks = 0;
+                try {
                     maxsec = Integer.parseInt(this.maxSections);
-                }catch(Exception e){}
-                
-                try{
+                } catch (Exception e) {
+                }
+
+                try {
                     mingapblocks = Integer.parseInt(this.minGapBlocks);
-                }catch(Exception e){}
-                
-                consulta = "insert into courses values("+this.idCourse+","+this.blocksWeek+","
-                    +maxsec+","+mingapblocks+","
-                    +this.minGapDays+","+this.rank+","+this.GR+",'"
-                    +excludeBlocksToString()+"',"+this.maxBlocksPerDay+",'"
-                    +this.rooms.toString()+"','"+this.excludeCols.toString()
-                    +"','"+this.excludeRows.toString()+"','"+this.trestricctions.toString()+"')";
+                } catch (Exception e) {
+                }
+
+                consulta = "insert into courses values(" + this.idCourse + "," + this.blocksWeek + ","
+                        + maxsec + "," + mingapblocks + ","
+                        + this.minGapDays + "," + this.rank + "," + this.GR + ",'"
+                        + excludeBlocksToString() + "'," + this.maxBlocksPerDay + ",'"
+                        + this.rooms.toString() + "','" + this.excludeCols.toString()
+                        + "','" + this.excludeRows.toString() + "','" + this.trestricctions.toString() + "')";
                 DBConnect.own.executeUpdate(consulta);
-            }else{
+            } else {
                 //to do: UPDATE
             }
         } catch (SQLException ex) {
             Logger.getLogger(Course.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+
     }
-    
-    
+
     @Override
-    public boolean equals(Object c){
-        return this.idCourse == ((Course)c).idCourse;
+    public boolean equals(Object c) {
+        return this.idCourse == ((Course) c).idCourse;
     }
 }

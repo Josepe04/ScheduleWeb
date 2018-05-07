@@ -29,6 +29,7 @@ public class Consultas {
     private Teacher tdefault;
     private Student stDefault;
     private HashMap<Integer, String> courseName;
+    private ArrayList<ArrayList<Boolean>> totalBlocksStart;
     private int totalBlocks;
 
     public Consultas() {
@@ -38,6 +39,7 @@ public class Consultas {
         stDefault.setGenero("Male");
         stDefault.setName("default");
         courseName = new HashMap<>();
+        totalBlocksStart = this.totalBlocksStart();
         totalBlocks = this.totalBlocks();
     }
 
@@ -395,8 +397,31 @@ public class Consultas {
                         excludes += rs.getString(1);
                     }
                 }
-                ret.get(i).setExcludeBlocks(excludes);
+                
+                
+                
+                //**David solo prueba**//         
+                String prefered ="";
+                consulta = "select udd.data\n"
+                        + "                from uddata udd\n"
+                        + "                inner join udfield udf\n"
+                        + "                    on udd.fieldid = udf.fieldid\n"
+                        + "                inner join udgroup udg\n"
+                        + "                    on udg.groupid = udf.groupid\n"
+                        + "                    and udg.grouptype = 'course'\n"
+                        + "                    and udg.groupname = 'Schedule'\n"
+                        + "                    and udf.fieldName = 'PreferredBlock'\n"
+                        + "                where udd.id =" + ret.get(i).getIdCourse();
 
+                rs = DBConnect.renweb.executeQuery(consulta);
+                while (rs.next()) {
+                    prefered += rs.getString(1);
+                }          
+                  ret.get(i).setPreferedBlocks(prefered);
+                
+                ///***///
+              
+                ret.get(i).setExcludeBlocks(excludes);
                 consulta = "select MaxSize from courses where courseid="
                         + ret.get(i).getIdCourse();
                 rs = DBConnect.renweb.executeQuery(consulta);
@@ -430,7 +455,7 @@ public class Consultas {
     }
 
     private int totalBlocks() {
-        
+
         String excludes = "";
         int ret = Algoritmo.TAMX * Algoritmo.TAMY;
         Course caux = new Course(1);
@@ -455,12 +480,46 @@ public class Consultas {
             }
             caux.setExcludeBlocks(excludes); //quita los bloques excluidos
             ret = caux.opciones().size();
+            
         } catch (SQLException ex) {
             Logger.getLogger(Consultas.class.getName()).log(Level.SEVERE, null, ex);
         }
         return ret;
     }
+    
+    // * @author David
+    private ArrayList<ArrayList<Boolean>> totalBlocksStart() {
 
+        String excludes = "";
+        int ret = Algoritmo.TAMX * Algoritmo.TAMY;
+        Course caux = new Course(1);
+        String consulta = "select udd.data\n"
+                + "                from uddata udd\n"
+                + "                inner join udfield udf\n"
+                + "                    on udd.fieldid = udf.fieldid\n"
+                + "                inner join udgroup udg\n"
+                + "                    on udg.groupid = udf.groupid\n"
+                + "                    and udg.grouptype = 'school'\n"
+                + "                    and udg.groupname = 'Schedule'\n"
+                + "                    and udf.fieldName = 'ExcludeBlocks03'";
+
+        ResultSet rs;
+        try {
+            rs = DBConnect.renweb.executeQuery(consulta);
+
+            while (rs.next()) {
+                if (!excludes.contains(rs.getString(1))) {
+                    excludes += rs.getString(1);
+                }
+            }
+            caux.setExcludeBlocks(excludes); //quita los bloques excluidos 
+            
+        } catch (SQLException ex) {
+            Logger.getLogger(Consultas.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return caux.opcionesStart();
+    }
+    
     private Teacher teacherDefault() {
         Teacher ret = new Teacher();
         String consulta;
@@ -907,7 +966,7 @@ public class Consultas {
      */
     public ArrayList<Course> getCoursesOwnDB() {
         ArrayList<Course> ret = new ArrayList();
-        String consulta = "select * from courses";
+        String consulta = "select * from courses order by id ASC";
         String teachers = "";
         try {
             ResultSet rs = DBConnect.own.executeQuery(consulta);
@@ -995,7 +1054,7 @@ public class Consultas {
 
     public HashMap<Integer, ArrayList<Integer>> getStudentsCourseOwnDB() {
         HashMap<Integer, ArrayList<Integer>> ret = new HashMap();
-        String consulta = "select * from students_course";
+        String consulta = "select distinct * from students_course";
         try {
             ResultSet rs = DBConnect.own.executeQuery(consulta);
             while (rs.next()) {
@@ -1019,6 +1078,19 @@ public class Consultas {
     -----------------------
      */
 
+    public ArrayList<ArrayList<Boolean>> getTotalBlocksStart() {
+        return totalBlocksStart;
+    }
+
+    public void setTotalBlocksStart(ArrayList<ArrayList<Boolean>> totalBlocks) {
+        this.totalBlocksStart = totalBlocks;
+    }
+
+    void fillHashCourses(ArrayList<Course> courses) {
+        for (int i = 0; i < courses.size(); i++) 
+                courseName.put(courses.get(i).getIdCourse(), fetchNameCourse(courses.get(i).getIdCourse())); 
+    }
+
     public int getTotalBlocks() {
         return totalBlocks;
     }
@@ -1026,4 +1098,5 @@ public class Consultas {
     public void setTotalBlocks(int totalBlocks) {
         this.totalBlocks = totalBlocks;
     }
+    
 }

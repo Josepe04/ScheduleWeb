@@ -34,8 +34,8 @@ public class ScheduleController {
         String yearid = hsr.getParameter("yearid");
         int x = Integer.parseInt(xs);
         int y = Integer.parseInt(ys);
-        mv.addObject("hFilas",Consultas.getRowHeader(id, y));
-        mv.addObject("hcols",Consultas.getColHeader(id, x));
+        mv.addObject("hFilas",Consultas.getRowHeader(id, y)); //4sg
+        mv.addObject("hcols",Consultas.getColHeader(id, x)); //2sg
         Algoritmo algo = new Algoritmo(x,y);
         Restrictions r = new Restrictions(yearid,tempid,roomgroup,1);
         r.syncOwnDB();
