@@ -3,14 +3,10 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/NetBeans/ScheduleWeb/src/java/dataManage/Conjuntos.java</file>
-            <file>file:/C:/NetBeans/ScheduleWeb/src/java/dataManage/Consultas.java</file>
-            <file>file:/C:/NetBeans/ScheduleWeb/web/WEB-INF/jsp/menu.jsp</file>
-            <file>file:/C:/NetBeans/ScheduleWeb/src/java/Controllers/Homepage.java</file>
-            <file>file:/C:/NetBeans/ScheduleWeb/src/java/model/Algoritmo.java</file>
-            <file>file:/C:/NetBeans/ScheduleWeb/src/java/dataManage/Restrictions.java</file>
-            <file>file:/C:/NetBeans/ScheduleWeb/src/java/Controllers/ScheduleController.java</file>
-            <file>file:/C:/NetBeans/ScheduleWeb/web/WEB-INF/jsp/userform.jsp</file>
+            <file>file:/C:/Users/nmoha/OneDrive/Documentos/NetBeansProjects/ScheduleWeb02/src/java/model/Course.java</file>
+            <file>file:/C:/Users/nmoha/OneDrive/Documentos/NetBeansProjects/ScheduleWeb02/src/java/Controllers/ScheduleController.java</file>
+            <file>file:/C:/Users/nmoha/OneDrive/Documentos/NetBeansProjects/ScheduleWeb02/src/java/dataManage/Consultas.java</file>
+            <file>file:/C:/Users/nmoha/OneDrive/Documentos/NetBeansProjects/ScheduleWeb02/src/java/dataManage/Restrictions.java</file>
         </group>
     </open-files>
 </project-private>

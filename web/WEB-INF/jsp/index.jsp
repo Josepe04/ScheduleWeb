@@ -103,7 +103,7 @@
             HashMap<Integer,Student> lista2 = (HashMap)request.getAttribute("students");
             ArrayList<String> log = (ArrayList<String>)request.getAttribute("log");
             ArrayList<Integer> groupRooms = (ArrayList<Integer>)request.getAttribute("grouprooms");
-            HashMap<Integer,Room> rooms = (HashMap<Integer,Room>)request.getAttribute("rooms");
+            HashMap<Integer,Room> rooms = (HashMap<Integer,Room>)request.getsAttribute("rooms");
             boolean swapcolor = true;
             double totalenrolled = 0;
             double totalnoenrolled = 0;

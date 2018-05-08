@@ -416,8 +416,9 @@ public class Consultas {
                 rs = DBConnect.renweb.executeQuery(consulta);
                 while (rs.next()) {
                     prefered += rs.getString(1);
-                }          
-                  ret.get(i).setPreferedBlocks(prefered);
+                }    
+                
+                ret.get(i).setPreferedBlocks(prefered);
                 
                 ///***///
               

@@ -29,7 +29,7 @@ public class Course {
     private boolean GR; //
     private ArrayList<Integer> excludeRows; // bloques que no se pueden usar
     private ArrayList<Integer> excludeCols;
-    private ArrayList<Tupla<Integer,Integer>> preferedBlocks;
+    private ArrayList<ArrayList<Tupla<Integer, Integer>>> preferedBlocks;
     private ArrayList<Tupla<Integer, Integer>> excludeBlocks;
     private int maxBlocksPerDay;
     private int sections;
@@ -399,20 +399,43 @@ public class Course {
         }
     }
 
-    public ArrayList<Tupla<Integer,Integer>> getPreferedBlocks() {
+    public void setPreferedBlocks(String s) {
+        if (s != null && s != "") {
+            this.preferedBlocks = new ArrayList();
+            //falta terminar
+            String[] restric_sec = s.split("]"), restric_bloq, restric_elem;
+
+            for (String restric_sec1 : restric_sec) {
+                String aux = restric_sec1.substring(1, restric_sec1.length());
+                restric_bloq = aux.split(";");
+                ArrayList<Tupla<Integer, Integer>> arrayAux = new ArrayList();
+                for (String restric_bloq1 : restric_bloq) {
+                    restric_elem = restric_bloq1.split(",");
+                    int row = -1;
+                    int col = -1;
+                    try {
+                        row = Integer.parseInt(restric_elem[0]);
+                        col = Integer.parseInt(restric_elem[1]);
+                    } catch (Exception e) {
+                        System.out.println("Problemas model.Course.setPreferedBlocks()");
+                    }
+                    if (row != -1 && col != -1) {
+                        arrayAux.add(new Tupla(row, col));
+                    }
+                }
+                this.preferedBlocks.add(arrayAux);
+            }
+        }
+    }
+
+    public ArrayList<ArrayList<Tupla<Integer, Integer>>> getPreferedBlocks() {
         return preferedBlocks;
     }
 
-    public void setPreferedBlocks(ArrayList<Tupla<Integer,Integer>> preferedBlocks) {
+    public void setPreferedBlocks(ArrayList<ArrayList<Tupla<Integer, Integer>>> preferedBlocks) {
         this.preferedBlocks = preferedBlocks;
     }
 
-    
-    public void setPreferedBlocks(String s) {
-     //falta terminar
-    }
-
-       
     public void setExcludeCols(String cols) {
         String[] s = cols.split(",");
         String[] elem;
