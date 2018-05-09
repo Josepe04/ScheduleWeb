@@ -21,8 +21,8 @@ import org.springframework.web.servlet.ModelAndView;
  */
 public class Algoritmo {
 
-    public static int TAMX = 6;
-    public static int TAMY = 12;
+    public static int TAMX = 3;
+    public static int TAMY = 11;
     public final static int CHILDSPERSECTION = 25;
     private ArrayList<String> Log;
     private Conjuntos<Integer> conjuntos;
@@ -55,7 +55,12 @@ public class Algoritmo {
                     numAlumnos = CHILDSPERSECTION; // POR DEFECTO
                 }
                 //MINIMO DE SECCIONES NECESARIAS PARA TODOS LOS ESTUDIANTES (TENIENDO EN CUENTA EL NUMERO MAX  DE ALUMNOS POR AULA)
-                minsections = 1 + r.studentsCourse.get(course.getIdCourse()).size() / numAlumnos;
+                //solo prueba
+                if(r.studentsCourse.get(course.getIdCourse()).size()%numAlumnos == 0)
+                    minsections = (r.studentsCourse.get(course.getIdCourse()).size() / numAlumnos);
+                else minsections = 1 + (r.studentsCourse.get(course.getIdCourse()).size() / numAlumnos);
+                //pruebas 
+                //if(minsections == 0) minsections = 4;
             } catch (ArithmeticException e) {
                 //e.printStackTrace();
                 System.out.println("id:" + course.getIdCourse() + " name: " + r.cs.nameCourse(course.getIdCourse()));
@@ -179,15 +184,15 @@ public class Algoritmo {
         // aqui es donde se tendra que modificar por donde se comenzara a buscar las posiciones del patron
         for (int i = 0; i < sec.size(); i++) {
             stids.add(new Tupla(i, new ArrayList<>()));
-            for (Integer j : studentsCourse) {      
+            for (Integer j : studentsCourse) {
                 if (students.get(j).patronCompatible(sec.get(i))) {
                     stids.get(i).y.add(j);
                 }
             }
         }
-        
 
-       /*
+
+        /*
         for (int i = 0; i < sec.size(); i++) {
             stids.add(new Tupla(i, new ArrayList<>()));
             
@@ -208,7 +213,7 @@ public class Algoritmo {
             }
         }*/
         updateStidsWithUserDefined(stids, r.totalBlocks);
-        
+
         //Ordena la lista de conjuntos por numero de estudiantes de mayor a menor.
         try {
             stids.sort(new CompConjuntos());
@@ -244,12 +249,26 @@ public class Algoritmo {
                             }
                         }
                     }
+                    //probar aqui
+
                     //si hay una room compatible o no el schedule por rooms esta desactivado
                     //entonces ya procedemos a ocupar los huecos de los estudiantes con la seccion elegida
                     if (compatibleRoom != null || rooms == null) {
                         int k = 0;
                         lastTeacher = i;
                         for (Integer j : diferencia) {
+                           /* if (c.getPreferedBlocks() != null && c.getPreferedBlocks().size() > 0) {
+                                for (int h = 0; h < c.getPreferedBlocks().get(studentsCourseSection.get(j)).size(); h++) {
+                                    ArrayList<Tupla> auxTupla = new ArrayList();
+                                    auxTupla.add(new Tupla(c.getPreferedBlocks().get(studentsCourseSection.get(j)).get(h).x - 1, c.getPreferedBlocks().get(studentsCourseSection.get(j)).get(h).y - 1));
+                                    if (!idsAsignados.contains(j) && students.get(j).patronCompatible(auxTupla)) {
+                                        idsAsignados.add(j);
+                                        students.get(j).ocuparHueco(auxTupla, c.getIdCourse() * 100 + c.getSections());
+                                        k++;
+                                        lastStudent = i;
+                                    }
+                                }
+                            }*/
                             if ((k < studentsCourse.size() / c.getMinSections() + 1 || studentsCourse.size() == 1) && !idsAsignados.contains(j)
                                     && students.get(j).patronCompatible(sec.get(stids.get(i).x))) {
                                 idsAsignados.add(j);

@@ -44,15 +44,15 @@ public class Restrictions {
         this.idCourses = new ArrayList();
         this.students = new HashMap<>();
         this.groupRooms = cs.roomsGroup(groupofrooms);
-        this.rooms = new HashMap();
-
+     //   this.rooms = new HashMap();
+       // this.courses = cs.getRestriccionesCourses(Consultas.convertIntegers(idCourses),cs.templateInfo(tempid));
+       // System.out.println("dataManage.Restrictions.<init>()");
         //solo prueba
         /*  ArrayList<Student> st = new ArrayList();
          this.studentsCourse = Consultas.getCoursesGroups(st,idCourses,yearid,tempid); //20sg
            st = (new Conjuntos<Student>()).union(st,
                 cs.restriccionesStudent(idCourses,studentsCourse,yearid));  //1min 20 sg
-           
-        this.courses = cs.getRestriccionesCourses(Consultas.convertIntegers(idCourses),cs.templateInfo(tempid));*/
+           */
     }
 
     public Restrictions(String yearid, String tempid, String groupofrooms, int mode) {
@@ -75,7 +75,7 @@ public class Restrictions {
         this.courses.sort(new Restrictions.CompCoursesRank());
         this.teachers = cs.teachersList(tempid);
 
-        //  cs.fillHashCourses(this.courses);
+        cs.fillHashCourses(this.courses);
     }
 
     /**
