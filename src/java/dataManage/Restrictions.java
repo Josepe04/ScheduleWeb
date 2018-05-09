@@ -44,6 +44,7 @@ public class Restrictions {
         this.idCourses = new ArrayList();
         this.students = new HashMap<>();
         this.groupRooms = cs.roomsGroup(groupofrooms);
+
      //   this.rooms = new HashMap();
        // this.courses = cs.getRestriccionesCourses(Consultas.convertIntegers(idCourses),cs.templateInfo(tempid));
        // System.out.println("dataManage.Restrictions.<init>()");
@@ -74,7 +75,6 @@ public class Restrictions {
         this.courses = cs.getRestriccionesCourses(Consultas.convertIntegers(idCourses), cs.templateInfo(tempid));
         this.courses.sort(new Restrictions.CompCoursesRank());
         this.teachers = cs.teachersList(tempid);
-
         cs.fillHashCourses(this.courses);
     }
 
@@ -84,10 +84,13 @@ public class Restrictions {
      */
     public void extraerDatosOwnDB() {
         this.courses = cs.getCoursesOwnDB();
+        
         this.students = cs.getStudnetsOwnDB();
         this.rooms = cs.getRoomsOwnDB();
         this.teachers = cs.getTeachersOwnDB();
         this.studentsCourse = cs.getStudentsCourseOwnDB();
+
+        //this.courses = cs.getRestriccionesCourses(Consultas.convertIntegers(idCourses), cs.templateInfo(tempid));
 
         cs.fillHashCourses(this.courses);
     }

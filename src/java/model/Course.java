@@ -112,7 +112,7 @@ public class Course {
      *
      * @return
      */
-    public ArrayList<ArrayList<Tupla>> opciones() { // AQUI ES DONDE SE LIMUTAN LOS HUECOS DISPONIBLES PARA EL ALGORITMO
+    public ArrayList<ArrayList<Tupla>> opciones() { // AQUI ES DONDE SE LIMUTAN LOS HUECOS DISPONIBLES PARA EL ALGORITMO por curso
         ArrayList<ArrayList<Tupla>> ret = new ArrayList<>();
         try {
             if (maxSections == null && Integer.parseInt(maxSections) == 0
