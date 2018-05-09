@@ -2,17 +2,6 @@
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
-        <group>
-            <file>file:/C:/NetBeans/ScheduleWeb03/src/java/Controllers/ScheduleController.java</file>
-            <file>file:/C:/NetBeans/ScheduleWeb03/src/java/model/Student.java</file>
-            <file>file:/C:/NetBeans/ScheduleWeb03/src/java/Controllers/Homepage.java</file>
-            <file>file:/C:/NetBeans/ScheduleWeb03/src/java/model/Algoritmo.java</file>
-            <file>file:/C:/NetBeans/ScheduleWeb03/src/java/dataManage/Restrictions.java</file>
-            <file>file:/C:/NetBeans/ScheduleWeb03/src/java/model/Course.java</file>
-            <file>file:/C:/NetBeans/ScheduleWeb03/src/java/dataManage/Conjuntos.java</file>
-            <file>file:/C:/NetBeans/ScheduleWeb03/web/WEB-INF/jsp/index.jsp</file>
-            <file>file:/C:/NetBeans/ScheduleWeb03/src/java/dataManage/Consultas.java</file>
-            <file>file:/C:/NetBeans/ScheduleWeb03/web/WEB-INF/jsp/infouser.jsp</file>
-        </group>
+        <group/>
     </open-files>
 </project-private>

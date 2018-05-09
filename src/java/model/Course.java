@@ -112,7 +112,7 @@ public class Course {
      *
      * @return
      */
-    public ArrayList<ArrayList<Tupla>> opciones() { // AQUI ES DONDE SE LIMUTAN LOS HUECOS DISPONIBLES PARA EL ALGORITMO por curso
+    public ArrayList<ArrayList<Tupla>> opciones() { 
         ArrayList<ArrayList<Tupla>> ret = new ArrayList<>();
         try {
             if (maxSections == null && Integer.parseInt(maxSections) == 0
@@ -121,20 +121,21 @@ public class Course {
             }
         } catch (Exception e) {
         }
-        for (int j = 0; j < Algoritmo.TAMY; j++) { // AQUI ES EL FALLO COMPARA LA HORA CON EL DIA TENIENDO EN CUENTA QUE LAS Y SON LAS HORAS Y LAS X LOS DIAS
-            if ((excludeRows == null && excludeCols == null && excludeBlocks == null) || !excludeRows.contains(j + 1)) {
+        for (int j = 0; j < Algoritmo.TAMY; j++) {
+            if ((excludeRows == null && excludeCols == null && excludeBlocks == null)
+                    || !excludeRows.contains(j + 1)) {
                 int k, bloqueados;
                 int gd = this.minGapDays;
                 if (gd == 0) {
                     gd++;
                 }
-                for (int i = 0; i < Algoritmo.TAMX; i++) { // cambiar!
+                for (int i = 0; i < Algoritmo.TAMX; i++) { // 
                     ArrayList<Tupla> t = new ArrayList<>();
                     int sum = 0;
                     bloqueados = 0;
                     k = this.blocksWeek;
                     while (k > 0) {
-                        Tupla taux = new Tupla((i + sum) % Algoritmo.TAMX, j);  // cambiar!
+                        Tupla taux = new Tupla((i + sum) % Algoritmo.TAMX, j);
                         if (!t.contains(taux) && !this.excludeBlocks.contains(taux)
                                 && !this.excludeCols.contains((i + sum) % Algoritmo.TAMX)) {
                             t.add(taux);
@@ -163,7 +164,7 @@ public class Course {
                 ArrayList<Boolean> t = new ArrayList<>();
                 for (int i = 1; i <= Algoritmo.TAMX; i++) { // cambiar!  
                     int bloqueados = 0;
-                    Tupla taux = new Tupla(j - 1, i - 1);
+                    Tupla taux = new Tupla(i, j);
                     if (!this.excludeBlocks.contains(taux) && !this.excludeRows.contains(i)) {
                         t.add(true);
                     } else {

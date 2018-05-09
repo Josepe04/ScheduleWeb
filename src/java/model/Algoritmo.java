@@ -175,6 +175,39 @@ public class Algoritmo {
         }
     }
 
+    private int buscarPosBlock(int pos, ArrayList<Tupla<Integer, ArrayList<Integer>>> stids){
+        for (int i = 0; i < stids.size(); i++){
+            if(stids.get(i).x == pos) return i;
+        }
+        return -1;
+    }
+    private void sortStidsByPriority(ArrayList<Tupla<Integer, ArrayList<Integer>>> stids, Course c, Restrictions r) {
+       /* if (c.getPreferedBlocks() != null && c.getPreferedBlocks().size() > 0) {
+            for (int h = 0; h < c.getPreferedBlocks().get(c.getSections() - 1).size(); h++) {
+                ArrayList<Tupla> auxTupla = new ArrayList();
+                auxTupla.add(new Tupla(c.getPreferedBlocks().get(c.getSections() - 1).get(h).x - 1, c.getPreferedBlocks().get(c.getSections() - 1).get(h).y - 1));
+                if (!idsAsignados.contains(j) && students.get(j).patronCompatible(auxTupla)) {
+                    idsAsignados.add(j);
+                    students.get(j).ocuparHueco(auxTupla, c.getIdCourse() * 100 + c.getSections());
+                    k++;
+                    lastStudent = i;
+                }
+            }
+        }*/
+       if (c.getPreferedBlocks() != null && c.getPreferedBlocks().size() > 0) {
+           for (int i = 0; i < c.getPreferedBlocks().get(c.getSections()-1).size(); i++) {
+               Tupla<Integer, ArrayList<Integer>> tuplaAux = stids.get(i);
+               
+               int posBlock = ((c.getPreferedBlocks().get(c.getSections()-1).get(i).x -1)) + ((c.getPreferedBlocks().get(c.getSections()-1).get(i).y -1 )*r.totalBlocks.get(0).size());
+               int res = buscarPosBlock(posBlock,stids);
+               if(res != -1){
+                    stids.set(i,stids.get(res));
+                    stids.set(posBlock,tuplaAux);
+               }
+           }
+        }
+    }
+
     private ArrayList<Integer> studentSections(Restrictions r, ArrayList<Teacher> teachers, Course c, int minsections, ArrayList<ArrayList<Tupla>> sec,
             ArrayList<Integer> studentsCourse, HashMap<Integer, Integer> studentsCourseSection, HashMap<Integer, Student> students, ArrayList<Integer> rooms) {
 
@@ -222,6 +255,7 @@ public class Algoritmo {
         } catch (Exception e) {
             return null;
         }
+        sortStidsByPriority(stids, c,r);
 
         //inicializo el conjunto de estudiantes seleccionables
         ArrayList<Integer> diferencia;
@@ -254,7 +288,6 @@ public class Algoritmo {
                             }
                         }
                     }
-                   
 
                     //si hay una room compatible o no el schedule por rooms esta desactivado
                     //entonces ya procedemos a ocupar los huecos de los estudiantes con la seccion elegida
@@ -267,22 +300,22 @@ public class Algoritmo {
                         }
 
                         for (Integer j : diferencia) {
-                            if (c.getPreferedBlocks() != null && c.getPreferedBlocks().size() > 0) {
-                                for (int h = 0; h < c.getPreferedBlocks().get(c.getSections()-1).size(); h++) {
-                                    ArrayList<Tupla> auxTupla = new ArrayList();
-                                    auxTupla.add(new Tupla(c.getPreferedBlocks().get(c.getSections()-1).get(h).x - 1, c.getPreferedBlocks().get(c.getSections()-1).get(h).y - 1));
-                                    if (!idsAsignados.contains(j) && students.get(j).patronCompatible(auxTupla)) {
-                                        idsAsignados.add(j);
-                                        students.get(j).ocuparHueco(auxTupla, c.getIdCourse() * 100 + c.getSections());
-                                        k++;
-                                        lastStudent = i;
+                            /*if (c.getPreferedBlocks() != null && c.getPreferedBlocks().size() > 0) {
+                                    for (int h = 0; h < c.getPreferedBlocks().get(c.getSections() - 1).size(); h++) {
+                                        ArrayList<Tupla> auxTupla = new ArrayList();
+                                        auxTupla.add(new Tupla(c.getPreferedBlocks().get(c.getSections() - 1).get(h).x - 1, c.getPreferedBlocks().get(c.getSections() - 1).get(h).y - 1));
+                                        if (!idsAsignados.contains(j) && students.get(j).patronCompatible(auxTupla)) {
+                                            idsAsignados.add(j);
+                                            students.get(j).ocuparHueco(auxTupla, c.getIdCourse() * 100 + c.getSections());
+                                            k++;
+                                            lastStudent = i;
+                                        }
                                     }
-                                }
-                            }
+                                }*/
                             //    if ((k < studentsCourse.size() / c.getMinSections() + 1 || studentsCourse.size() == 1) && !idsAsignados.contains(j)
                             if (((k < studentsBySection) || studentsCourse.size() == 1) && !idsAsignados.contains(j)
                                     && students.get(j).patronCompatible(sec.get(stids.get(i).x))) {
-                                
+
                                 idsAsignados.add(j);
                                 students.get(j).ocuparHueco(sec.get(stids.get(i).x), c.getIdCourse() * 100 + c.getSections());
                                 k++;
