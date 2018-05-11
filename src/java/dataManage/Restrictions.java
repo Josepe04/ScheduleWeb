@@ -72,6 +72,9 @@ public class Restrictions {
 
         this.totalBlocks = this.cs.getTotalBlocksStart();
         this.rooms = cs.getRooms();
+        
+        /*ArrayList<Integer> auxPrueba = new ArrayList<>();
+        auxPrueba.add(idCourses.get(0));*/
         this.courses = cs.getRestriccionesCourses(Consultas.convertIntegers(idCourses), cs.templateInfo(tempid));
         this.courses.sort(new Restrictions.CompCoursesRank());
         this.teachers = cs.teachersList(tempid);

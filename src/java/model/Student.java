@@ -183,5 +183,13 @@ public class Student {
         return ((Student) st).id == this.id;
     }
 
-   
+   public int getNumSectionByCourse(int idCourse){
+       for (int i = 0; i < Algoritmo.TAMX; i++) {
+           for (int j = 0; j < Algoritmo.TAMY; j++) {
+               if((this.huecos[i][j] /100) == idCourse)
+                   return this.huecos[i][j]%100;
+           }
+       }
+       return -1;
+   }
 }

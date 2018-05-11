@@ -398,7 +398,7 @@ public class Consultas {
                     }
                 }
                 
-                
+                ret.get(i).setExcludeBlocks(excludes);
                 
                 //**David solo prueba**//         
                 String prefered ="";
@@ -420,9 +420,30 @@ public class Consultas {
                 
                 ret.get(i).setPreferedBlocks(prefered);
                 
+                
+                 //**David solo prueba**//         
+                boolean balanceTeachers = false;
+                consulta = "select udd.data\n"
+                        + "                from uddata udd\n"
+                        + "                inner join udfield udf\n"
+                        + "                    on udd.fieldid = udf.fieldid\n"
+                        + "                inner join udgroup udg\n"
+                        + "                    on udg.groupid = udf.groupid\n"
+                        + "                    and udg.grouptype = 'course'\n"
+                        + "                    and udg.groupname = 'Schedule'\n"
+                        + "                    and udf.fieldName = 'balanceTeachers'\n"
+                        + "                where udd.id =" + ret.get(i).getIdCourse();
+
+                rs = DBConnect.renweb.executeQuery(consulta);
+                while (rs.next()) {
+                    balanceTeachers = rs.getBoolean(1);
+                }    
+                
+                ret.get(i).setBalanceTeachers(balanceTeachers);
+                                          
                 ///***///
               
-                ret.get(i).setExcludeBlocks(excludes);
+                
                 consulta = "select MaxSize from courses where courseid="
                         + ret.get(i).getIdCourse();
                 rs = DBConnect.renweb.executeQuery(consulta);
@@ -480,7 +501,9 @@ public class Consultas {
                 }
             }
             caux.setExcludeBlocks(excludes); //quita los bloques excluidos
-            ret = caux.opciones().size();
+            //ret = caux.opciones().size(); 
+           
+            ret = 33; //solo prueba
             
         } catch (SQLException ex) {
             Logger.getLogger(Consultas.class.getName()).log(Level.SEVERE, null, ex);

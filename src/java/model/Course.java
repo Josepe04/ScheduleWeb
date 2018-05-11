@@ -27,6 +27,7 @@ public class Course {
     private int minGapDays; //cada cuantos dias entre bloques
     private int rank; // prioridad
     private boolean GR; //
+    private boolean balanceTeachers;
     private ArrayList<Integer> excludeRows; // bloques que no se pueden usar
     private ArrayList<Integer> excludeCols;
     private ArrayList<ArrayList<Tupla<Integer, Integer>>> preferedBlocks;
@@ -57,6 +58,8 @@ public class Course {
         patronesStudents = new ArrayList<>();
         trestricctions = new ArrayList();
         rooms = new ArrayList();
+       
+        balanceTeachers = false;
     }
 
     public void addRoom(int id) {
@@ -107,12 +110,133 @@ public class Course {
         return ret;
     }
 
+    ArrayList<ArrayList<Tupla>> opciones(ArrayList<ArrayList<Boolean>> totalBlocks) {
+        ArrayList<ArrayList<Tupla>> ret = new ArrayList<>();
+        try {
+            if (maxSections == null && Integer.parseInt(maxSections) == 0
+                    && Integer.parseInt(maxSections) <= sections) {
+                return ret;
+            }
+        } catch (Exception e) {
+            System.out.println("model.Course.opciones()");
+        }
+
+        for (int j = 0; j < Algoritmo.TAMY; j++) { // j son las filas  11 en MS
+            if ((excludeRows == null && excludeCols == null && excludeBlocks == null)
+                    || !excludeRows.contains(j + 1)) {
+                int k, bloqueados;
+                int gd = this.minGapDays;
+                if (gd == 0) {
+                    gd++;
+                }
+                int sumC = gd;
+                for (int i = 0; i < Algoritmo.TAMX; i++) { //i son las cols 3 en MS 
+                    ArrayList<Tupla> t = new ArrayList<>();
+                    k = this.blocksWeek;
+                    Tupla taux = new Tupla(i, j);
+
+                    if (!t.contains(taux) && !this.excludeBlocks.contains(taux)
+                            && !this.excludeCols.contains(i)
+                            && totalBlocks.get(j).get(i)) {
+
+                        t.add(taux);
+                        k--;
+                        /*nuevo*/
+                        if (k <= 0) {
+                            ret.add((ArrayList<Tupla>) t.clone());
+                            t.remove(t.size() - 1);
+                        } else {
+                            for (int l = i + 1; l < Algoritmo.TAMX; l++) {
+                                for (int m = 0; m < Algoritmo.TAMY; m++) {
+                                    Tupla taux2 = new Tupla(l, m);
+                                    if (!t.contains(taux2) && !this.excludeBlocks.contains(taux2)
+                                            && !this.excludeCols.contains(l)
+                                            && totalBlocks.get(m).get(l)) {
+                                        t.add(taux2);
+                                        k--;
+                                        if (k <= 0) {
+                                            ret.add((ArrayList<Tupla>) t.clone());
+                                            t.remove(t.size() - 1);
+                                            k++;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        /*
+                        int cont = 0;
+                        while (i+sumC < Algoritmo.TAMX && cont < Algoritmo.TAMY) {
+                            Tupla taux2 = new Tupla(i+sumC, cont);
+                            if (!t.contains(taux2) && !this.excludeBlocks.contains(taux2)
+                                    && !this.excludeCols.contains(i+sumC)
+                                    && totalBlocks.get(cont).get(i+sumC)) {
+                                t.add(taux2);
+                                k--;
+                                if (k <= 0/* && !ret.contains(t)) {
+                                    ret.add(t);
+                                    t.remove(t.size()-1);
+                                    k++;
+                                }
+                            } 
+                            cont++;
+                            sumC++;
+                        }*/
+                    }
+                }
+
+            }
+        }
+
+        /*for (int j = 0; j < Algoritmo.TAMY; j++) { // j son las filas  11 en MS
+            if ((excludeRows == null && excludeCols == null && excludeBlocks == null)
+                    || !excludeRows.contains(j + 1)) {
+                int k, bloqueados;
+                int gd = this.minGapDays;
+                if (gd == 0) {
+                    gd++;
+                }
+                for (int i = 0; i < Algoritmo.TAMX; i++) { //i son las cols 3 en MS
+                    ArrayList<Tupla> t = new ArrayList<>();
+                    int sum = 0;
+                    bloqueados = 0;
+                    k = this.blocksWeek;
+
+                    while (k > 0) {
+                        Tupla taux = new Tupla((i + sum) % Algoritmo.TAMX, j);
+                        
+                        if (!t.contains(taux) && !this.excludeBlocks.contains(taux)
+                                && !this.excludeCols.contains((i + sum) % Algoritmo.TAMX)
+                                && totalBlocks.get(j).get(i)
+                                && totalBlocks.get(j).get((i + sum) % Algoritmo.TAMX)) {
+                            t.add(taux);
+                            k--;
+                        } 
+                        else {
+                            bloqueados++;
+                        }
+                        
+                        if (bloqueados > Algoritmo.TAMY) {
+                            break;
+                        }
+                        sum += gd;                      
+                    }
+
+                    if (k <= 0 && !ret.contains(t)) {
+                        ret.add(t);
+                    }
+                }
+            }
+        }*/
+        return ret;
+    }
+
     /**
      * Devuelve los huecos donde se puede colocar una seccion
      *
      * @return
      */
-    public ArrayList<ArrayList<Tupla>> opciones() { 
+    /*public ArrayList<ArrayList<Tupla>> opciones() {
         ArrayList<ArrayList<Tupla>> ret = new ArrayList<>();
         try {
             if (maxSections == null && Integer.parseInt(maxSections) == 0
@@ -121,7 +245,7 @@ public class Course {
             }
         } catch (Exception e) {
         }
-        for (int j = 0; j < Algoritmo.TAMY; j++) {
+        for (int j = 0; j < Algoritmo.TAMY; j++) { // j son las filas  11 en MS
             if ((excludeRows == null && excludeCols == null && excludeBlocks == null)
                     || !excludeRows.contains(j + 1)) {
                 int k, bloqueados;
@@ -129,7 +253,7 @@ public class Course {
                 if (gd == 0) {
                     gd++;
                 }
-                for (int i = 0; i < Algoritmo.TAMX; i++) { // 
+                for (int i = 0; i < Algoritmo.TAMX; i++) { //  i son las filas 11 en MS
                     ArrayList<Tupla> t = new ArrayList<>();
                     int sum = 0;
                     bloqueados = 0;
@@ -155,8 +279,7 @@ public class Course {
             }
         }
         return ret;
-    }
-
+    }*/
     public ArrayList<ArrayList<Boolean>> opcionesStart() { // AQUI ES DONDE SE LIMUTAN LOS HUECOS DISPONIBLES INICIO
         ArrayList<ArrayList<Boolean>> ret = new ArrayList<>();
         for (int j = 1; j <= Algoritmo.TAMY; j++) { // AQUI ES EL FALLO COMPARA LA HORA CON EL DIA TENIENDO EN CUENTA QUE LAS Y SON LAS HORAS Y LAS X LOS DIAS
@@ -302,6 +425,14 @@ public class Course {
         this.minGapDays = minGapDays;
     }
 
+    public boolean isBalanceTeachers() {
+        return balanceTeachers;
+    }
+
+    public void setBalanceTeachers(boolean balanceTeachers) {
+        this.balanceTeachers = balanceTeachers;
+    }
+
     public int getRank() {
         return rank;
     }
@@ -363,6 +494,7 @@ public class Course {
     public void setTrestricctions(ArrayList<Integer> trestricctions) {
         this.trestricctions = trestricctions;
     }
+
 
     public String[][] getHuecos() {
         return huecos;
@@ -516,4 +648,5 @@ public class Course {
     public boolean equals(Object c) {
         return this.idCourse == ((Course) c).idCourse;
     }
+
 }

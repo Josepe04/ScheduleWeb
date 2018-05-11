@@ -11,6 +11,7 @@ import dataManage.Consultas;
 import com.google.gson.Gson;
 import dataManage.Restrictions;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import org.springframework.web.servlet.ModelAndView;
@@ -75,29 +76,29 @@ public class Algoritmo {
             for (int i = 0; i < noAsign.size(); i++) { // secciones 0,1,2,3,...
                 noAsignSection.put(noAsign.get(i), i % minsections);
             }
-
-            if (course.opciones().size() > 0) {
+            //id:695  science
+            if (course.opciones(r.totalBlocks).size() > 0) {
                 //Segun el modo de gestion de clases cambia como rellenas la parte de studentsSections
                 switch (roommode) {
                     case 0:
                         noAsign = studentSections(r, r.teachers, course, minsections,
-                                course.opciones(), noAsign, noAsignSection, r.students, null);
+                                course.opciones(r.totalBlocks), noAsign, noAsignSection, r.students, null);
                         break;
                     case 1:
                         noAsign = studentSections(r, r.teachers, course, minsections,
-                                course.opciones(), noAsign, noAsignSection, r.students, course.getRooms());
+                                course.opciones(r.totalBlocks), noAsign, noAsignSection, r.students, course.getRooms());
                         break;
                     case 2:
                         noAsign = studentSections(r, r.teachers, course, minsections,
-                                course.opciones(), noAsign, noAsignSection, r.students, r.groupRooms);
+                                course.opciones(r.totalBlocks), noAsign, noAsignSection, r.students, r.groupRooms);
                         break;
                     case 3:
                         if (course.getRooms().isEmpty()) {
                             noAsign = studentSections(r, r.teachers, course, minsections,
-                                    course.opciones(), noAsign, noAsignSection, r.students, r.groupRooms);
+                                    course.opciones(r.totalBlocks), noAsign, noAsignSection, r.students, r.groupRooms);
                         } else {
                             noAsign = studentSections(r, r.teachers, course, minsections,
-                                    course.opciones(), noAsign, noAsignSection, r.students, course.getRooms());
+                                    course.opciones(r.totalBlocks), noAsign, noAsignSection, r.students, course.getRooms());
                         }
                         break;
                     default:
@@ -175,13 +176,26 @@ public class Algoritmo {
         }
     }
 
-    private int buscarPosBlock(int pos, ArrayList<Tupla<Integer, ArrayList<Integer>>> stids){
-        for (int i = 0; i < stids.size(); i++){
+    private int buscarPosBlock(int x,int y, ArrayList<Tupla<Integer, ArrayList<Integer>>> stids ,ArrayList<ArrayList<Tupla>> sec){
+      /*  for (int i = 0; i < stids.size(); i++){
             if(stids.get(i).x == pos) return i;
+        }*/
+       int maxAlumnos = stids.get(0).getY().size();
+       
+        for (int i = 0; i < stids.size(); i++) {
+            for (int j = 0; j < sec.get(0).size(); j++) {
+                 if(((Integer)sec.get(stids.get(i).x).get(j).x == x  && (Integer)sec.get(stids.get(i).x).get(j).y == y )
+                    || ((Integer)sec.get(stids.get(i).x).get(j).x == y  && (Integer)sec.get(stids.get(i).x).get(j).y == x )
+                    && stids.get(i).y.size() >= maxAlumnos)
+                    return i;
+            }
+           
+            //sec.get(stids.get(i).x)
         }
+       
         return -1;
     }
-    private void sortStidsByPriority(ArrayList<Tupla<Integer, ArrayList<Integer>>> stids, Course c, Restrictions r) {
+    private void sortStidsByPriority(ArrayList<Tupla<Integer, ArrayList<Integer>>> stids,ArrayList<ArrayList<Tupla>> sec, Course c, Restrictions r) {
        /* if (c.getPreferedBlocks() != null && c.getPreferedBlocks().size() > 0) {
             for (int h = 0; h < c.getPreferedBlocks().get(c.getSections() - 1).size(); h++) {
                 ArrayList<Tupla> auxTupla = new ArrayList();
@@ -194,15 +208,18 @@ public class Algoritmo {
                 }
             }
         }*/
+        
        if (c.getPreferedBlocks() != null && c.getPreferedBlocks().size() > 0) {
            for (int i = 0; i < c.getPreferedBlocks().get(c.getSections()-1).size(); i++) {
-               Tupla<Integer, ArrayList<Integer>> tuplaAux = stids.get(i);
-               
-               int posBlock = ((c.getPreferedBlocks().get(c.getSections()-1).get(i).x -1)) + ((c.getPreferedBlocks().get(c.getSections()-1).get(i).y -1 )*r.totalBlocks.get(0).size());
-               int res = buscarPosBlock(posBlock,stids);
+               Tupla<Integer, ArrayList<Integer>> tuplaAux = new Tupla(stids.get(i).x, stids.get(i).y);
+               int res = buscarPosBlock((c.getPreferedBlocks().get(c.getSections()-1).get(i).x)-1,(c.getPreferedBlocks().get(c.getSections()-1).get(i).y) -1,stids,sec);
                if(res != -1){
                     stids.set(i,stids.get(res));
-                    stids.set(posBlock,tuplaAux);
+                    stids.set(res,tuplaAux);
+                    /*
+                        ESTO MODIFICARA EL STIDS PONIENDO DELANTE LAS PRIORITARIAS
+                    */        
+                    
                }
            }
         }
@@ -247,15 +264,16 @@ public class Algoritmo {
                 }
             }
         }*/
-        updateStidsWithUserDefined(stids, r.totalBlocks);
+      //  updateStidsWithUserDefined(stids, r.totalBlocks);
 
         //Ordena la lista de conjuntos por numero de estudiantes de mayor a menor.
         try {
             stids.sort(new CompConjuntos());
-        } catch (Exception e) {
-            return null;
+          // Collections.sort(stids,new CompConjuntos());
+        } catch (Exception e) { // esto da errores aveces solucionar comparador
+            //return null;
         }
-        sortStidsByPriority(stids, c,r);
+        sortStidsByPriority(stids,sec,c,r);
 
         //inicializo el conjunto de estudiantes seleccionables
         ArrayList<Integer> diferencia;
@@ -271,11 +289,21 @@ public class Algoritmo {
 
         //recorro la lista de conjuntos y la de profesores
         while (i < stids.size()) { // recorrido a los bloques disponibles
-            for (Teacher t : teachers) { // recorrido a los teachers  totales
+            //ordenar por prioridad los teachers
+            ArrayList<Teacher> teachersOrderByPriority = new ArrayList<>();
+            
+            if(c.isBalanceTeachers()){
+                teachersOrderByPriority = sortTeacherByPriorty(teachers,c.getTrestricctions(),c.getMinSections());
+               //teachers = teachersOrderByPriority;
+            }
+            for (Teacher t : teachersOrderByPriority) { // recorrido a los teachers  totales
                 Room compatibleRoom = null;
                 //compruebo que el profesor puede impartir esta clase
-                if (c.getTrestricctions().contains(t.getIdTeacher()) //comprobar que el profesor puede dar ese curso
+              /*  if (c.getTrestricctions().contains(t.getIdTeacher()) //comprobar que el profesor puede dar ese curso
                         && t.asignaturaCursable(c.getIdCourse()) // comprueba que el profesor puede iniciar una nueva seccion
+                        && t.patronCompatible(sec.get(stids.get(i).x))
+                        && c.getSections() <= c.getMinSections()) {*/
+                if (t.asignaturaCursable(c.getIdCourse()) // comprueba que el profesor puede iniciar una nueva seccion
                         && t.patronCompatible(sec.get(stids.get(i).x))
                         && c.getSections() <= c.getMinSections()) {
                     //si el schedule por rooms esta activado comprueba si las rooms disponibles 
@@ -392,7 +420,7 @@ public class Algoritmo {
                 for (Integer i2 : ret) {
                     anadir += students.get(i2).getName() + ",";
                     if (aux == null) {
-                        aux = students.get(i2).listPatronesCompatibles(c.opciones());
+                        aux = students.get(i2).listPatronesCompatibles(c.opciones(r.totalBlocks));
                     } else {
                         aux = students.get(i2).listPatronesCompatibles(aux);
                     }
@@ -406,6 +434,26 @@ public class Algoritmo {
                 students.get(st).addNoAsignado(c.getIdCourse());
             }
             return ret;
+        }
+        return null;
+    }
+    
+    private ArrayList<Teacher> sortTeacherByPriorty( ArrayList<Teacher> teachers,ArrayList<Integer> preferedTeachers,int numSections){
+        
+        ArrayList<Teacher> aux = new ArrayList<>();
+        if(preferedTeachers.isEmpty())
+            return aux;
+        
+        for (int i = 0; i < numSections; i++) {
+            Teacher teacher = findTeacher(teachers, preferedTeachers.get(i%preferedTeachers.size()));
+            aux.add(teacher);
+        }
+        return aux;
+    }
+    private Teacher findTeacher(ArrayList<Teacher> teachers, int idTeacher){
+        for (int i = 0; i < teachers.size(); i++) {
+            if(teachers.get(i).getIdTeacher() == idTeacher)
+                return teachers.get(i);
         }
         return null;
     }

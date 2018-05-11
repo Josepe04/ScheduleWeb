@@ -136,6 +136,26 @@
                         for (Course t : courses) {
                             out.println("<h3>" + cs.nameCourse(t.getIdCourse()) + "</h3>");
                             out.println("<table id='table_id' class='table'>");
+                            
+                            for (int j = 1; j <= t.getSections(); j++) {
+                                String studentNames = "";
+                                out.println("<tr>");
+                                out.println("<td>Section " + j + ":</td>");
+                                out.println("<td>");
+                                for (int k = 0; k < t.getStudentsAsignados().size(); k++) {   
+                                    if(lista2.get(t.getStudentsAsignados().get(k)).getNumSectionByCourse(t.getIdCourse()) == j)
+                                    {
+                                       // studentNames +=  lista2.get(t.getStudentsAsignados().get(k)).getNumSectionByCourse(t.getIdCourse());
+                                        if(!studentNames.contains(lista2.get(t.getStudentsAsignados().get(k)).getName()))
+                                            studentNames += " ," + lista2.get(t.getStudentsAsignados().get(k)).getName();
+                                    }
+                                    
+                                }
+                                
+                                out.println(studentNames + ".");
+                                out.println("</td>");
+                                out.println("</tr>");
+                            }
                             out.println(headCols);
                             swapcolor = true;
                             for (int i = 0; i < TAMY; i++) {
@@ -187,8 +207,8 @@
                                 out.println("<td>" + c.getSectionsNoEnrolled() + "</td>");
                                 out.println("</tr>");
 
-                                String studentNames = "";
-/*
+                                /*String studentNames = "";
+
                                 out.println("<tr>");
                                 out.println("<td>Students Enrolled</td>");
                                 out.println("<td>");
@@ -200,9 +220,10 @@
                                 }
                                 out.println(studentNames + ".");
                                 out.println("</td>");
-                                out.println("</tr>");*/
+                                out.println("</tr>");
+                                 */
+                                String studentNames = "";
 
-                               // studentNames = "";
                                 out.println("<tr>");
                                 out.println("<td>Students no enrolled</td>");
                                 out.println("<td>");
@@ -330,8 +351,9 @@
                             }
 
                             countDays++;
+                            out.println("</table>");
                         }
-                        out.println("</table>");
+                      
                     %>
                 </div>
 
